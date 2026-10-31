@@ -1,4 +1,8 @@
+import sharp from 'sharp';
 import { MetaClient } from '../lib/metaClient';
+
+// Max image dimension before encoding — reduces payload ~2-3x vs full-res
+const MAX_IMAGE_DIM = 800;
 
 export interface BoundingBox {
   x1: number;
@@ -17,12 +21,43 @@ export interface SamDetectionResult {
   rawText: string;
 }
 
+export interface SamFrameResult {
+  /** Merged boxes from all prompts (person + clothing) */
+  boxes: BoundingBox[];
+  /** Per-prompt breakdown */
+  perPrompt: SamDetectionResult[];
+  /** Wall-clock time for the parallel batch (max of individual call times) */
+  wallTimeMs: number;
+  /** Whether any detections were found — used to skip Muse Spark */
+  hasDetections: boolean;
+}
+
 export class Sam31Client {
   private static readonly MODEL = 'sam-3.1';
   private static readonly ENDPOINT = '/responses';
 
+  /**
+   * Resize an image buffer to MAX_IMAGE_DIM on its longest side (JPEG output).
+   * Reduces base64 payload size by ~2-4x vs full-res PNG, cutting upload and
+   * API decode time.
+   */
+  public static async resizeImage(inputBuffer: Buffer): Promise<string> {
+    const resized = await sharp(inputBuffer)
+      .resize(MAX_IMAGE_DIM, MAX_IMAGE_DIM, {
+        fit: 'inside',        // preserve aspect ratio
+        withoutEnlargement: true,
+      })
+      .jpeg({ quality: 85 }) // JPEG ~3-4x smaller than PNG for photos
+      .toBuffer();
+
+    return `data:image/jpeg;base64,${resized.toString('base64')}`;
+  }
+
+  /**
+   * Single concept segmentation call. Internal — use segmentFrame for batches.
+   */
   public static async segmentConcept(
-    imageBase64: string,
+    imageDataUrl: string,
     prompt: string
   ): Promise<SamDetectionResult> {
     const payload = {
@@ -34,9 +69,9 @@ export class Sam31Client {
             { type: 'input_text', text: prompt },
             {
               type: 'input_image',
-              image_url: imageBase64.startsWith('data:')
-                ? imageBase64
-                : `data:image/jpeg;base64,${imageBase64}`,
+              image_url: imageDataUrl.startsWith('data:')
+                ? imageDataUrl
+                : `data:image/jpeg;base64,${imageDataUrl}`,
             },
           ],
         },
@@ -75,6 +110,41 @@ export class Sam31Client {
       maskCount,
       latencyMs: response.latencyMs,
       rawText: outText,
+    };
+  }
+
+  /**
+   * Process a single frame with ALL prompts in PARALLEL (Promise.all).
+   * Wall-clock time ≈ max(individual call times) instead of their sum.
+   *
+   * @param imageBuffer   Raw image bytes (PNG or JPEG)
+   * @param prompts       Concept prompts to run concurrently (default: person + clothing)
+   * @returns SamFrameResult with merged boxes and per-prompt breakdown
+   */
+  public static async segmentFrame(
+    imageBuffer: Buffer,
+    prompts: string[] = ['person', 'clothing']
+  ): Promise<SamFrameResult> {
+    const wallStart = Date.now();
+
+    // Step 1: Resize once, share the resized data URL across all parallel calls
+    const imageDataUrl = await Sam31Client.resizeImage(imageBuffer);
+
+    // Step 2: Fire all prompt calls concurrently
+    const results = await Promise.all(
+      prompts.map((p) => Sam31Client.segmentConcept(imageDataUrl, p))
+    );
+
+    const wallTimeMs = Date.now() - wallStart;
+
+    // Merge all boxes from all prompts
+    const allBoxes = results.flatMap((r) => r.boxes);
+
+    return {
+      boxes: allBoxes,
+      perPrompt: results,
+      wallTimeMs,
+      hasDetections: allBoxes.length > 0,
     };
   }
 }

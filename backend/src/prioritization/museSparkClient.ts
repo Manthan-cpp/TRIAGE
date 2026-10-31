@@ -28,9 +28,34 @@ export class MuseSparkClient {
   private static readonly MODEL = 'muse-spark-1.3';
   private static readonly ENDPOINT = '/chat/completions';
 
+  /**
+   * Prioritize a batch of candidates via Muse Spark 1.3.
+   *
+   * OPTIMIZATION: Candidates with zero detections are assigned possible-low
+   * automatically — no API call made for them, saving ~11s each.
+   * Only detection-positive candidates go to Muse Spark.
+   */
   public static async prioritizeBatch(
     candidates: CandidateToRank[]
   ): Promise<PrioritizationResult> {
+    const validLabels: ConfidenceLabel[] = ['possible-high', 'possible-medium', 'possible-low'];
+
+    // Partition candidates
+    const withDetections = candidates.filter((c) => c.detectedBoxesCount > 0);
+    const noDetections = candidates.filter((c) => c.detectedBoxesCount === 0);
+
+    // If nothing to rank via model, return early — saves ~11s
+    if (withDetections.length === 0) {
+      const autoRanked: RankedItem[] = noDetections.map((c, idx) => ({
+        candidateId: c.candidateId,
+        priorityRank: idx + 1,
+        confidenceLabel: 'possible-low' as ConfidenceLabel,
+        reasoningSummary: 'No candidate signals detected; auto-ranked without model call.',
+        evidenceIds: [],
+      }));
+      return { rankedItems: autoRanked, latencyMs: 0, model: this.MODEL + ':early-exit' };
+    }
+
     const systemPrompt = `You are the prioritization engine for Project Triage (SAR decision-support).
 Your sole task is to comparatively rank visual candidate drone frames for human reviewer attention.
 MANDATORY CONSTRAINTS:
@@ -51,7 +76,7 @@ MANDATORY CONSTRAINTS:
   ]
 }`;
 
-    const userPrompt = `Rank the following ${candidates.length} visual candidates:\n${JSON.stringify(candidates, null, 2)}`;
+    const userPrompt = `Rank the following ${withDetections.length} visual candidates:\n${JSON.stringify(withDetections, null, 2)}`;
 
     const payload = {
       model: this.MODEL,
@@ -82,22 +107,30 @@ MANDATORY CONSTRAINTS:
     }
 
     // Sanitize and validate vocabulary constraints
-    const validLabels: ConfidenceLabel[] = ['possible-high', 'possible-medium', 'possible-low'];
     const sanitized = parsed.rankedItems.map((item, idx) => ({
       candidateId: item.candidateId || `item_${idx + 1}`,
       priorityRank: typeof item.priorityRank === 'number' ? item.priorityRank : idx + 1,
       confidenceLabel: validLabels.includes(item.confidenceLabel)
         ? item.confidenceLabel
-        : 'possible-low',
+        : 'possible-low' as ConfidenceLabel,
       reasoningSummary: item.reasoningSummary || 'Candidate flagged for manual review.',
       evidenceIds: item.evidenceIds || [],
     }));
 
-    // Ensure sorted by priorityRank
-    sanitized.sort((a, b) => a.priorityRank - b.priorityRank);
+    // Append zero-detect candidates at the bottom, re-ranked after model results
+    const baseRank = sanitized.length;
+    const autoBottom: RankedItem[] = noDetections.map((c, idx) => ({
+      candidateId: c.candidateId,
+      priorityRank: baseRank + idx + 1,
+      confidenceLabel: 'possible-low' as ConfidenceLabel,
+      reasoningSummary: 'No candidate signals detected; assigned lowest priority.',
+      evidenceIds: [],
+    }));
+
+    const merged = [...sanitized, ...autoBottom].sort((a, b) => a.priorityRank - b.priorityRank);
 
     return {
-      rankedItems: sanitized,
+      rankedItems: merged,
       latencyMs: response.latencyMs,
       model: this.MODEL,
     };
