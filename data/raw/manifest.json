@@ -1,0 +1,678 @@
+{
+  "total_units": 38,
+  "breakdown": {
+    "light_occlusion": 14,
+    "heavy_occlusion": 16,
+    "negative_control": 8
+  },
+  "items": [
+    {
+      "id": "sard_01",
+      "filename": "sard_human_01.png",
+      "dataset": "SARD",
+      "category": "light_occlusion",
+      "relative_path": "sard/sard_human_01.png",
+      "ground_truth_has_person": true,
+      "width": 790,
+      "height": 790,
+      "license": "CC BY 4.0 / MIT (Sambolek & Ivasic-Kos, 2021)"
+    },
+    {
+      "id": "sard_02",
+      "filename": "sard_human_02.png",
+      "dataset": "SARD",
+      "category": "light_occlusion",
+      "relative_path": "sard/sard_human_02.png",
+      "ground_truth_has_person": true,
+      "width": 790,
+      "height": 805,
+      "license": "CC BY 4.0 / MIT (Sambolek & Ivasic-Kos, 2021)"
+    },
+    {
+      "id": "sard_03",
+      "filename": "sard_human_03.png",
+      "dataset": "SARD",
+      "category": "light_occlusion",
+      "relative_path": "sard/sard_human_03.png",
+      "ground_truth_has_person": true,
+      "width": 790,
+      "height": 790,
+      "license": "CC BY 4.0 / MIT (Sambolek & Ivasic-Kos, 2021)"
+    },
+    {
+      "id": "sard_04",
+      "filename": "sard_human_04.png",
+      "dataset": "SARD",
+      "category": "light_occlusion",
+      "relative_path": "sard/sard_human_04.png",
+      "ground_truth_has_person": true,
+      "width": 790,
+      "height": 793,
+      "license": "CC BY 4.0 / MIT (Sambolek & Ivasic-Kos, 2021)"
+    },
+    {
+      "id": "sard_05",
+      "filename": "sard_human_05.png",
+      "dataset": "SARD",
+      "category": "heavy_occlusion",
+      "relative_path": "sard/sard_human_05.png",
+      "ground_truth_has_person": true,
+      "width": 790,
+      "height": 790,
+      "license": "CC BY 4.0 / MIT (Sambolek & Ivasic-Kos, 2021)"
+    },
+    {
+      "id": "sard_06",
+      "filename": "sard_human_06.png",
+      "dataset": "SARD",
+      "category": "heavy_occlusion",
+      "relative_path": "sard/sard_human_06.png",
+      "ground_truth_has_person": true,
+      "width": 790,
+      "height": 790,
+      "license": "CC BY 4.0 / MIT (Sambolek & Ivasic-Kos, 2021)"
+    },
+    {
+      "id": "sard_07",
+      "filename": "sard_human_07.png",
+      "dataset": "SARD",
+      "category": "heavy_occlusion",
+      "relative_path": "sard/sard_human_07.png",
+      "ground_truth_has_person": true,
+      "width": 790,
+      "height": 790,
+      "license": "CC BY 4.0 / MIT (Sambolek & Ivasic-Kos, 2021)"
+    },
+    {
+      "id": "sard_08",
+      "filename": "sard_human_08.png",
+      "dataset": "SARD",
+      "category": "heavy_occlusion",
+      "relative_path": "sard/sard_human_08.png",
+      "ground_truth_has_person": true,
+      "width": 790,
+      "height": 790,
+      "license": "CC BY 4.0 / MIT (Sambolek & Ivasic-Kos, 2021)"
+    },
+    {
+      "id": "uav_01",
+      "filename": "uav_sar_01.jpg",
+      "dataset": "UAV-SAR",
+      "category": "light_occlusion",
+      "relative_path": "uav_sar/uav_sar_01.jpg",
+      "ground_truth_has_person": true,
+      "boxes_normalized": [
+        [
+          0.50625,
+          0.6506944444444445,
+          0.08046875,
+          0.2861111111111111
+        ],
+        [
+          0.575,
+          0.6402777777777777,
+          0.07109375,
+          0.2986111111111111
+        ]
+      ],
+      "width": 1280,
+      "height": 720,
+      "license": "CC BY 4.0 (Mikiee et al., 2026)"
+    },
+    {
+      "id": "uav_02",
+      "filename": "uav_sar_02.jpg",
+      "dataset": "UAV-SAR",
+      "category": "light_occlusion",
+      "relative_path": "uav_sar/uav_sar_02.jpg",
+      "ground_truth_has_person": true,
+      "boxes_normalized": [
+        [
+          0.550390625,
+          0.3263888888888889,
+          0.05234375,
+          0.21944444444444444
+        ],
+        [
+          0.47265625,
+          0.33819444444444446,
+          0.0515625,
+          0.22916666666666666
+        ]
+      ],
+      "width": 1280,
+      "height": 720,
+      "license": "CC BY 4.0 (Mikiee et al., 2026)"
+    },
+    {
+      "id": "uav_03",
+      "filename": "uav_sar_03.jpg",
+      "dataset": "UAV-SAR",
+      "category": "light_occlusion",
+      "relative_path": "uav_sar/uav_sar_03.jpg",
+      "ground_truth_has_person": true,
+      "boxes_normalized": [
+        [
+          0.73046875,
+          0.3416666666666667,
+          0.05546875,
+          0.20416666666666666
+        ],
+        [
+          0.534375,
+          0.28958333333333336,
+          0.0421875,
+          0.19166666666666668
+        ]
+      ],
+      "width": 1280,
+      "height": 720,
+      "license": "CC BY 4.0 (Mikiee et al., 2026)"
+    },
+    {
+      "id": "uav_04",
+      "filename": "uav_sar_04.jpg",
+      "dataset": "UAV-SAR",
+      "category": "light_occlusion",
+      "relative_path": "uav_sar/uav_sar_04.jpg",
+      "ground_truth_has_person": true,
+      "boxes_normalized": [
+        [
+          0.961328125,
+          0.45902777777777776,
+          0.0765625,
+          0.25833333333333336
+        ],
+        [
+          0.5953125,
+          0.29444444444444445,
+          0.04375,
+          0.18333333333333332
+        ]
+      ],
+      "width": 1280,
+      "height": 720,
+      "license": "CC BY 4.0 (Mikiee et al., 2026)"
+    },
+    {
+      "id": "uav_05",
+      "filename": "uav_sar_05.jpg",
+      "dataset": "UAV-SAR",
+      "category": "light_occlusion",
+      "relative_path": "uav_sar/uav_sar_05.jpg",
+      "ground_truth_has_person": true,
+      "boxes_normalized": [
+        [
+          0.5875,
+          0.4756944444444444,
+          0.07578125,
+          0.2361111111111111
+        ],
+        [
+          0.350390625,
+          0.3090277777777778,
+          0.05,
+          0.18333333333333332
+        ]
+      ],
+      "width": 1280,
+      "height": 720,
+      "license": "CC BY 4.0 (Mikiee et al., 2026)"
+    },
+    {
+      "id": "uav_06",
+      "filename": "uav_sar_06.jpg",
+      "dataset": "UAV-SAR",
+      "category": "light_occlusion",
+      "relative_path": "uav_sar/uav_sar_06.jpg",
+      "ground_truth_has_person": true,
+      "boxes_normalized": [
+        [
+          0.03828125,
+          0.4745277777777778,
+          0.0765625,
+          0.26295833333333335
+        ],
+        [
+          0.3578125,
+          0.1423611111111111,
+          0.0453125,
+          0.18472222222222223
+        ]
+      ],
+      "width": 1280,
+      "height": 720,
+      "license": "CC BY 4.0 (Mikiee et al., 2026)"
+    },
+    {
+      "id": "uav_07",
+      "filename": "uav_sar_07.jpg",
+      "dataset": "UAV-SAR",
+      "category": "light_occlusion",
+      "relative_path": "uav_sar/uav_sar_07.jpg",
+      "ground_truth_has_person": true,
+      "boxes_normalized": [
+        [
+          0.361328125,
+          0.3840277777777778,
+          0.053125,
+          0.21666666666666667
+        ],
+        [
+          0.32578125,
+          0.3763888888888889,
+          0.0515625,
+          0.2111111111111111
+        ]
+      ],
+      "width": 1280,
+      "height": 720,
+      "license": "CC BY 4.0 (Mikiee et al., 2026)"
+    },
+    {
+      "id": "uav_08",
+      "filename": "uav_sar_08.jpg",
+      "dataset": "UAV-SAR",
+      "category": "light_occlusion",
+      "relative_path": "uav_sar/uav_sar_08.jpg",
+      "ground_truth_has_person": true,
+      "boxes_normalized": [
+        [
+          0.33621875,
+          0.3725277777777778,
+          0.0191875,
+          0.09583333333333334
+        ]
+      ],
+      "width": 1280,
+      "height": 720,
+      "license": "CC BY 4.0 (Mikiee et al., 2026)"
+    },
+    {
+      "id": "uav_09",
+      "filename": "uav_sar_09.jpg",
+      "dataset": "UAV-SAR",
+      "category": "light_occlusion",
+      "relative_path": "uav_sar/uav_sar_09.jpg",
+      "ground_truth_has_person": true,
+      "boxes_normalized": [
+        [
+          0.536828125,
+          0.51875,
+          0.0220625,
+          0.09306944444444445
+        ]
+      ],
+      "width": 1280,
+      "height": 720,
+      "license": "CC BY 4.0 (Mikiee et al., 2026)"
+    },
+    {
+      "id": "uav_10",
+      "filename": "uav_sar_10.jpg",
+      "dataset": "UAV-SAR",
+      "category": "light_occlusion",
+      "relative_path": "uav_sar/uav_sar_10.jpg",
+      "ground_truth_has_person": true,
+      "boxes_normalized": [
+        [
+          0.395515625,
+          0.5714444444444444,
+          0.0159140625,
+          0.060625
+        ]
+      ],
+      "width": 1280,
+      "height": 720,
+      "license": "CC BY 4.0 (Mikiee et al., 2026)"
+    },
+    {
+      "id": "uav_11",
+      "filename": "uav_sar_11.jpg",
+      "dataset": "UAV-SAR",
+      "category": "heavy_occlusion",
+      "relative_path": "uav_sar/uav_sar_11.jpg",
+      "ground_truth_has_person": true,
+      "boxes_normalized": [
+        [
+          0.37215625,
+          0.5776249999999999,
+          0.0162578125,
+          0.06193055555555556
+        ]
+      ],
+      "width": 1280,
+      "height": 720,
+      "license": "CC BY 4.0 (Mikiee et al., 2026)"
+    },
+    {
+      "id": "uav_12",
+      "filename": "uav_sar_12.jpg",
+      "dataset": "UAV-SAR",
+      "category": "heavy_occlusion",
+      "relative_path": "uav_sar/uav_sar_12.jpg",
+      "ground_truth_has_person": true,
+      "boxes_normalized": [
+        [
+          0.484375,
+          0.37930555555555556,
+          0.0108984375,
+          0.06040277777777778
+        ]
+      ],
+      "width": 1280,
+      "height": 720,
+      "license": "CC BY 4.0 (Mikiee et al., 2026)"
+    },
+    {
+      "id": "uav_13",
+      "filename": "uav_sar_13.jpg",
+      "dataset": "UAV-SAR",
+      "category": "heavy_occlusion",
+      "relative_path": "uav_sar/uav_sar_13.jpg",
+      "ground_truth_has_person": true,
+      "boxes_normalized": [
+        [
+          0.4776640625,
+          0.27720833333333333,
+          0.016171875,
+          0.08070833333333333
+        ]
+      ],
+      "width": 1280,
+      "height": 720,
+      "license": "CC BY 4.0 (Mikiee et al., 2026)"
+    },
+    {
+      "id": "uav_14",
+      "filename": "uav_sar_14.jpg",
+      "dataset": "UAV-SAR",
+      "category": "heavy_occlusion",
+      "relative_path": "uav_sar/uav_sar_14.jpg",
+      "ground_truth_has_person": true,
+      "boxes_normalized": [
+        [
+          0.6920625,
+          0.8902777777777777,
+          0.03046875,
+          0.11388888888888889
+        ]
+      ],
+      "width": 1280,
+      "height": 720,
+      "license": "CC BY 4.0 (Mikiee et al., 2026)"
+    },
+    {
+      "id": "uav_15",
+      "filename": "uav_sar_15.jpg",
+      "dataset": "UAV-SAR",
+      "category": "heavy_occlusion",
+      "relative_path": "uav_sar/uav_sar_15.jpg",
+      "ground_truth_has_person": true,
+      "boxes_normalized": [
+        [
+          0.501953125,
+          0.5745972222222222,
+          0.084375,
+          0.3283888888888889
+        ]
+      ],
+      "width": 1280,
+      "height": 720,
+      "license": "CC BY 4.0 (Mikiee et al., 2026)"
+    },
+    {
+      "id": "uav_16",
+      "filename": "uav_sar_16.jpg",
+      "dataset": "UAV-SAR",
+      "category": "heavy_occlusion",
+      "relative_path": "uav_sar/uav_sar_16.jpg",
+      "ground_truth_has_person": true,
+      "boxes_normalized": [
+        [
+          0.3298515625,
+          0.8149166666666667,
+          0.0407109375,
+          0.22327777777777777
+        ]
+      ],
+      "width": 1280,
+      "height": 720,
+      "license": "CC BY 4.0 (Mikiee et al., 2026)"
+    },
+    {
+      "id": "uav_17",
+      "filename": "uav_sar_17.jpg",
+      "dataset": "UAV-SAR",
+      "category": "heavy_occlusion",
+      "relative_path": "uav_sar/uav_sar_17.jpg",
+      "ground_truth_has_person": true,
+      "boxes_normalized": [
+        [
+          0.3862109375,
+          0.3816805555555556,
+          0.0167421875,
+          0.08280555555555555
+        ],
+        [
+          0.791875,
+          0.46593055555555557,
+          0.014695312499999998,
+          0.03102777777777778
+        ],
+        [
+          0.804640625,
+          0.48533333333333334,
+          0.01290625,
+          0.029277777777777774
+        ],
+        [
+          0.8163828125,
+          0.4921111111111111,
+          0.01234375,
+          0.022416666666666668
+        ]
+      ],
+      "width": 1280,
+      "height": 720,
+      "license": "CC BY 4.0 (Mikiee et al., 2026)"
+    },
+    {
+      "id": "uav_18",
+      "filename": "uav_sar_18.jpg",
+      "dataset": "UAV-SAR",
+      "category": "heavy_occlusion",
+      "relative_path": "uav_sar/uav_sar_18.jpg",
+      "ground_truth_has_person": true,
+      "boxes_normalized": [
+        [
+          0.44375,
+          0.4215277777777778,
+          0.0140625,
+          0.06805555555555555
+        ]
+      ],
+      "width": 1280,
+      "height": 720,
+      "license": "CC BY 4.0 (Mikiee et al., 2026)"
+    },
+    {
+      "id": "uav_19",
+      "filename": "uav_sar_19.jpg",
+      "dataset": "UAV-SAR",
+      "category": "heavy_occlusion",
+      "relative_path": "uav_sar/uav_sar_19.jpg",
+      "ground_truth_has_person": true,
+      "boxes_normalized": [
+        [
+          0.37065625,
+          0.6986666666666667,
+          0.012015625,
+          0.058444444444444445
+        ]
+      ],
+      "width": 1280,
+      "height": 720,
+      "license": "CC BY 4.0 (Mikiee et al., 2026)"
+    },
+    {
+      "id": "uav_20",
+      "filename": "uav_sar_20.jpg",
+      "dataset": "UAV-SAR",
+      "category": "heavy_occlusion",
+      "relative_path": "uav_sar/uav_sar_20.jpg",
+      "ground_truth_has_person": true,
+      "boxes_normalized": [
+        [
+          0.6920625,
+          0.8902777777777777,
+          0.03046875,
+          0.11388888888888889
+        ]
+      ],
+      "width": 1280,
+      "height": 720,
+      "license": "CC BY 4.0 (Mikiee et al., 2026)"
+    },
+    {
+      "id": "uav_21",
+      "filename": "uav_sar_21.jpg",
+      "dataset": "UAV-SAR",
+      "category": "heavy_occlusion",
+      "relative_path": "uav_sar/uav_sar_21.jpg",
+      "ground_truth_has_person": true,
+      "boxes_normalized": [
+        [
+          0.7492656249999999,
+          0.9209027777777777,
+          0.0501796875,
+          0.1295
+        ],
+        [
+          0.42224218750000003,
+          0.9144722222222221,
+          0.03515625,
+          0.14227777777777778
+        ]
+      ],
+      "width": 1280,
+      "height": 720,
+      "license": "CC BY 4.0 (Mikiee et al., 2026)"
+    },
+    {
+      "id": "uav_22",
+      "filename": "uav_sar_22.jpg",
+      "dataset": "UAV-SAR",
+      "category": "heavy_occlusion",
+      "relative_path": "uav_sar/uav_sar_22.jpg",
+      "ground_truth_has_person": true,
+      "boxes_normalized": [
+        [
+          0.6879583333333333,
+          0.6210648148148148,
+          0.06929687500000001,
+          0.2523796296296296
+        ]
+      ],
+      "width": 1920,
+      "height": 1080,
+      "license": "CC BY 4.0 (Mikiee et al., 2026)"
+    },
+    {
+      "id": "neg_01",
+      "filename": "neg_control_01.jpg",
+      "dataset": "UAV-SAR-Negative",
+      "category": "negative_control",
+      "relative_path": "negative_controls/neg_control_01.jpg",
+      "ground_truth_has_person": false,
+      "boxes_normalized": [],
+      "width": 640,
+      "height": 240,
+      "license": "CC BY 4.0 (Derived Terrain Negative)"
+    },
+    {
+      "id": "neg_02",
+      "filename": "neg_control_02.jpg",
+      "dataset": "UAV-SAR-Negative",
+      "category": "negative_control",
+      "relative_path": "negative_controls/neg_control_02.jpg",
+      "ground_truth_has_person": false,
+      "boxes_normalized": [],
+      "width": 400,
+      "height": 240,
+      "license": "CC BY 4.0 (Derived Terrain Negative)"
+    },
+    {
+      "id": "neg_03",
+      "filename": "neg_control_03.jpg",
+      "dataset": "UAV-SAR-Negative",
+      "category": "negative_control",
+      "relative_path": "negative_controls/neg_control_03.jpg",
+      "ground_truth_has_person": false,
+      "boxes_normalized": [],
+      "width": 640,
+      "height": 240,
+      "license": "CC BY 4.0 (Derived Terrain Negative)"
+    },
+    {
+      "id": "neg_04",
+      "filename": "neg_control_04.jpg",
+      "dataset": "UAV-SAR-Negative",
+      "category": "negative_control",
+      "relative_path": "negative_controls/neg_control_04.jpg",
+      "ground_truth_has_person": false,
+      "boxes_normalized": [],
+      "width": 400,
+      "height": 240,
+      "license": "CC BY 4.0 (Derived Terrain Negative)"
+    },
+    {
+      "id": "neg_05",
+      "filename": "neg_control_05.jpg",
+      "dataset": "UAV-SAR-Negative",
+      "category": "negative_control",
+      "relative_path": "negative_controls/neg_control_05.jpg",
+      "ground_truth_has_person": false,
+      "boxes_normalized": [],
+      "width": 640,
+      "height": 240,
+      "license": "CC BY 4.0 (Derived Terrain Negative)"
+    },
+    {
+      "id": "neg_06",
+      "filename": "neg_control_06.jpg",
+      "dataset": "UAV-SAR-Negative",
+      "category": "negative_control",
+      "relative_path": "negative_controls/neg_control_06.jpg",
+      "ground_truth_has_person": false,
+      "boxes_normalized": [],
+      "width": 400,
+      "height": 240,
+      "license": "CC BY 4.0 (Derived Terrain Negative)"
+    },
+    {
+      "id": "neg_07",
+      "filename": "neg_control_07.jpg",
+      "dataset": "UAV-SAR-Negative",
+      "category": "negative_control",
+      "relative_path": "negative_controls/neg_control_07.jpg",
+      "ground_truth_has_person": false,
+      "boxes_normalized": [],
+      "width": 640,
+      "height": 240,
+      "license": "CC BY 4.0 (Derived Terrain Negative)"
+    },
+    {
+      "id": "neg_08",
+      "filename": "neg_control_08.jpg",
+      "dataset": "UAV-SAR-Negative",
+      "category": "negative_control",
+      "relative_path": "negative_controls/neg_control_08.jpg",
+      "ground_truth_has_person": false,
+      "boxes_normalized": [],
+      "width": 400,
+      "height": 240,
+      "license": "CC BY 4.0 (Derived Terrain Negative)"
+    }
+  ]
+}
