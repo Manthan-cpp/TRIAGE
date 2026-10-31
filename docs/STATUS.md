@@ -1,7 +1,7 @@
 # Project Status
 
-Last updated: 2026-10-31T21:51:00+05:30
-Last completed: Phase 3 — Data Pipeline & Ingestion Architecture
+Last updated: 2026-10-31T22:02:00+05:30
+Last completed: Phase 4 — Core Perception Layer (SAM 3.1 Candidate Detection)
 In progress: none
 
 ## What exists right now
@@ -21,7 +21,11 @@ In progress: none
 - `backend/` — Node/TypeScript project with `better-sqlite3`, `express`, `sharp`, `tsx`, and client wrappers:
   - `src/lib/costLogger.ts` — Persistent cost and latency logger. (done)
   - `src/lib/metaClient.ts` — Authenticated HTTP client with retries and abort controller. (done)
+  - `src/perception/prompts.ts` — Validated prompt set (`person`, `clothing`) with documented rationale. (done)
+  - `src/perception/candidateTypes.ts` — Structured `CandidateSignalRecord` and `PerceptionBatchResult` types. (done)
+  - `src/perception/falsePositiveDampener.ts` — Evaluates detections, penalizes sub-threshold isolated boxes, protects corroborated signals, respects zero-dismissal rule. (done)
   - `src/perception/sam31Client.ts` — SAM 3.1 client: parallel prompt execution + image resize (Tier 1 optimizations). (done)
+  - `src/perception/perceptionRunner.ts` — Bounded concurrency runner consuming `JobManifest` and saving `candidates.json`. (done)
   - `src/prioritization/museSparkClient.ts` — Muse Spark 1.3 client: zero-detect early-exit + merged ranking. (done)
   - `src/ingestion/fileValidator.ts` — File extension and size validation for images/videos. (done)
   - `src/ingestion/storage.ts` — Directory manager for `data/ingested/<jobId>/{raw,normalized}/` and metadata persistence. (done)
@@ -31,6 +35,7 @@ In progress: none
   - `src/scripts/testSam.ts` & `src/scripts/testMuse.ts` — Connectivity test suite. (done)
   - `src/scripts/benchmarkLatency.ts` — Sequential vs parallel latency benchmark. (done)
   - `src/scripts/testIngestion.ts` — End-to-end ingestion pipeline test with real and synthetic media. (done)
+  - `src/scripts/testPerception.ts` — End-to-end perception test with SAM 3.1, candidate structuring, and dampener evaluation. (done)
 - `frontend/` — Scaffolded Vite + React + TypeScript application with `lucide-react`. (done)
 
 ## Decisions locked in
@@ -45,6 +50,11 @@ In progress: none
   - 1 fps sampling rule for video clips via FFmpeg.
   - 800px max dimension, JPEG 85% for all units.
   - Manifest JSON (`data/ingested/<jobId>/manifest.json`) serves as immutable contract for perception and queue layers.
+- **Phase 4 Perception Architecture Locked:**
+  - Prompts: `person` (weight 1.0) and `clothing` (weight 0.8).
+  - Bounded concurrency: 3 concurrent units with intra-frame parallel prompts.
+  - False positive dampener flags solitary micro-boxes (<0.3% frame area) while never dismissing units.
+  - Candidate records output to `data/ingested/<jobId>/candidates.json`.
 
 ## Next action
-- Phase 4: Core Perception Layer: SAM 3.1 Candidate Detection (`backend/src/perception/`) with prompt set definition, batch execution against manifest, structured candidate records, and false-positive dampener.
+- Phase 5: Reasoning & Prioritization Layer: Muse Spark (`backend/src/prioritization/`) with structured batch prompt generation, comparative ranking, confidence labelling (`possible-high`, `possible-medium`, `possible-low`), and evidence linking.

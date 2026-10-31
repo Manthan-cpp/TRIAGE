@@ -10,6 +10,7 @@
     "test:sam": "tsx src/scripts/testSam.ts",
     "test:muse": "tsx src/scripts/testMuse.ts",
     "test:ingest": "tsx src/scripts/testIngestion.ts",
+    "test:perception": "tsx src/scripts/testPerception.ts",
     "benchmark:latency": "tsx src/scripts/benchmarkLatency.ts"
   },
   "keywords": [
