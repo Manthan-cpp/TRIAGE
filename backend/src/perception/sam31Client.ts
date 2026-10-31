@@ -117,18 +117,22 @@ export class Sam31Client {
    * Process a single frame with ALL prompts in PARALLEL (Promise.all).
    * Wall-clock time ≈ max(individual call times) instead of their sum.
    *
-   * @param imageBuffer   Raw image bytes (PNG or JPEG)
+   * @param imageInput    Raw image Buffer OR pre-encoded base64 / dataUrl string.
+   *                      If Buffer is passed, it is resized to MAX_IMAGE_DIM.
+   *                      If string is passed, it is used directly to avoid redundant encoding.
    * @param prompts       Concept prompts to run concurrently (default: person + clothing)
    * @returns SamFrameResult with merged boxes and per-prompt breakdown
    */
   public static async segmentFrame(
-    imageBuffer: Buffer,
+    imageInput: Buffer | string,
     prompts: string[] = ['person', 'clothing']
   ): Promise<SamFrameResult> {
     const wallStart = Date.now();
 
-    // Step 1: Resize once, share the resized data URL across all parallel calls
-    const imageDataUrl = await Sam31Client.resizeImage(imageBuffer);
+    // Step 1: Resize if Buffer, or format as dataUrl if string
+    const imageDataUrl = typeof imageInput === 'string'
+      ? (imageInput.startsWith('data:') ? imageInput : `data:image/jpeg;base64,${imageInput}`)
+      : await Sam31Client.resizeImage(imageInput);
 
     // Step 2: Fire all prompt calls concurrently
     const results = await Promise.all(

@@ -1,9 +1,9 @@
 {
-  "totalEstimatedCostUsd": 0.027,
-  "totalApiCalls": 6,
+  "totalEstimatedCostUsd": 0.034,
+  "totalApiCalls": 8,
   "callsByModel": {
-    "sam-3.1": 5,
-    "muse-spark-1.3": 1
+    "sam-3.1": 6,
+    "muse-spark-1.3": 2
   },
   "entries": [
     {
@@ -53,6 +53,22 @@
       "latencyMs": 1698,
       "inputUnits": 1,
       "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-10-31T16:25:17.667Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 4797,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-10-31T16:25:30.769Z",
+      "model": "muse-spark-1.3",
+      "endpoint": "/chat/completions",
+      "latencyMs": 5220,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.002
     }
   ]
 }
