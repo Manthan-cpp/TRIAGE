@@ -1,7 +1,7 @@
 # Project Status
 
-Last updated: 2026-10-31T22:02:00+05:30
-Last completed: Phase 4 — Core Perception Layer (SAM 3.1 Candidate Detection)
+Last updated: 2026-10-31T22:14:00+05:30
+Last completed: Phase 5 — Reasoning & Prioritization Layer (Muse Spark)
 In progress: none
 
 ## What exists right now
@@ -26,6 +26,8 @@ In progress: none
   - `src/perception/falsePositiveDampener.ts` — Evaluates detections, penalizes sub-threshold isolated boxes, protects corroborated signals, respects zero-dismissal rule. (done)
   - `src/perception/sam31Client.ts` — SAM 3.1 client: parallel prompt execution + image resize (Tier 1 optimizations). (done)
   - `src/perception/perceptionRunner.ts` — Bounded concurrency runner consuming `JobManifest` and saving `candidates.json`. (done)
+  - `src/prioritization/contextAggregator.ts` — Transforms candidate records into comparative ranking summaries with spatial box area fractions. (done)
+  - `src/prioritization/prioritizer.ts` — Multi-batch coordinator enforcing vocabulary locks, contiguous 1..N ranks, guardrail sanitization, and outputting `prioritized_queue.json`. (done)
   - `src/prioritization/museSparkClient.ts` — Muse Spark 1.3 client: zero-detect early-exit + merged ranking. (done)
   - `src/ingestion/fileValidator.ts` — File extension and size validation for images/videos. (done)
   - `src/ingestion/storage.ts` — Directory manager for `data/ingested/<jobId>/{raw,normalized}/` and metadata persistence. (done)
@@ -36,6 +38,7 @@ In progress: none
   - `src/scripts/benchmarkLatency.ts` — Sequential vs parallel latency benchmark. (done)
   - `src/scripts/testIngestion.ts` — End-to-end ingestion pipeline test with real and synthetic media. (done)
   - `src/scripts/testPerception.ts` — End-to-end perception test with SAM 3.1, candidate structuring, and dampener evaluation. (done)
+  - `src/scripts/testPrioritization.ts` — Full pipeline integration test (Ingestion -> Perception -> Prioritization). (done)
 - `frontend/` — Scaffolded Vite + React + TypeScript application with `lucide-react`. (done)
 
 ## Decisions locked in
@@ -55,6 +58,11 @@ In progress: none
   - Bounded concurrency: 3 concurrent units with intra-frame parallel prompts.
   - False positive dampener flags solitary micro-boxes (<0.3% frame area) while never dismissing units.
   - Candidate records output to `data/ingested/<jobId>/candidates.json`.
+- **Phase 5 Prioritization Architecture Locked:**
+  - Comparative ranking via Muse Spark 1.3 across aggregated candidate summaries.
+  - Guardrail sanitizer actively removes banned certainty vocabulary from reasoning text.
+  - Contiguous ascending priority ranks (1, 2, 3...) sorted by confidence tier and comparative strength.
+  - Output persisted to `data/ingested/<jobId>/prioritized_queue.json`.
 
 ## Next action
-- Phase 5: Reasoning & Prioritization Layer: Muse Spark (`backend/src/prioritization/`) with structured batch prompt generation, comparative ranking, confidence labelling (`possible-high`, `possible-medium`, `possible-low`), and evidence linking.
+- Phase 6: Backend Service Architecture (SQLite schema, background job queue state machine, REST API routes).

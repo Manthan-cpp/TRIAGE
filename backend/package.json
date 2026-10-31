@@ -11,6 +11,7 @@
     "test:muse": "tsx src/scripts/testMuse.ts",
     "test:ingest": "tsx src/scripts/testIngestion.ts",
     "test:perception": "tsx src/scripts/testPerception.ts",
+    "test:prio": "tsx src/scripts/testPrioritization.ts",
     "benchmark:latency": "tsx src/scripts/benchmarkLatency.ts"
   },
   "keywords": [

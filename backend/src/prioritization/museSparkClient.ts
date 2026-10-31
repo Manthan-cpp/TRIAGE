@@ -50,7 +50,7 @@ export class MuseSparkClient {
         candidateId: c.candidateId,
         priorityRank: idx + 1,
         confidenceLabel: 'possible-low' as ConfidenceLabel,
-        reasoningSummary: 'No candidate signals detected; auto-ranked without model call.',
+        reasoningSummary: 'No candidate signals flagged; assigned baseline priority without model call.',
         evidenceIds: [],
       }));
       return { rankedItems: autoRanked, latencyMs: 0, model: this.MODEL + ':early-exit' };
@@ -123,7 +123,7 @@ MANDATORY CONSTRAINTS:
       candidateId: c.candidateId,
       priorityRank: baseRank + idx + 1,
       confidenceLabel: 'possible-low' as ConfidenceLabel,
-      reasoningSummary: 'No candidate signals detected; assigned lowest priority.',
+      reasoningSummary: 'No candidate signals flagged; assigned baseline priority.',
       evidenceIds: [],
     }));
 
