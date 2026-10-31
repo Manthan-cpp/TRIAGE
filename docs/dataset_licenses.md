@@ -53,3 +53,11 @@ This document records the provenance, licensing terms, and permitted use cases f
 - [x] **Simulated targets only:** All persons are volunteer actors or simulated figures in controlled environments.
 - [x] **License verified:** Every dataset used carries an open research license (CC BY 4.0, CC BY 3.0, MIT, or Academic Non-Commercial).
 - [x] **Attribution documented:** Full academic citations recorded for paper and README inclusion.
+
+---
+
+## README Data Statement (Ready for Inclusion)
+
+> **Data Provenance & Ethical Disclosure:**  
+> All testing and benchmarking in Project Triage is conducted strictly on publicly accessible academic research datasets (SARD and UAV-SAR benchmarks), containing volunteers simulating search-and-rescue and missing-person scenarios in wilderness, quarry, and rural environments. Under no circumstances does this repository use real disaster casualty imagery or footage depicting trauma. Any operational deployment in the field would require formal partnerships, data sharing agreements, and operational calibration with accredited Search-and-Rescue organizations.
+
