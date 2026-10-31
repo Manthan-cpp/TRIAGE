@@ -26,54 +26,78 @@ export class PerceptionRunner {
 
     // Worker pool for bounded concurrency
     const worker = async (unit: IngestionUnit): Promise<CandidateSignalRecord> => {
-      const fullPath = path.resolve(rootDir, unit.filePath);
-      if (!fs.existsSync(fullPath)) {
-        throw new Error(`Unit image file not found at ${fullPath}`);
-      }
-
-      // Read file and encode directly to base64 dataUrl (pre-normalized, no resizing needed)
-      const buffer = fs.readFileSync(fullPath);
-      const dataUrl = `data:image/jpeg;base64,${buffer.toString('base64')}`;
-
-      // Segment with all active prompts in parallel
-      const frameResult = await Sam31Client.segmentFrame(dataUrl, prompts);
-
-      const matchedPrompts: string[] = [];
-      for (const p of frameResult.perPrompt) {
-        if (p.boxes.length > 0 && !matchedPrompts.includes(p.prompt)) {
-          matchedPrompts.push(p.prompt);
-        }
-      }
-
-      const hasCorroboration = matchedPrompts.includes('person') && matchedPrompts.includes('clothing');
-      const dampening = FalsePositiveDampener.evaluate(
-        frameResult.boxes,
-        matchedPrompts,
-        unit.width,
-        unit.height
-      );
-
       const candidateId = `cand_${manifest.jobId}_${unit.unitId}`;
+      const fullPath = path.resolve(rootDir, unit.filePath);
 
-      return {
-        candidateId,
-        unitId: unit.unitId,
-        sourceFile: unit.sourceFile,
-        sourceType: unit.sourceType,
-        timestampSec: unit.timestampSec,
-        filePath: unit.filePath,
-        matchedPrompts,
-        totalBoxesCount: frameResult.boxes.length,
-        boxes: frameResult.boxes,
-        hasCorroboratingSignals: hasCorroboration,
-        dampening: {
-          isDampened: dampening.isDampened,
-          reason: dampening.reason,
-          dampeningScore: dampening.dampeningScore,
-        },
-        rawResults: frameResult.perPrompt,
-        createdAt: new Date().toISOString(),
-      };
+      try {
+        if (!fs.existsSync(fullPath)) {
+          throw new Error(`Unit image file not found at ${fullPath}`);
+        }
+
+        // Read file and encode directly to base64 dataUrl (pre-normalized, no resizing needed)
+        const buffer = fs.readFileSync(fullPath);
+        const dataUrl = `data:image/jpeg;base64,${buffer.toString('base64')}`;
+
+        // Segment with all active prompts in parallel
+        const frameResult = await Sam31Client.segmentFrame(dataUrl, prompts);
+
+        const matchedPrompts: string[] = [];
+        for (const p of frameResult.perPrompt) {
+          if (p.boxes.length > 0 && !matchedPrompts.includes(p.prompt)) {
+            matchedPrompts.push(p.prompt);
+          }
+        }
+
+        const hasCorroboration = matchedPrompts.includes('person') && matchedPrompts.includes('clothing');
+        const dampening = FalsePositiveDampener.evaluate(
+          frameResult.boxes,
+          matchedPrompts,
+          unit.width,
+          unit.height
+        );
+
+        return {
+          candidateId,
+          unitId: unit.unitId,
+          sourceFile: unit.sourceFile,
+          sourceType: unit.sourceType,
+          timestampSec: unit.timestampSec,
+          filePath: unit.filePath,
+          matchedPrompts,
+          totalBoxesCount: frameResult.boxes.length,
+          boxes: frameResult.boxes,
+          hasCorroboratingSignals: hasCorroboration,
+          dampening: {
+            isDampened: dampening.isDampened,
+            reason: dampening.reason,
+            dampeningScore: dampening.dampeningScore,
+          },
+          rawResults: frameResult.perPrompt,
+          createdAt: new Date().toISOString(),
+        };
+      } catch (err: any) {
+        console.warn(`[PerceptionRunner] Non-fatal error processing unit ${unit.unitId}: ${err.message}`);
+        // Zero-dismissal resilience: preserve unit as dampened record rather than aborting batch
+        return {
+          candidateId,
+          unitId: unit.unitId,
+          sourceFile: unit.sourceFile,
+          sourceType: unit.sourceType,
+          timestampSec: unit.timestampSec,
+          filePath: unit.filePath,
+          matchedPrompts: [],
+          totalBoxesCount: 0,
+          boxes: [],
+          hasCorroboratingSignals: false,
+          dampening: {
+            isDampened: true,
+            reason: `Perception processing note: ${err.message || 'Inspection error; retained for manual review.'}`,
+            dampeningScore: 0.9,
+          },
+          rawResults: [],
+          createdAt: new Date().toISOString(),
+        };
+      }
     };
 
     // Execute units in chunks of CONCURRENCY_LIMIT

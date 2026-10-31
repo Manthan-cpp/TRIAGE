@@ -59,6 +59,12 @@ async function main() {
     console.log(`    - Source: ${item.sourceFile}`);
     console.log(`    - Reasoning: "${item.reasoningSummary}"`);
     console.log(`    - Evidence Cited: [${item.evidenceIds.join(', ')}]`);
+    console.log(`    - Thumbnail URL: ${item.thumbnailUrl}`);
+
+    console.assert(
+      item.thumbnailUrl && item.thumbnailUrl.startsWith('/api/media/'),
+      `Missing or invalid thumbnailUrl on queue item: ${item.thumbnailUrl}`
+    );
 
     // Vocabulary lock assertions
     const validLabels = ['possible-high', 'possible-medium', 'possible-low'];

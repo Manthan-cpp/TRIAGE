@@ -43,6 +43,7 @@ export class Sam31Client {
    */
   public static async resizeImage(inputBuffer: Buffer): Promise<string> {
     const resized = await sharp(inputBuffer)
+      .rotate() // auto-orient based on EXIF
       .resize(MAX_IMAGE_DIM, MAX_IMAGE_DIM, {
         fit: 'inside',        // preserve aspect ratio
         withoutEnlargement: true,
@@ -91,13 +92,24 @@ export class Sam31Client {
     let match: RegExpExecArray | null;
 
     while ((match = boxRegex.exec(outText)) !== null) {
+      const rawX1 = parseInt(match[1], 10);
+      const rawY1 = parseInt(match[2], 10);
+      const rawX2 = parseInt(match[3], 10);
+      const rawY2 = parseInt(match[4], 10);
+
+      // Ensure x1 <= x2 and y1 <= y2 even if model returns inverted coordinates
+      const x1 = Math.min(rawX1, rawX2);
+      const x2 = Math.max(rawX1, rawX2);
+      const y1 = Math.min(rawY1, rawY2);
+      const y2 = Math.max(rawY1, rawY2);
+
       boxes.push({
-        x1: parseInt(match[1], 10),
-        y1: parseInt(match[2], 10),
-        x2: parseInt(match[3], 10),
-        y2: parseInt(match[4], 10),
-        width: match[5] ? parseInt(match[5], 10) : undefined,
-        height: match[6] ? parseInt(match[6], 10) : undefined,
+        x1,
+        y1,
+        x2,
+        y2,
+        width: match[5] ? parseInt(match[5], 10) : x2 - x1,
+        height: match[6] ? parseInt(match[6], 10) : y2 - y1,
       });
     }
 

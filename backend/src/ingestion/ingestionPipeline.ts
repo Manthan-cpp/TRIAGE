@@ -68,6 +68,10 @@ export class IngestionPipeline {
       }
     }
 
+    if (units.length === 0) {
+      throw new Error(`Ingestion failed: No valid image or video frames could be extracted for job ${jobId}`);
+    }
+
     // Persist metadata and manifest
     IngestionStorage.saveJobMeta({
       jobId,

@@ -95,9 +95,19 @@ MANDATORY CONSTRAINTS:
       throw new Error('Muse Spark returned an empty response body.');
     }
 
+    let cleanJson = content.trim();
+    if (cleanJson.startsWith('```')) {
+      cleanJson = cleanJson.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim();
+    }
+    const firstBrace = cleanJson.indexOf('{');
+    const lastBrace = cleanJson.lastIndexOf('}');
+    if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+      cleanJson = cleanJson.substring(firstBrace, lastBrace + 1);
+    }
+
     let parsed: { rankedItems?: RankedItem[] };
     try {
-      parsed = JSON.parse(content);
+      parsed = JSON.parse(cleanJson);
     } catch (err) {
       throw new Error(`Failed to parse Muse Spark JSON output: ${content}`);
     }

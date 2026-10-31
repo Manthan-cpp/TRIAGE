@@ -27,7 +27,7 @@ export class FalsePositiveDampener {
     if (boxes.length === 0) {
       return {
         isDampened: true,
-        reason: 'Zero visual candidate signals detected.',
+        reason: 'Zero visual candidate signals flagged.',
         dampeningScore: 1.0,
       };
     }

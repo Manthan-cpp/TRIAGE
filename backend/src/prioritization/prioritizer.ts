@@ -15,6 +15,7 @@ export interface PrioritizedQueueItem {
   sourceType: 'image' | 'video';
   timestampSec?: number;
   filePath: string;
+  thumbnailUrl?: string;
   matchedPrompts: string[];
   boxesCount: number;
   dampened: boolean;
@@ -104,6 +105,7 @@ export class Prioritizer {
           sourceType: raw.sourceType,
           timestampSec: raw.timestampSec,
           filePath: raw.filePath,
+          thumbnailUrl: `/api/media/${raw.filePath.replace(/\\/g, '/')}`,
           matchedPrompts: raw.matchedPrompts,
           boxesCount: raw.totalBoxesCount,
           dampened: raw.dampening.isDampened,

@@ -34,6 +34,7 @@ export class FrameSampler {
     const metadata = await image.metadata();
 
     const transformed = await image
+      .rotate() // auto-orient based on EXIF before resizing
       .resize(this.MAX_DIMENSION, this.MAX_DIMENSION, {
         fit: 'inside',
         withoutEnlargement: true,
