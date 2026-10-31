@@ -1,0 +1,39 @@
+{
+  "name": "triage-backend",
+  "version": "1.0.0",
+  "description": "Backend decision-support triage service for SAR drone video backlog review",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "test:sam": "tsx src/scripts/testSam.ts",
+    "test:muse": "tsx src/scripts/testMuse.ts"
+  },
+  "keywords": [
+    "search-and-rescue",
+    "sam-3.1",
+    "muse-spark",
+    "meta-model-api",
+    "triage"
+  ],
+  "author": "Manthan",
+  "license": "MIT",
+  "dependencies": {
+    "better-sqlite3": "^13.0.3",
+    "cors": "^2.8.6",
+    "dotenv": "^18.0.9",
+    "express": "^5.3.0",
+    "multer": "^2.5.0"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^9.6.0",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/multer": "^2.3.0",
+    "@types/node": "^26.6.6",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  }
+}

@@ -1,1 +1,30 @@
+# Environment
 .env
+*.env
+backend/.env
+frontend/.env.local
+
+# Dependencies
+node_modules/
+.npm/
+
+# Build outputs
+dist/
+build/
+
+# Local databases & logs
+*.db
+*.db-journal
+*.sqlite
+logs/
+*.log
+
+# Ingested upload data
+data/ingested/
+data/cache/
+
+# OS and Editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
