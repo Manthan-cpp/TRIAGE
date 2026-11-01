@@ -19,7 +19,7 @@ router.get(/^\/media\/(.+)$/, (req: Request, res: Response): void => {
   // Resolve absolute path and prevent directory traversal
   const resolvedPath = path.resolve(PROJECT_ROOT, relativeSubpath);
   if (!resolvedPath.startsWith(PROJECT_ROOT)) {
-    res.status(403).json({ error: 'Access denied: Path traversal detected' });
+    res.status(403).json({ error: 'Access denied: Invalid path traversal attempt' });
     return;
   }
 

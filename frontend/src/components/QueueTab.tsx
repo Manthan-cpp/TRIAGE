@@ -8,6 +8,7 @@ interface Props {
   selectedCandidateId: string | null;
   onSelectCandidate: (candidateId: string) => void;
   reviewerDecisions: Record<string, ReviewerDecision>;
+  onNavigateToIngest?: () => void;
 }
 
 export const QueueTab: React.FC<Props> = ({
@@ -15,6 +16,7 @@ export const QueueTab: React.FC<Props> = ({
   selectedCandidateId,
   onSelectCandidate,
   reviewerDecisions,
+  onNavigateToIngest,
 }) => {
   const [filterTier, setFilterTier] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -117,7 +119,12 @@ export const QueueTab: React.FC<Props> = ({
             {filteredItems.length === 0 ? (
               <tr>
                 <td colSpan={7} style={{ textAlign: 'center', padding: '36px 16px', color: 'var(--text-muted)' }}>
-                  No candidate frames found matching current criteria. All units remain retained.
+                  <div>No candidate frames found matching current criteria. All units remain retained.</div>
+                  {items.length === 0 && onNavigateToIngest && (
+                    <button className="btn btn-secondary" style={{ marginTop: 12 }} onClick={onNavigateToIngest}>
+                      Go to Ingest Batch →
+                    </button>
+                  )}
                 </td>
               </tr>
             ) : (

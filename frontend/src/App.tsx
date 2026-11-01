@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import type { TabId, JobRecord, QueueItem, CandidateDetail, ReviewerDecision, HealthInfo } from './types';
 import {
   fetchHealth,
+  fetchJobs,
   fetchJob,
   fetchQueue,
   fetchCandidate,
@@ -28,9 +29,32 @@ export function App() {
   const [reviewerDecisions, setReviewerDecisions] = useState<Record<string, ReviewerDecision>>({});
   const [healthInfo, setHealthInfo] = useState<HealthInfo | null>(null);
 
-  // Poll health and cost telemetry on mount
+  // Poll health and load latest job on mount
   useEffect(() => {
     fetchHealth().then(setHealthInfo).catch(() => {});
+    
+    // Auto-load latest existing job from backend store
+    fetchJobs(1).then(async (res) => {
+      if (res.jobs && res.jobs.length > 0) {
+        const latest = res.jobs[0];
+        setCurrentJob({
+          jobId: latest.id,
+          status: latest.status,
+          progress: { total: latest.totalUnits, processed: latest.processedUnits },
+          currentStage: latest.currentStage,
+          sourceLabel: latest.sourceLabel,
+          completedAt: latest.completedAt,
+        });
+
+        if (latest.status === 'complete') {
+          const q = await fetchQueue(latest.id).catch(() => null);
+          if (q) setQueueItems(q.rankedItems);
+          const decs = await fetchJobDecisions(latest.id).catch(() => ({}));
+          setReviewerDecisions(decs);
+        }
+      }
+    }).catch(() => {});
+
     const interval = setInterval(() => {
       fetchHealth().then(setHealthInfo).catch(() => {});
     }, 12000);
@@ -101,16 +125,9 @@ export function App() {
   };
 
   // Handler: Reviewer human-in-the-loop decision with backend persistence
-  const handleReviewDecision = async (
-    candidateId: string,
-    status: 'verified' | 'false_alarm',
-    notes?: string
-  ) => {
+  const handleReviewDecision = async (candidateId: string, status: 'verified' | 'false_alarm', notes?: string) => {
     const now = new Date().toISOString();
-    setReviewerDecisions((prev) => ({
-      ...prev,
-      [candidateId]: { status, notes, updatedAt: now },
-    }));
+    setReviewerDecisions((prev) => ({ ...prev, [candidateId]: { status, notes, updatedAt: now } }));
 
     if (currentJob?.jobId) {
       try {
@@ -180,6 +197,7 @@ export function App() {
           selectedCandidateId={selectedCandidate?.candidateId || null}
           onSelectCandidate={handleSelectCandidate}
           reviewerDecisions={reviewerDecisions}
+          onNavigateToIngest={() => setActiveTab('ingest')}
         />
       )}
 

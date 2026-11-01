@@ -80,62 +80,64 @@ export const ClipReviewTab: React.FC<Props> = ({
             justifyContent: 'center',
           }}
         >
-          <img
-            src={candidate.sourceFrameUrl}
-            alt={candidate.sourceMetadata.clipId}
-            style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }}
-          />
+          <div style={{ position: 'relative', display: 'inline-block', maxWidth: '100%', maxHeight: '100%' }}>
+            <img
+              src={candidate.sourceFrameUrl}
+              alt={candidate.sourceMetadata.clipId}
+              style={{ maxWidth: '100%', maxHeight: '480px', objectFit: 'contain', display: 'block' }}
+            />
 
-          {showBoxes && (
-            <svg
-              viewBox="0 0 800 800"
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                width: '100%',
-                height: '100%',
-                pointerEvents: 'none',
-              }}
-            >
-              {boxes.map((b, i) => {
-                const w = Math.max(10, b.width || Math.abs(b.x2 - b.x1));
-                const h = Math.max(10, b.height || Math.abs(b.y2 - b.y1));
-                const x = Math.min(b.x1, b.x2);
-                const y = Math.min(b.y1, b.y2);
-                return (
-                  <g key={i}>
-                    {/* Single accent color bounding box per DESIGN.md Section 7.3 */}
-                    <rect
-                      x={x}
-                      y={y}
-                      width={w}
-                      height={h}
-                      fill="rgba(37, 99, 235, 0.15)"
-                      stroke="#3b82f6"
-                      strokeWidth="2.5"
-                    />
-                    <text
-                      x={x}
-                      y={Math.max(14, y - 6)}
-                      fill="#60a5fa"
-                      fontSize="14"
-                      fontFamily="monospace"
-                      fontWeight="bold"
-                    >
-                      SIGNAL #{i + 1}
-                    </text>
-                  </g>
-                );
-              })}
-            </svg>
-          )}
+            {showBoxes && (
+              <svg
+                viewBox="0 0 1000 1000"
+                preserveAspectRatio="none"
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: '100%',
+                  pointerEvents: 'none',
+                }}
+              >
+                {boxes.map((b, i) => {
+                  const w = Math.max(12, b.width || Math.abs(b.x2 - b.x1));
+                  const h = Math.max(12, b.height || Math.abs(b.y2 - b.y1));
+                  const x = Math.min(b.x1, b.x2);
+                  const y = Math.min(b.y1, b.y2);
+                  return (
+                    <g key={i}>
+                      <rect
+                        x={x}
+                        y={y}
+                        width={w}
+                        height={h}
+                        fill="rgba(37, 99, 235, 0.15)"
+                        stroke="#3b82f6"
+                        strokeWidth="2.5"
+                      />
+                      <text
+                        x={x}
+                        y={Math.max(18, y - 6)}
+                        fill="#60a5fa"
+                        fontSize="18"
+                        fontFamily="monospace"
+                        fontWeight="bold"
+                      >
+                        SIGNAL #{i + 1}
+                      </text>
+                    </g>
+                  );
+                })}
+              </svg>
+            )}
+          </div>
         </div>
 
         {/* Coordinate Details Bar */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, fontSize: 11, fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', background: 'var(--bg-secondary)', padding: '6px 12px', borderRadius: 3, border: '1px solid var(--border-subtle)' }}>
           <div>SIGNALS: <span style={{ color: 'var(--text-primary)' }}>{boxes.length}</span></div>
-          <div>CORROBORATION: <span style={{ color: candidate.hasCorroboratingSignals ? '#34d399' : 'var(--text-muted)' }}>{candidate.hasCorroboratingSignals ? 'CONFIRMED' : 'NONE'}</span></div>
+          <div>CORROBORATION: <span style={{ color: candidate.hasCorroboratingSignals ? '#34d399' : 'var(--text-muted)' }}>{candidate.hasCorroboratingSignals ? 'CORROBORATED' : 'NONE'}</span></div>
           <div>DAMPENING SCORE: <span style={{ color: candidate.dampening.isDampened ? '#fbbf24' : 'var(--text-primary)' }}>{candidate.dampening.dampeningScore}</span></div>
         </div>
       </div>
@@ -144,12 +146,12 @@ export const ClipReviewTab: React.FC<Props> = ({
       <div style={{ display: 'flex', flexDirection: 'column', gap: 14, overflowY: 'auto' }}>
         {/* Top Badges */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          {queueItem && (
+          {(queueItem || candidate.priorityRank) && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <span style={{ fontWeight: 700, fontSize: 14, fontFamily: 'var(--font-mono)' }}>
-                RANK #{queueItem.priorityRank}
+                RANK #{queueItem?.priorityRank || candidate.priorityRank}
               </span>
-              <ConfidencePill label={queueItem.confidenceLabel as ConfidenceLabel} />
+              <ConfidencePill label={(queueItem?.confidenceLabel || candidate.confidenceLabel || 'possible-medium') as ConfidenceLabel} />
             </div>
           )}
           <span style={{ fontSize: 11, fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>
@@ -161,7 +163,7 @@ export const ClipReviewTab: React.FC<Props> = ({
         <div className="stat-card" style={{ gap: 8 }}>
           <span className="stat-label">Model Reasoning Justification (Muse Spark 1.3)</span>
           <p style={{ fontSize: 13, color: 'var(--text-primary)', lineHeight: 1.45 }}>
-            {queueItem?.reasoningSummary || 'Comparative triage signal evaluation.'}
+            {candidate.fullReasoningText || queueItem?.reasoningSummary || 'Comparative triage signal evaluation.'}
           </p>
         </div>
 

@@ -33,6 +33,10 @@ export interface CandidateDetailRecord {
   dampeningScore: number;
   boxes: any[];
   rawResults: any[];
+  fullReasoningText?: string;
+  evidenceIds?: string[];
+  priorityRank?: number;
+  confidenceLabel?: string;
   createdAt: string;
 }
 
@@ -153,6 +157,10 @@ export class JobRepository {
     const row = db.prepare('SELECT * FROM candidates WHERE candidate_id = ?').get(candidateId) as any;
     if (!row) return null;
 
+    const qRow = db.prepare(
+      'SELECT reasoning_summary, evidence_ids_json, priority_rank, confidence_label FROM queue_items WHERE candidate_id = ?'
+    ).get(candidateId) as any;
+
     return {
       candidateId: row.candidate_id,
       jobId: row.job_id,
@@ -169,6 +177,10 @@ export class JobRepository {
       dampeningScore: row.dampening_score,
       boxes: JSON.parse(row.boxes_json),
       rawResults: JSON.parse(row.raw_results_json),
+      fullReasoningText: qRow?.reasoning_summary || undefined,
+      evidenceIds: qRow?.evidence_ids_json ? JSON.parse(qRow.evidence_ids_json) : undefined,
+      priorityRank: qRow?.priority_rank || undefined,
+      confidenceLabel: qRow?.confidence_label || undefined,
       createdAt: row.created_at,
     };
   }

@@ -61,11 +61,16 @@ export interface CandidateDetail {
     matchedPrompts: string[];
     rawResults?: any[];
   };
+  fullReasoningText?: string;
+  evidenceIds?: string[];
+  priorityRank?: number;
+  confidenceLabel?: ConfidenceLabel;
   sourceMetadata: {
     clipId: string;
     sourceType: 'image' | 'video';
     timestampSec?: number;
     unitId: string;
+    datasetLabel?: string;
   };
   dampening: {
     isDampened: boolean;

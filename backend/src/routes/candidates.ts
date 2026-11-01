@@ -30,11 +30,16 @@ router.get('/candidates/:candidateId', (req: Request, res: Response): void => {
       matchedPrompts: candidate.matchedPrompts,
       rawResults: candidate.rawResults,
     },
+    fullReasoningText: candidate.fullReasoningText || 'Candidate signal awaiting comparative ranking.',
+    evidenceIds: candidate.evidenceIds || candidate.matchedPrompts,
+    priorityRank: candidate.priorityRank,
+    confidenceLabel: candidate.confidenceLabel,
     sourceMetadata: {
       clipId: candidate.sourceFile,
       sourceType: candidate.sourceType,
       timestampSec: candidate.timestampSec,
       unitId: candidate.unitId,
+      datasetLabel: candidate.sourceFile.split('_')[0] || 'dataset',
     },
     dampening: {
       isDampened: candidate.isDampened,

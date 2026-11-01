@@ -102,7 +102,7 @@ export class JobQueue {
       jobId,
       manifest.totalUnits,
       manifest.totalUnits,
-      `Detected ${perceptionResult.totalSignalsCount} visual signals. Proceeding to prioritization...`
+      `Flagged ${perceptionResult.totalSignalsCount} candidate signals. Proceeding to prioritization...`
     );
 
     // Stage 3: Prioritization (Muse Spark)

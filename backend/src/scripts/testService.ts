@@ -106,10 +106,12 @@ async function main() {
     console.assert(candidateRes.status === 200, `GET candidate returned ${candidateRes.status}`);
     const candidateData = (await candidateRes.json()) as any;
     console.log(`  Candidate detail retrieved: ${candidateData.candidateId}`);
-    console.log(`    - Boxes detected: ${candidateData.maskOverlayData.boxes.length}`);
+    console.log(`    - Candidate boxes: ${candidateData.maskOverlayData.boxes.length}`);
     console.log(`    - Source URL: ${candidateData.sourceFrameUrl}`);
     console.log(`    - Corroboration: ${candidateData.hasCorroboratingSignals}`);
-    console.assert(candidateData.maskOverlayData.boxes.length > 0, 'Candidate 1 should have detected bounding boxes');
+    console.log(`    - Full Reasoning: ${candidateData.fullReasoningText}`);
+    console.assert(candidateData.maskOverlayData.boxes.length > 0, 'Candidate 1 should have candidate bounding boxes');
+    console.assert(Boolean(candidateData.fullReasoningText), 'Candidate 1 should have full reasoning text');
 
     // 6. Test Media Streaming
     console.log('\n[Step 6] Verifying media streaming endpoint via GET /api/media/...');
