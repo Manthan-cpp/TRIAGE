@@ -3,6 +3,7 @@ import cors from 'cors';
 import jobsRouter from './routes/jobs';
 import candidatesRouter from './routes/candidates';
 import mediaRouter from './routes/media';
+import auditRouter from './routes/audit';
 import { CostLogger } from './lib/costLogger';
 
 export function createServer(): Express {
@@ -27,6 +28,7 @@ export function createServer(): Express {
   app.use('/api', jobsRouter);
   app.use('/api', candidatesRouter);
   app.use('/api', mediaRouter);
+  app.use('/api', auditRouter);
 
   return app;
 }

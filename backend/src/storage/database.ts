@@ -81,6 +81,28 @@ export class AppDatabase {
 
       CREATE INDEX IF NOT EXISTS idx_candidates_job ON candidates(job_id);
       CREATE INDEX IF NOT EXISTS idx_queue_job ON queue_items(job_id, priority_rank);
+
+      CREATE TABLE IF NOT EXISTS audit_logs (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        job_id TEXT NOT NULL,
+        timestamp TEXT NOT NULL,
+        stage TEXT NOT NULL,
+        unit_id TEXT,
+        event_type TEXT NOT NULL,
+        details TEXT NOT NULL,
+        duration_ms INTEGER,
+        status TEXT NOT NULL
+      );
+      CREATE INDEX IF NOT EXISTS idx_audit_job ON audit_logs(job_id, id);
+
+      CREATE TABLE IF NOT EXISTS reviewer_decisions (
+        candidate_id TEXT PRIMARY KEY,
+        job_id TEXT NOT NULL,
+        decision TEXT NOT NULL,
+        notes TEXT,
+        updated_at TEXT NOT NULL
+      );
+      CREATE INDEX IF NOT EXISTS idx_reviewer_job ON reviewer_decisions(job_id);
     `);
   }
 

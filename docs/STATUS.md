@@ -1,7 +1,7 @@
 # Project Status
 
-Last updated: 2026-11-01T16:36:00+05:30
-Last completed: Phase 6 — Backend Service Architecture (Job Queue, API, Storage)
+Last updated: 2026-11-01T17:42:00+05:30
+Last completed: Phase 7 — Frontend Review Dashboard & Phase 8 — Evidence & Forensic Audit Trail
 In progress: none
 
 ## What exists right now
@@ -18,8 +18,8 @@ In progress: none
 - `docs/latency_analysis.md` — Root cause analysis, live benchmark results, and optimization roadmap. (done)
 - `data/raw/` — 38 curated evaluation units (14 light, 16 heavy, 8 negatives). (done)
 - `data/cost_log.json` — Live API cost and latency tracking log. (done)
-- `data/triage.db` — SQLite database file initialized with WAL mode and foreign key constraints. (done)
-- `backend/` — Node/TypeScript production backend service with `better-sqlite3`, `express`, `sharp`, `tsx`, and client wrappers:
+- `data/triage.db` — SQLite database file initialized with WAL mode, foreign key constraints, `audit_logs`, and `reviewer_decisions`. (done)
+- `backend/` — Node/TypeScript production backend service:
   - `src/lib/costLogger.ts` — Persistent cost and latency logger. (done)
   - `src/lib/metaClient.ts` — Authenticated HTTP client with retries (429/5xx) and abort controller. (done)
   - `src/perception/prompts.ts` — Validated prompt set (`person`, `clothing`) with documented rationale. (done)
@@ -37,41 +37,37 @@ In progress: none
   - `src/ingestion/ingestionPipeline.ts` — Unified pipeline orchestrating validation, storage, sampling, and manifest generation. (done)
   - `src/storage/database.ts` — `better-sqlite3` instance manager with WAL mode and schema auto-migration. (done)
   - `src/storage/jobRepository.ts` — SQLite repository with atomic transactions for jobs, units, candidates, and queue items. (done)
-  - `src/jobs/jobQueue.ts` — In-process async background queue orchestrating the full pipeline across state machine stages. (done)
+  - `src/storage/auditRepository.ts` — Append-only audit logger and reviewer decision store for chain of custody. (done)
+  - `src/jobs/jobQueue.ts` — In-process async background queue orchestrating pipeline across state machine stages with audit log recording. (done)
   - `src/routes/jobs.ts` — Express router for `POST /api/jobs`, `GET /api/jobs/:id`, `GET /api/jobs/:id/queue`. (done)
   - `src/routes/candidates.ts` — Express router for `GET /api/candidates/:candidateId`. (done)
   - `src/routes/media.ts` — Express router for safe streaming of `/api/media/*` assets with directory traversal protection. (done)
+  - `src/routes/audit.ts` — Express router for `GET /api/jobs/:id/audit`, `GET /api/audit`, and `POST /api/candidates/:id/decision`. (done)
   - `src/server.ts` — Express application factory with CORS, JSON body parser, and `/health` endpoint. (done)
   - `src/index.ts` — Standalone service entry point with graceful shutdown handling. (done)
-  - `src/scripts/testService.ts` — End-to-end HTTP service integration test validating all API contracts and state machine transitions. (done)
-- `frontend/` — Scaffolded Vite + React + TypeScript application with `lucide-react`. (done)
+  - `src/scripts/testService.ts` — End-to-end HTTP service integration test. (done)
+  - `src/scripts/testAudit.ts` — Audit log and reviewer decision persistence test. (done)
+- `frontend/` — Monotonous maximalist review dashboard (Vite + React 19 + TypeScript + Lucide):
+  - Strict anti-AI-slop design: 0 glowing borders, 0 glowing buttons, 0 glowing pills/tags, single functional accent (`#2563eb`), 0 emojis.
+  - Smooth animations throughout: CSS cross-tab transitions (`tabFadeInSlide`), tactile active button press, smooth table row hovers, smooth progress bar fills.
+  - Dedicated 8-tab operational layout:
+    1. **Ingest Batch (`ingest`)** — Upload drone sweeps, 1-click academic benchmarks (`eval_mix`), live 5-stage state tracker.
+    2. **Priority Queue (`queue`)** — Dense triage table, instant multi-field search, tier filter buttons, rank #1..N, micro thumbnails, zero-dismissal banner.
+    3. **Clip Review (`clip`)** — 2-column forensic cockpit, SVG single-accent `#3b82f6` bounding box overlay, coordinates table, full Muse Spark reasoning, reviewer decision persistence.
+    4. **Forensic Audit (`audit`)** — Full chain of custody event log with timestamps, stage chips, latency readouts, JSON download export.
+    5. **Mission Overview (`overview`)** — Incident commander SAR cockpit, candidate breakdown KPI cards, review queue progress bar.
+    6. **Feasibility Benchmarks (`benchmarks`)** — Phase 0 empirical validation report (85.7% light vs 62.5% heavy occlusion hit rate, Outcome 2 lock).
+    7. **API Telemetry (`telemetry`)** — Live Meta API cost tracker ($0.0000 hackathon tier), Phase 2.5 latency optimization benchmark (74% faster), system diagnostics.
+    8. **System & Scope (`settings`)** — Model cards (`sam-3.1`, `muse-spark-1.3`), strictly banned terminology cards (with Lucide icons, no emojis), dataset license attributions.
+  - Keyboard navigation: `[1]` through `[8]` for tabs, `[J]` / `[K]` for candidate navigation.
+  - All files strictly under 250 lines (conforming to Rule 5.1).
 
 ## Decisions locked in
 - **Phase 0 Outcome 2 Locked:** Assistive backlog triage only, never autonomous detection.
 - **Phase 1 Framing Locked:** Strict vocabulary lock (`possible-high`, `possible-medium`, `possible-low`), zero-dismissal rule.
 - **Phase 2 Stack Locked:** TypeScript + tsx, SQLite via better-sqlite3, async job queue required.
-- **Phase 2.5 Latency Architecture Locked (Tier 1 — implemented):**
-  - Parallel SAM prompts via `Promise.all` → 74% wall-time reduction confirmed (6722ms → 1722ms)
-  - Image resize to 800px max via `sharp` before base64 encode → 71% payload reduction (336KB → 96KB)
-  - Zero-detect early-exit in Muse Spark → saves ~11s for empty frames
-- **Phase 3 Ingestion Rules Locked:**
-  - 1 fps sampling rule for video clips via FFmpeg.
-  - 800px max dimension, JPEG 85% for all units.
-  - Manifest JSON (`data/ingested/<jobId>/manifest.json`) serves as immutable contract for perception and queue layers.
-- **Phase 4 Perception Architecture Locked:**
-  - Prompts: `person` (weight 1.0) and `clothing` (weight 0.8).
-  - Bounded concurrency: 3 concurrent units with intra-frame parallel prompts.
-  - False positive dampener flags solitary micro-boxes (<0.3% frame area) while never dismissing units.
-  - Candidate records output to `data/ingested/<jobId>/candidates.json`.
-- **Phase 5 Prioritization Architecture Locked:**
-  - Comparative ranking via Muse Spark 1.3 across aggregated candidate summaries.
-  - Guardrail sanitizer actively removes banned certainty vocabulary from reasoning text.
-  - Contiguous ascending priority ranks (1, 2, 3...) sorted by confidence tier and comparative strength.
-  - Output persisted to `data/ingested/<jobId>/prioritized_queue.json`.
-- **Phase 6 Service Architecture Locked:**
-  - In-process async `JobQueue` with state machine: `queued -> ingesting -> detecting -> ranking -> complete`.
-  - SQLite storage (`data/triage.db`) via `better-sqlite3`.
-  - Express API contracts match Section 4 (`POST /api/jobs`, `GET /api/jobs/:id`, `GET /api/jobs/:id/queue`, `GET /api/candidates/:id`, `GET /health`).
+- **Phase 7 UI Aesthetic Locked:** Monotonous maximalist operations dashboard, single functional accent color, zero AI slop, smooth animations in tab changes and micro-interactions, every concern in its own dedicated tab.
+- **Phase 8 Evidence & Audit Locked:** Complete forensic chain of custody logged to `audit_logs` table and accessible via dedicated Forensic Audit tab.
 
 ## Next action
-- Phase 7: Frontend Review Dashboard (Vite + React + TypeScript, tab-based navigation, Priority Queue tab, Clip Review modal, System Stats).
+- Phase 9: End-to-End System Demo Run & Evaluation against 38 curated cases.

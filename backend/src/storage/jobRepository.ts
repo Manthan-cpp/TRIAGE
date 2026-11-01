@@ -40,37 +40,20 @@ export class JobRepository {
   public static createJob(id: string, sourceLabel: string): JobRecord {
     const db = AppDatabase.getInstance();
     const createdAt = new Date().toISOString();
-    const stmt = db.prepare(`
+    db.prepare(`
       INSERT INTO jobs (id, source_label, status, total_units, processed_units, current_stage, created_at)
       VALUES (?, ?, 'queued', 0, 0, 'Job queued', ?)
-    `);
-    stmt.run(id, sourceLabel, createdAt);
+    `).run(id, sourceLabel, createdAt);
 
-    return {
-      id,
-      sourceLabel,
-      status: 'queued',
-      totalUnits: 0,
-      processedUnits: 0,
-      currentStage: 'Job queued',
-      createdAt,
-    };
+    return { id, sourceLabel, status: 'queued', totalUnits: 0, processedUnits: 0, currentStage: 'Job queued', createdAt };
   }
 
-  public static updateStatus(
-    id: string,
-    status: JobStatus,
-    currentStage: string,
-    errorMessage?: string
-  ): void {
+  public static updateStatus(id: string, status: JobStatus, currentStage: string, errorMessage?: string): void {
     const db = AppDatabase.getInstance();
     const completedAt = status === 'complete' || status === 'failed' ? new Date().toISOString() : null;
-    const stmt = db.prepare(`
-      UPDATE jobs
-      SET status = ?, current_stage = ?, error_message = ?, completed_at = COALESCE(?, completed_at)
-      WHERE id = ?
-    `);
-    stmt.run(status, currentStage, errorMessage || null, completedAt, id);
+    db.prepare(`
+      UPDATE jobs SET status = ?, current_stage = ?, error_message = ?, completed_at = COALESCE(?, completed_at) WHERE id = ?
+    `).run(status, currentStage, errorMessage || null, completedAt, id);
   }
 
   public static updateProgress(
