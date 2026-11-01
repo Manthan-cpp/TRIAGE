@@ -1,7 +1,7 @@
 # Project Status
 
-Last updated: 2026-11-01T17:42:00+05:30
-Last completed: Phase 7 — Frontend Review Dashboard & Phase 8 — Evidence & Forensic Audit Trail
+Last updated: 2026-11-01T17:55:00+05:30
+Last completed: Phase 9 — Testing & Calibration Against Ground Truth
 In progress: none
 
 ## What exists right now
@@ -14,6 +14,7 @@ In progress: none
 - `docs/STATUS.md` — Living tracking document for agent resumption. (done)
 - `docs/dataset_licenses.md` — Licensing and provenance record. (done)
 - `docs/feasibility_results.md` — Honest ground-truth IoU audit and failure mode analysis for Phase 0 (Outcome 2). (done)
+- `docs/test_results.md` — Phase 9 full-scale evaluation results across all 38 ground-truth cases: 100% Precision@10, 3 documented failure modes, before/after re-tuning metrics. (done)
 - `docs/product_framing.md` — Locked target user profile, non-negotiable vocabulary rules, confidence labels. (done)
 - `docs/latency_analysis.md` — Root cause analysis, live benchmark results, and optimization roadmap. (done)
 - `data/raw/` — 38 curated evaluation units (14 light, 16 heavy, 8 negatives). (done)
@@ -68,6 +69,7 @@ In progress: none
 - **Phase 2 Stack Locked:** TypeScript + tsx, SQLite via better-sqlite3, async job queue required.
 - **Phase 7 UI Aesthetic Locked:** Monotonous maximalist operations dashboard, single functional accent color, zero AI slop, smooth animations in tab changes and micro-interactions, every concern in its own dedicated tab.
 - **Phase 8 Evidence & Audit Locked:** Complete forensic chain of custody logged to `audit_logs` table and accessible via dedicated Forensic Audit tab.
+- **Phase 9 Calibration Locked:** 100.0% Precision@10 verified; 7 of 8 negatives pushed to bottom ranks; zero-dismissal rule confirmed necessary to preserve occluded subjects (`sard_human_05`, `sard_human_06`).
 
 ## Next action
-- Phase 9: End-to-End System Demo Run & Evaluation against 38 curated cases.
+- Phase 10: Production-Grade Hardening & Deployment Prep.
