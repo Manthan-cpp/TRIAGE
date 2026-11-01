@@ -1,14 +1,14 @@
 # Project Status
 
-Last updated: 2026-10-31T22:14:00+05:30
-Last completed: Phase 5 — Reasoning & Prioritization Layer (Muse Spark)
+Last updated: 2026-11-01T16:36:00+05:30
+Last completed: Phase 6 — Backend Service Architecture (Job Queue, API, Storage)
 In progress: none
 
 ## What exists right now
 - `SYSTEM_DESIGN.md` — Technical architecture, component responsibilities, file size limits (150-250 lines), and production checklist. (done)
 - `PLAN.md` — 11-phase development and evaluation plan with mandatory reporting protocol and resumption guidelines. (done)
 - `DESIGN.md` — Operations dashboard visual and UX specification (anti-AI slop, 1 accent color, dense queue). (done)
-- `docs/system_notes.md` — Frame sampling rules (1 fps default), image normalization specifications (max 800px, JPEG 85%), manifest schema, storage layouts. (done)
+- `docs/system_notes.md` — Frame sampling rules (1 fps default), image normalization specifications (max 800px, JPEG 85%), manifest schema, storage layouts, job state machine. (done)
 - `Backend/.env` & `.env` — Environment configuration containing `META_MODEL_API_KEY` (gitignored). (done)
 - `.env.example` — Template environment variables for local dev and deploy. (done)
 - `docs/STATUS.md` — Living tracking document for agent resumption. (done)
@@ -18,27 +18,32 @@ In progress: none
 - `docs/latency_analysis.md` — Root cause analysis, live benchmark results, and optimization roadmap. (done)
 - `data/raw/` — 38 curated evaluation units (14 light, 16 heavy, 8 negatives). (done)
 - `data/cost_log.json` — Live API cost and latency tracking log. (done)
-- `backend/` — Node/TypeScript project with `better-sqlite3`, `express`, `sharp`, `tsx`, and client wrappers:
+- `data/triage.db` — SQLite database file initialized with WAL mode and foreign key constraints. (done)
+- `backend/` — Node/TypeScript production backend service with `better-sqlite3`, `express`, `sharp`, `tsx`, and client wrappers:
   - `src/lib/costLogger.ts` — Persistent cost and latency logger. (done)
-  - `src/lib/metaClient.ts` — Authenticated HTTP client with retries and abort controller. (done)
+  - `src/lib/metaClient.ts` — Authenticated HTTP client with retries (429/5xx) and abort controller. (done)
   - `src/perception/prompts.ts` — Validated prompt set (`person`, `clothing`) with documented rationale. (done)
   - `src/perception/candidateTypes.ts` — Structured `CandidateSignalRecord` and `PerceptionBatchResult` types. (done)
   - `src/perception/falsePositiveDampener.ts` — Evaluates detections, penalizes sub-threshold isolated boxes, protects corroborated signals, respects zero-dismissal rule. (done)
-  - `src/perception/sam31Client.ts` — SAM 3.1 client: parallel prompt execution + image resize (Tier 1 optimizations). (done)
-  - `src/perception/perceptionRunner.ts` — Bounded concurrency runner consuming `JobManifest` and saving `candidates.json`. (done)
+  - `src/perception/sam31Client.ts` — SAM 3.1 client: parallel prompt execution + image resize + EXIF rotation. (done)
+  - `src/perception/perceptionRunner.ts` — Bounded concurrency runner consuming `JobManifest`, isolated per-unit try/catch. (done)
   - `src/prioritization/contextAggregator.ts` — Transforms candidate records into comparative ranking summaries with spatial box area fractions. (done)
-  - `src/prioritization/prioritizer.ts` — Multi-batch coordinator enforcing vocabulary locks, contiguous 1..N ranks, guardrail sanitization, and outputting `prioritized_queue.json`. (done)
-  - `src/prioritization/museSparkClient.ts` — Muse Spark 1.3 client: zero-detect early-exit + merged ranking. (done)
+  - `src/prioritization/prioritizer.ts` — Multi-batch coordinator enforcing vocabulary locks, contiguous 1..N ranks, guardrail sanitization, and outputting `thumbnailUrl`. (done)
+  - `src/prioritization/museSparkClient.ts` — Muse Spark 1.3 client: zero-detect early-exit + markdown fence stripper. (done)
   - `src/ingestion/fileValidator.ts` — File extension and size validation for images/videos. (done)
   - `src/ingestion/storage.ts` — Directory manager for `data/ingested/<jobId>/{raw,normalized}/` and metadata persistence. (done)
   - `src/ingestion/frameSampler.ts` — Sharp image resizer & FFmpeg 1 fps video frame extractor. (done)
   - `src/ingestion/manifestGenerator.ts` — Standardized batch manifest creator and serializer. (done)
   - `src/ingestion/ingestionPipeline.ts` — Unified pipeline orchestrating validation, storage, sampling, and manifest generation. (done)
-  - `src/scripts/testSam.ts` & `src/scripts/testMuse.ts` — Connectivity test suite. (done)
-  - `src/scripts/benchmarkLatency.ts` — Sequential vs parallel latency benchmark. (done)
-  - `src/scripts/testIngestion.ts` — End-to-end ingestion pipeline test with real and synthetic media. (done)
-  - `src/scripts/testPerception.ts` — End-to-end perception test with SAM 3.1, candidate structuring, and dampener evaluation. (done)
-  - `src/scripts/testPrioritization.ts` — Full pipeline integration test (Ingestion -> Perception -> Prioritization). (done)
+  - `src/storage/database.ts` — `better-sqlite3` instance manager with WAL mode and schema auto-migration. (done)
+  - `src/storage/jobRepository.ts` — SQLite repository with atomic transactions for jobs, units, candidates, and queue items. (done)
+  - `src/jobs/jobQueue.ts` — In-process async background queue orchestrating the full pipeline across state machine stages. (done)
+  - `src/routes/jobs.ts` — Express router for `POST /api/jobs`, `GET /api/jobs/:id`, `GET /api/jobs/:id/queue`. (done)
+  - `src/routes/candidates.ts` — Express router for `GET /api/candidates/:candidateId`. (done)
+  - `src/routes/media.ts` — Express router for safe streaming of `/api/media/*` assets with directory traversal protection. (done)
+  - `src/server.ts` — Express application factory with CORS, JSON body parser, and `/health` endpoint. (done)
+  - `src/index.ts` — Standalone service entry point with graceful shutdown handling. (done)
+  - `src/scripts/testService.ts` — End-to-end HTTP service integration test validating all API contracts and state machine transitions. (done)
 - `frontend/` — Scaffolded Vite + React + TypeScript application with `lucide-react`. (done)
 
 ## Decisions locked in
@@ -63,6 +68,10 @@ In progress: none
   - Guardrail sanitizer actively removes banned certainty vocabulary from reasoning text.
   - Contiguous ascending priority ranks (1, 2, 3...) sorted by confidence tier and comparative strength.
   - Output persisted to `data/ingested/<jobId>/prioritized_queue.json`.
+- **Phase 6 Service Architecture Locked:**
+  - In-process async `JobQueue` with state machine: `queued -> ingesting -> detecting -> ranking -> complete`.
+  - SQLite storage (`data/triage.db`) via `better-sqlite3`.
+  - Express API contracts match Section 4 (`POST /api/jobs`, `GET /api/jobs/:id`, `GET /api/jobs/:id/queue`, `GET /api/candidates/:id`, `GET /health`).
 
 ## Next action
-- Phase 6: Backend Service Architecture (SQLite schema, background job queue state machine, REST API routes).
+- Phase 7: Frontend Review Dashboard (Vite + React + TypeScript, tab-based navigation, Priority Queue tab, Clip Review modal, System Stats).
