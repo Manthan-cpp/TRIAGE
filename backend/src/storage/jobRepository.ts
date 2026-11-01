@@ -108,6 +108,27 @@ export class JobRepository {
     };
   }
 
+  public static listJobs(limit = 20): JobRecord[] {
+    const db = AppDatabase.getInstance();
+    const rows = db.prepare(`
+      SELECT * FROM jobs
+      ORDER BY created_at DESC
+      LIMIT ?
+    `).all(limit) as any[];
+
+    return rows.map((row) => ({
+      id: row.id,
+      sourceLabel: row.source_label,
+      status: row.status as JobStatus,
+      totalUnits: row.total_units,
+      processedUnits: row.processed_units,
+      currentStage: row.current_stage,
+      errorMessage: row.error_message || undefined,
+      createdAt: row.created_at,
+      completedAt: row.completed_at || undefined,
+    }));
+  }
+
   public static saveCandidates(jobId: string, candidates: CandidateSignalRecord[]): void {
     const db = AppDatabase.getInstance();
     const stmt = db.prepare(`

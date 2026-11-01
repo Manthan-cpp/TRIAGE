@@ -23,6 +23,11 @@ async function main() {
     const healthJson = (await healthRes.json()) as any;
     console.log(`  GET /health -> 200 OK (status: ${healthJson.status})`);
 
+    const listRes = await fetch(`${BASE_URL}/api/jobs`);
+    console.assert(listRes.status === 200, `List jobs returned ${listRes.status}`);
+    const listJson = (await listRes.json()) as any;
+    console.log(`  GET /api/jobs -> 200 OK (${listJson.total} existing jobs found)`);
+
     // 2. Submit Job
     console.log('\n[Step 2] Submitting job via POST /api/jobs...');
     const humanImg = path.join(rootDir, 'data/raw/sard/sard_human_01.png');

@@ -32,21 +32,37 @@ router.post('/jobs', upload.array('files', 50), async (req: Request, res: Respon
     // Case 2: Demo dataset paths passed via JSON body
     else if (req.body.demoDataset) {
       const rootDir = path.resolve(__dirname, '../../../');
-      const demoType = req.body.demoDataset; // e.g. 'sard', 'uav_sar', 'eval_mix'
-      let demoDir = path.join(rootDir, 'data/raw/sard');
+      const demoType = req.body.demoDataset; // 'sard', 'uav_sar', 'negative', 'eval_mix'
 
-      if (demoType === 'uav_sar') demoDir = path.join(rootDir, 'data/raw/uav_sar');
-      else if (demoType === 'negative') demoDir = path.join(rootDir, 'data/raw/negative_controls');
+      if (demoType === 'eval_mix') {
+        const dirs = [
+          { dir: path.join(rootDir, 'data/raw/sard'), count: 2 },
+          { dir: path.join(rootDir, 'data/raw/uav_sar'), count: 2 },
+          { dir: path.join(rootDir, 'data/raw/negative_controls'), count: 1 },
+        ];
+        for (const d of dirs) {
+          if (fs.existsSync(d.dir)) {
+            const files = fs.readdirSync(d.dir).filter((f) => !f.endsWith('.json')).slice(0, d.count);
+            for (const fname of files) {
+              const fpath = path.join(d.dir, fname);
+              if (fs.statSync(fpath).isFile()) {
+                inputFiles.push({ originalName: fname, buffer: fs.readFileSync(fpath) });
+              }
+            }
+          }
+        }
+      } else {
+        let demoDir = path.join(rootDir, 'data/raw/sard');
+        if (demoType === 'uav_sar') demoDir = path.join(rootDir, 'data/raw/uav_sar');
+        else if (demoType === 'negative') demoDir = path.join(rootDir, 'data/raw/negative_controls');
 
-      if (fs.existsSync(demoDir)) {
-        const files = fs.readdirSync(demoDir).slice(0, 10);
-        for (const fname of files) {
-          const fpath = path.join(demoDir, fname);
-          if (fs.statSync(fpath).isFile()) {
-            inputFiles.push({
-              originalName: fname,
-              buffer: fs.readFileSync(fpath),
-            });
+        if (fs.existsSync(demoDir)) {
+          const files = fs.readdirSync(demoDir).filter((f) => !f.endsWith('.json')).slice(0, 10);
+          for (const fname of files) {
+            const fpath = path.join(demoDir, fname);
+            if (fs.statSync(fpath).isFile()) {
+              inputFiles.push({ originalName: fname, buffer: fs.readFileSync(fpath) });
+            }
           }
         }
       }
@@ -68,6 +84,16 @@ router.post('/jobs', upload.array('files', 50), async (req: Request, res: Respon
   } catch (err: any) {
     res.status(500).json({ error: err.message || 'Failed to enqueue job' });
   }
+});
+
+/**
+ * GET /api/jobs
+ * List recent jobs for the review dashboard.
+ */
+router.get('/jobs', (req: Request, res: Response): void => {
+  const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 20;
+  const jobs = JobRepository.listJobs(limit);
+  res.json({ jobs, total: jobs.length });
 });
 
 /**
