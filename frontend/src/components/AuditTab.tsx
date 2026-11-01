@@ -17,7 +17,12 @@ export const AuditTab: React.FC<Props> = ({ activeJobId }) => {
     try {
       if (activeJobId) {
         const data = await fetchJobAudit(activeJobId);
-        setEvents(data);
+        if (data && data.length > 0) {
+          setEvents(data);
+        } else {
+          const recent = await fetchRecentAudit(100);
+          setEvents(recent);
+        }
       } else {
         const data = await fetchRecentAudit(100);
         setEvents(data);

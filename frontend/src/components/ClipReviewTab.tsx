@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import type { CandidateDetail, ConfidenceLabel, ReviewerDecision, QueueItem } from '../types';
 import { ConfidencePill } from './ConfidencePill';
+import { resolveMediaUrl } from '../api';
 import { CheckCircle2, XCircle, ArrowLeft, ArrowRight, Crosshair, Clock } from 'lucide-react';
 
 interface Props {
@@ -82,7 +83,7 @@ export const ClipReviewTab: React.FC<Props> = ({
         >
           <div style={{ position: 'relative', display: 'inline-block', maxWidth: '100%', maxHeight: '100%' }}>
             <img
-              src={candidate.sourceFrameUrl}
+              src={resolveMediaUrl(candidate.sourceFrameUrl)}
               alt={candidate.sourceMetadata.clipId}
               style={{ maxWidth: '100%', maxHeight: '480px', objectFit: 'contain', display: 'block' }}
             />
@@ -101,10 +102,11 @@ export const ClipReviewTab: React.FC<Props> = ({
                 }}
               >
                 {boxes.map((b, i) => {
-                  const w = Math.max(12, b.width || Math.abs(b.x2 - b.x1));
-                  const h = Math.max(12, b.height || Math.abs(b.y2 - b.y1));
-                  const x = Math.min(b.x1, b.x2);
-                  const y = Math.min(b.y1, b.y2);
+                  const x = Math.max(0, Math.min(990, Math.min(b.x1, b.x2)));
+                  const y = Math.max(0, Math.min(990, Math.min(b.y1, b.y2)));
+                  const w = Math.max(12, Math.min(1000 - x, b.width || Math.abs(b.x2 - b.x1)));
+                  const h = Math.max(12, Math.min(1000 - y, b.height || Math.abs(b.y2 - b.y1)));
+                  const labelY = y > 24 ? y - 6 : y + 20;
                   return (
                     <g key={i}>
                       <rect
@@ -118,7 +120,7 @@ export const ClipReviewTab: React.FC<Props> = ({
                       />
                       <text
                         x={x}
-                        y={Math.max(18, y - 6)}
+                        y={labelY}
                         fill="#60a5fa"
                         fontSize="18"
                         fontFamily="monospace"

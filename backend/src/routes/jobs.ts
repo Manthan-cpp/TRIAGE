@@ -67,6 +67,21 @@ router.post('/jobs', upload.array('files', 50), async (req: Request, res: Respon
         }
       }
     }
+    // Case 3: Explicit units array per SYSTEM_DESIGN.md Section 4 contract
+    else if (req.body.units && Array.isArray(req.body.units) && req.body.units.length > 0) {
+      const rootDir = path.resolve(__dirname, '../../../');
+      for (const u of req.body.units) {
+        if (u.fileRef) {
+          const resolvedPath = path.resolve(rootDir, u.fileRef);
+          if (resolvedPath.startsWith(rootDir) && fs.existsSync(resolvedPath) && fs.statSync(resolvedPath).isFile()) {
+            inputFiles.push({
+              originalName: path.basename(resolvedPath),
+              buffer: fs.readFileSync(resolvedPath),
+            });
+          }
+        }
+      }
+    }
 
     if (inputFiles.length === 0) {
       res.status(400).json({ error: 'No files provided. Please upload files or select a demo dataset.' });

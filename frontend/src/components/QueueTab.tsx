@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import type { QueueItem, ConfidenceLabel, ReviewerDecision } from '../types';
 import { ConfidencePill } from './ConfidencePill';
+import { resolveMediaUrl } from '../api';
 import { Search, Filter, Eye, CheckCircle, AlertOctagon, ShieldCheck } from 'lucide-react';
 
 interface Props {
@@ -147,7 +148,7 @@ export const QueueTab: React.FC<Props> = ({
 
                     <td>
                       <img
-                        src={item.thumbnailUrl}
+                        src={resolveMediaUrl(item.thumbnailUrl)}
                         alt={`Candidate #${item.priorityRank}`}
                         style={{
                           width: 48,

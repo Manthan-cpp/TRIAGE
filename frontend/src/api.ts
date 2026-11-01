@@ -1,6 +1,16 @@
 import type { JobRecord, QueueItem, CandidateDetail, HealthInfo, AuditLogEntry, ReviewerDecision } from './types';
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || '';
+const rawBase = import.meta.env.VITE_API_BASE_URL || '';
+const API_BASE = rawBase.endsWith('/') ? rawBase.slice(0, -1) : rawBase;
+
+export function resolveMediaUrl(url?: string): string {
+  if (!url) return '';
+  if (url.startsWith('http://') || url.startsWith('https://')) return url;
+  if (API_BASE && url.startsWith('/')) {
+    return `${API_BASE}${url}`;
+  }
+  return url;
+}
 
 export async function fetchHealth(): Promise<HealthInfo> {
   const res = await fetch(`${API_BASE}/health`);

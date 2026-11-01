@@ -15,7 +15,7 @@ AppDatabase.getInstance();
 
 const server = app.listen(PORT, () => {
   console.log(`[Triage Backend] Listening on port ${PORT}`);
-  console.log(`[Triage Backend] Health check available at http://localhost:${PORT}/health`);
+  console.log(`[Triage Backend] Health check available at /health`);
 });
 
 // Graceful shutdown

@@ -41,7 +41,8 @@ export class FalsePositiveDampener {
       };
     }
 
-    const totalFrameArea = frameWidth * frameHeight;
+    // SAM 3.1 returns bounding boxes in normalized 0..1000 coordinate space
+    const totalFrameArea = 1000 * 1000;
     let maxBoxArea = 0;
 
     for (const b of boxes) {

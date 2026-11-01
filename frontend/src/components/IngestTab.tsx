@@ -47,7 +47,7 @@ export const IngestTab: React.FC<Props> = ({
   const stages = [
     { key: 'queued', label: 'Queued' },
     { key: 'ingesting', label: 'Frame Ingestion (1 fps)' },
-    { key: 'detecting', label: 'SAM 3.1 Candidate Detection' },
+    { key: 'detecting', label: 'SAM 3.1 Candidate Segmentation' },
     { key: 'ranking', label: 'Muse Spark Prioritization' },
     { key: 'complete', label: 'Review Ready' },
   ];

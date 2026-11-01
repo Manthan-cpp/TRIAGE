@@ -41,12 +41,12 @@ export class Prioritizer {
 
   private static sanitizeReasoning(text: string): string {
     return text
-      .replace(/\bdetected\b/gi, 'flagged')
-      .replace(/\bdetection\b/gi, 'signal')
-      .replace(/\bsurvivor found\b/gi, 'candidate identified')
-      .replace(/\bvictim located\b/gi, 'candidate identified')
+      .replace(/\bdetect(ed|ing|s)?\b/gi, 'flag$1')
+      .replace(/\bdetections?\b/gi, 'signal')
+      .replace(/\bsurvivor(s)? found\b/gi, 'candidate identified')
+      .replace(/\bvictim(s)? located\b/gi, 'candidate identified')
       .replace(/\bpositive id\b/gi, 'visual alignment')
-      .replace(/\bconfirmed\b/gi, 'observed');
+      .replace(/\bconfirm(ed|ing|s)?\b/gi, 'observed');
   }
 
   /**

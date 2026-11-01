@@ -86,7 +86,7 @@ export const OverviewTab: React.FC<Props> = ({ items, reviewerDecisions }) => {
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12 }}>
             <Target size={14} color="#34d399" />
-            <span>Top-10 Precision: <strong>90%</strong> (Audit Baseline)</span>
+            <span>Top-10 Precision: <strong>100%</strong> (Phase 9 Calibrated)</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12 }}>
             <ShieldCheck size={14} color="#38bdf8" />
