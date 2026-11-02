@@ -14,6 +14,7 @@
     "test:prio": "tsx src/scripts/testPrioritization.ts",
     "test:service": "tsx src/scripts/testService.ts",
     "test:audit": "tsx src/scripts/testAudit.ts",
+    "test:smoke": "tsx src/scripts/smokeTestProduction.ts",
     "benchmark:latency": "tsx src/scripts/benchmarkLatency.ts",
     "eval:phase9": "tsx src/scripts/runEvaluation.ts"
   },

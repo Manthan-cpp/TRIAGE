@@ -1,0 +1,24 @@
+{
+  "name": "project-triage",
+  "version": "1.0.0",
+  "description": "AI-assisted Search-and-Rescue (SAR) decision-support triage dashboard",
+  "scripts": {
+    "install:all": "npm --prefix backend install && npm --prefix frontend install",
+    "build:frontend": "npm --prefix frontend run build",
+    "build:backend": "npm --prefix backend run build",
+    "build": "npm --prefix frontend run build && npm --prefix backend run build",
+    "start": "node backend/dist/index.js",
+    "smoke:prod": "npm --prefix backend run test:smoke",
+    "dev:backend": "npm --prefix backend run dev",
+    "dev:frontend": "npm --prefix frontend run dev"
+  },
+  "keywords": [
+    "search-and-rescue",
+    "meta-model-api",
+    "sam-3.1",
+    "muse-spark",
+    "triage"
+  ],
+  "author": "Manthan",
+  "license": "MIT"
+}

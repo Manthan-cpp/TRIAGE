@@ -10,13 +10,21 @@ const PROJECT_ROOT = path.resolve(__dirname, '../../../');
  * Stream normalized image or video assets safely with path traversal protection.
  */
 router.get(/^\/media\/(.+)$/, (req: Request, res: Response): void => {
-  const relativeSubpath = req.params[0];
-  if (!relativeSubpath) {
+  const rawSubpath = req.params[0];
+  if (!rawSubpath) {
     res.status(400).json({ error: 'Missing media file path' });
     return;
   }
 
   // Resolve absolute path and prevent directory traversal
+  let relativeSubpath = rawSubpath;
+  try {
+    relativeSubpath = decodeURIComponent(rawSubpath);
+  } catch {
+    res.status(400).json({ error: 'Malformed URI encoding' });
+    return;
+  }
+
   const resolvedPath = path.resolve(PROJECT_ROOT, relativeSubpath);
   if (!resolvedPath.startsWith(PROJECT_ROOT)) {
     res.status(403).json({ error: 'Access denied: Invalid path traversal attempt' });

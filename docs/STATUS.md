@@ -1,10 +1,11 @@
 # Project Status
 
-Last updated: 2026-11-01T19:50:00+05:30
-Last completed: Full Codebase Audit & System Design Verification
+Last updated: 2026-11-01T20:15:00+05:30
+Last completed: Phase 10 — Production-Grade Hardening & Smoke Testing (10/10 checks passed)
 In progress: none
 
 ## What exists right now
+- `package.json` & `render.yaml` — Root project manifest and Infrastructure-as-Code blueprint for zero-cost single-service deployment to Render with production build scripts. (done)
 - `SYSTEM_DESIGN.md` — Technical architecture, component responsibilities, file size limits (150-250 lines), and production checklist. (done)
 - `PLAN.md` — 11-phase development and evaluation plan with mandatory reporting protocol and resumption guidelines. (done)
 - `DESIGN.md` — Operations dashboard visual and UX specification (anti-AI slop, 1 accent color, dense queue). (done)
@@ -42,10 +43,11 @@ In progress: none
   - `src/jobs/jobQueue.ts` — In-process async background queue orchestrating pipeline across state machine stages with audit log recording. (done)
   - `src/routes/jobs.ts` — Express router for `POST /api/jobs` (supporting multipart, demoDataset, and SYSTEM_DESIGN Section 4 `units` contract), `GET /api/jobs/:id`, `GET /api/jobs/:id/queue`. (done)
   - `src/routes/candidates.ts` — Express router for `GET /api/candidates/:candidateId` adhering to SYSTEM_DESIGN contract. (done)
-  - `src/routes/media.ts` — Express router for safe streaming of `/api/media/*` assets with directory traversal protection. (done)
+  - `src/routes/media.ts` — Express router with URI decode traversal protection for safe streaming of `/api/media/*` assets. (done)
   - `src/routes/audit.ts` — Express router for `GET /api/jobs/:id/audit`, `GET /api/audit`, and `POST /api/candidates/:id/decision`. (done)
   - `src/server.ts` — Express application factory with CORS, JSON body parser, `/health` endpoint, and static SPA serving from `frontend/dist`. (done)
   - `src/index.ts` — Standalone service entry point with graceful shutdown handling. (done)
+  - `src/scripts/smokeTestProduction.ts` — 10-point automated production smoke test covering health, SPA routes, API contracts, traversal defense, and decision persistence. (done)
   - `src/scripts/testService.ts` — End-to-end HTTP service integration test. (done)
   - `src/scripts/testAudit.ts` — Audit log and reviewer decision persistence test. (done)
 - `frontend/` — Monotonous maximalist review dashboard (Vite + React 19 + TypeScript + Lucide):
@@ -71,6 +73,7 @@ In progress: none
 - **Phase 7 UI Aesthetic Locked:** Monotonous maximalist operations dashboard, single functional accent color, zero AI slop, smooth animations in tab changes and micro-interactions, every concern in its own dedicated tab.
 - **Phase 8 Evidence & Audit Locked:** Complete forensic chain of custody logged to `audit_logs` table and accessible via dedicated Forensic Audit tab.
 - **Phase 9 Calibration Locked:** 100.0% Precision@10 verified; 7 of 8 negatives pushed to bottom ranks; zero-dismissal rule confirmed necessary to preserve occluded subjects (`sard_human_05`, `sard_human_06`).
+- **Phase 10 Hardening Locked:** Zero mocks/placeholders; root orchestration via `package.json` and `render.yaml`; 10/10 production smoke test passed.
 
 ## Next action
-- Phase 10: Production-Grade Hardening & Deployment Prep.
+- Phase 11: Submission Packaging (README.md, demo video walkthrough script, written draft).
