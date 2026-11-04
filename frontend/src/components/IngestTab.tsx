@@ -64,10 +64,13 @@ export const IngestTab: React.FC<Props> = ({
         onDragLeave={() => setDragOver(false)}
         onDrop={handleDrop}
         style={{
-          backgroundColor: dragOver ? 'var(--bg-hover)' : 'var(--bg-secondary)',
-          border: `2px dashed ${dragOver ? 'var(--accent-primary)' : 'var(--border-subtle)'}`,
-          borderRadius: 6,
-          padding: '44px 24px',
+          backgroundColor: dragOver ? 'rgba(37, 99, 235, 0.16)' : 'var(--glass-surface)',
+          backdropFilter: 'var(--glass-blur-md)',
+          WebkitBackdropFilter: 'var(--glass-blur-md)',
+          border: 'none',
+          borderRadius: 8,
+          boxShadow: dragOver ? '0 12px 40px rgba(37, 99, 235, 0.25)' : 'var(--glass-shadow-md)',
+          padding: '48px 24px',
           textAlign: 'center',
           display: 'flex',
           flexDirection: 'column',
@@ -91,11 +94,14 @@ export const IngestTab: React.FC<Props> = ({
           width: 52,
           height: 52,
           borderRadius: '50%',
-          backgroundColor: 'var(--bg-tertiary)',
+          backgroundColor: 'rgba(255, 255, 255, 0.06)',
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          border: '1px solid var(--border-subtle)',
+          border: 'none',
+          boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)',
         }}>
           <UploadCloud size={26} color="var(--accent-highlight)" />
         </div>
@@ -113,7 +119,7 @@ export const IngestTab: React.FC<Props> = ({
       </div>
 
       {errorMessage && (
-        <div role="alert" style={{ color: '#fca5a5', background: 'rgba(127, 29, 29, 0.2)', border: '1px solid #7f1d1d', padding: '8px 12px', borderRadius: 4, fontSize: 12 }}>
+        <div role="alert" style={{ color: '#fca5a5', background: 'rgba(127, 29, 29, 0.28)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', border: 'none', padding: '10px 14px', borderRadius: 6, fontSize: 12, boxShadow: 'var(--glass-shadow-sm)' }}>
           {errorMessage}
         </div>
       )}

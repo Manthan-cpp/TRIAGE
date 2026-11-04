@@ -47,10 +47,13 @@ const renderSituationalAssessment = (text?: string) => {
           <div
             key={idx}
             style={{
-              background: 'rgba(255, 255, 255, 0.03)',
-              borderLeft: `3px solid ${item!.color}`,
-              borderRadius: '0 4px 4px 0',
-              padding: '8px 12px',
+              background: 'rgba(255, 255, 255, 0.05)',
+              backdropFilter: 'blur(10px)',
+              WebkitBackdropFilter: 'blur(10px)',
+              border: 'none',
+              borderRadius: 6,
+              padding: '10px 14px',
+              boxShadow: 'var(--glass-shadow-sm)',
             }}
           >
             <div
@@ -134,8 +137,9 @@ export const ClipReviewTab: React.FC<Props> = ({
           style={{
             position: 'relative',
             backgroundColor: '#000',
-            border: '1px solid var(--border-subtle)',
-            borderRadius: 4,
+            border: 'none',
+            borderRadius: 8,
+            boxShadow: '0 12px 40px rgba(0, 0, 0, 0.5)',
             overflow: 'hidden',
             aspectRatio: '16/9',
             display: 'flex',
@@ -150,13 +154,16 @@ export const ClipReviewTab: React.FC<Props> = ({
                 position: 'absolute',
                 top: 8,
                 left: 8,
-                backgroundColor: 'rgba(9, 9, 11, 0.85)',
-                border: '1px solid var(--border-subtle)',
+                backgroundColor: 'rgba(9, 9, 11, 0.72)',
+                backdropFilter: 'blur(12px)',
+                WebkitBackdropFilter: 'blur(12px)',
+                border: 'none',
                 color: 'var(--text-secondary)',
-                padding: '2px 6px',
-                borderRadius: 2,
+                padding: '3px 8px',
+                borderRadius: 4,
                 fontFamily: 'var(--font-mono)',
                 fontSize: 11,
+                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
                 zIndex: 10,
               }}>
                 {formatTimecode(candidate.sourceMetadata.timestampSec)}
@@ -220,7 +227,7 @@ export const ClipReviewTab: React.FC<Props> = ({
         </div>
 
         {/* Coordinate Details Bar */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16, fontSize: 11, fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', background: 'var(--bg-secondary)', padding: '6px 12px', borderRadius: 3, border: '1px solid var(--border-subtle)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16, fontSize: 11, fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', background: 'var(--glass-surface)', backdropFilter: 'var(--glass-blur-md)', WebkitBackdropFilter: 'var(--glass-blur-md)', padding: '8px 14px', borderRadius: 6, border: 'none', boxShadow: 'var(--glass-shadow-sm)' }}>
           <div>SIGNALS: <span style={{ color: 'var(--text-primary)' }}>{boxes.length}</span></div>
           <div>CORROBORATION: <span style={{ color: candidate.hasCorroboratingSignals ? '#34d399' : 'var(--text-muted)' }}>{candidate.hasCorroboratingSignals ? 'CORROBORATED' : 'NONE'}</span></div>
           <div>DAMPENING SCORE: <span style={{ color: candidate.dampening.isDampened ? '#fbbf24' : 'var(--text-primary)' }}>{candidate.dampening.dampeningScore}</span></div>
@@ -267,7 +274,7 @@ export const ClipReviewTab: React.FC<Props> = ({
               </span>
             </div>
             {candidate.dampening.reason && (
-              <div style={{ fontSize: 11, color: 'var(--text-muted)', borderTop: '1px solid var(--border-subtle)', paddingTop: 6 }}>
+              <div style={{ fontSize: 11, color: 'var(--text-muted)', paddingTop: 6, opacity: 0.85 }}>
                 Note: {candidate.dampening.reason}
               </div>
             )}

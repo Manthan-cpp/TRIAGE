@@ -65,7 +65,7 @@ export const QueueTab: React.FC<Props> = ({
         {/* Filter Controls */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           {/* Search box */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'var(--bg-secondary)', border: '1px solid var(--border-subtle)', borderRadius: 4, padding: '5px 10px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'var(--glass-input)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', border: 'none', borderRadius: 6, padding: '6px 12px', boxShadow: 'var(--glass-shadow-sm)' }}>
             <Search size={14} color="var(--text-muted)" />
             <input
               type="text"
@@ -84,22 +84,23 @@ export const QueueTab: React.FC<Props> = ({
           </div>
 
           {/* Tier Filter Buttons */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 3, background: 'var(--bg-secondary)', padding: 3, borderRadius: 4, border: '1px solid var(--border-subtle)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 3, background: 'var(--glass-input)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', padding: 4, borderRadius: 6, border: 'none', boxShadow: 'var(--glass-shadow-sm)' }}>
             <Filter size={12} color="var(--text-muted)" style={{ marginLeft: 6 }} />
             {(['all', 'possible-high', 'possible-medium', 'possible-low'] as const).map((tier) => (
               <button
                 key={tier}
                 onClick={() => setFilterTier(tier)}
                 style={{
-                  background: filterTier === tier ? 'var(--bg-tertiary)' : 'transparent',
+                  background: filterTier === tier ? 'rgba(255, 255, 255, 0.12)' : 'transparent',
                   color: filterTier === tier ? 'var(--text-primary)' : 'var(--text-muted)',
-                  border: filterTier === tier ? '1px solid var(--border-focus)' : '1px solid transparent',
-                  borderRadius: 3,
-                  padding: '3px 8px',
+                  border: 'none',
+                  borderRadius: 4,
+                  padding: '4px 10px',
                   fontSize: 11,
                   fontFamily: 'var(--font-mono)',
                   cursor: 'pointer',
                   textTransform: 'uppercase',
+                  boxShadow: filterTier === tier ? '0 2px 6px rgba(0, 0, 0, 0.25)' : 'none',
                   transition: 'all var(--transition-fast)',
                 }}
               >
@@ -163,8 +164,9 @@ export const QueueTab: React.FC<Props> = ({
                           width: 48,
                           height: 32,
                           objectFit: 'cover',
-                          borderRadius: 2,
-                          border: '1px solid var(--border-subtle)',
+                          borderRadius: 4,
+                          border: 'none',
+                          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
                           display: 'block',
                         }}
                         loading="lazy"

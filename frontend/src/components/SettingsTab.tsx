@@ -71,7 +71,7 @@ export const SettingsTab: React.FC<Props> = ({ healthInfo, systemInfo }) => {
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
-          <div style={{ background: 'rgba(239, 68, 68, 0.08)', border: '1px solid rgba(239, 68, 68, 0.25)', padding: 12, borderRadius: 3 }}>
+          <div style={{ background: 'rgba(239, 68, 68, 0.1)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)', border: 'none', padding: 14, borderRadius: 6, boxShadow: 'var(--glass-shadow-sm)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
               <XCircle size={14} color="#f87171" />
               <span style={{ fontSize: 11, fontWeight: 700, color: '#f87171', textTransform: 'uppercase' }}>
@@ -83,7 +83,7 @@ export const SettingsTab: React.FC<Props> = ({ healthInfo, systemInfo }) => {
             </p>
           </div>
 
-          <div style={{ background: 'rgba(16, 185, 129, 0.08)', border: '1px solid rgba(16, 185, 129, 0.25)', padding: 12, borderRadius: 3 }}>
+          <div style={{ background: 'rgba(16, 185, 129, 0.1)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)', border: 'none', padding: 14, borderRadius: 6, boxShadow: 'var(--glass-shadow-sm)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
               <CheckCircle2 size={14} color="#34d399" />
               <span style={{ fontSize: 11, fontWeight: 700, color: '#34d399', textTransform: 'uppercase' }}>
@@ -96,14 +96,14 @@ export const SettingsTab: React.FC<Props> = ({ healthInfo, systemInfo }) => {
           </div>
         </div>
 
-        <div style={{ fontSize: 11, color: 'var(--text-muted)', borderTop: '1px solid var(--border-subtle)', paddingTop: 8 }}>
+        <div style={{ fontSize: 11, color: 'var(--text-muted)', paddingTop: 8, opacity: 0.9 }}>
           <strong>Zero-Dismissal Protocol:</strong> Low-confidence and empty frames are pushed down the queue but are NEVER auto-deleted or hidden. Full human agency is preserved over 100% of footage.
         </div>
       </div>
 
       {/* Dataset License Documentation Table */}
       <div className="dense-table-container">
-        <div style={{ padding: '10px 14px', borderBottom: '1px solid var(--border-subtle)', background: 'var(--bg-tertiary)', display: 'flex', alignItems: 'center', gap: 6 }}>
+        <div style={{ padding: '12px 16px', borderBottom: 'none', background: 'var(--glass-surface-elevated)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', display: 'flex', alignItems: 'center', gap: 6 }}>
           <Scale size={14} color="var(--text-muted)" />
           <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-muted)' }}>
             Dataset License Verification & Attribution (Phase 0.1 Audit)

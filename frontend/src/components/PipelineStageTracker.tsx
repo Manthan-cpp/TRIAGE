@@ -40,10 +40,13 @@ export const PipelineStageTracker: React.FC<Props> = ({ currentJob, onNavigateTo
             <div
               key={stage.key}
               style={{
-                backgroundColor: isCurrent ? 'var(--accent-subtle)' : isPast ? 'var(--bg-hover)' : 'var(--bg-tertiary)',
-                border: `1px solid ${isCurrent ? 'var(--accent-primary)' : 'var(--border-subtle)'}`,
-                borderRadius: 4,
-                padding: '8px 10px',
+                backgroundColor: isCurrent ? 'var(--accent-subtle)' : isPast ? 'rgba(255, 255, 255, 0.08)' : 'rgba(255, 255, 255, 0.04)',
+                backdropFilter: 'blur(12px)',
+                WebkitBackdropFilter: 'blur(12px)',
+                border: 'none',
+                borderRadius: 6,
+                boxShadow: isCurrent ? '0 4px 14px rgba(37, 99, 235, 0.25)' : 'var(--glass-shadow-sm)',
+                padding: '9px 12px',
                 display: 'flex',
                 flexDirection: 'column',
                 gap: 4,
@@ -61,7 +64,7 @@ export const PipelineStageTracker: React.FC<Props> = ({ currentJob, onNavigateTo
         })}
       </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: 'var(--bg-primary)', padding: '10px 14px', borderRadius: 4, border: '1px solid var(--border-subtle)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: 'rgba(12, 12, 15, 0.65)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', padding: '12px 16px', borderRadius: 6, border: 'none', boxShadow: 'var(--glass-shadow-sm)' }}>
         <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
           {currentJob.status === 'failed' ? currentJob.errorMessage || currentJob.currentStage : currentJob.currentStage}
         </span>

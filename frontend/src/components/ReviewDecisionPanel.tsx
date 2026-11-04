@@ -46,7 +46,7 @@ export const ReviewDecisionPanel: React.FC<Props> = ({ candidateId, decision, on
         onChange={(event) => setReviewerNotes(event.target.value)}
         placeholder=""
         rows={2}
-        style={{ width: '100%', background: 'var(--bg-tertiary)', border: '1px solid var(--border-subtle)', borderRadius: 3, color: 'var(--text-primary)', padding: 8, fontSize: 11, outline: 'none', resize: 'none' }}
+        style={{ width: '100%', background: 'var(--glass-input)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', border: 'none', borderRadius: 6, color: 'var(--text-primary)', padding: '10px 12px', fontSize: 11, outline: 'none', resize: 'none', boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.4)' }}
       />
 
       <div style={{ display: 'flex', gap: 8 }}>
@@ -54,7 +54,7 @@ export const ReviewDecisionPanel: React.FC<Props> = ({ candidateId, decision, on
           <CheckCircle2 size={14} />
           <span>Mark Verified</span>
         </button>
-        <button className="btn btn-secondary" style={{ flex: 1, borderColor: 'var(--border-subtle)', color: 'var(--text-secondary)' }} onClick={() => void submitDecision('false_alarm')} disabled={isSaving}>
+        <button className="btn btn-secondary" style={{ flex: 1, color: 'var(--text-secondary)' }} onClick={() => void submitDecision('false_alarm')} disabled={isSaving}>
           <XCircle size={14} />
           <span>Flag False Alarm</span>
         </button>
