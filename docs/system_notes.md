@@ -1,6 +1,6 @@
 # Project Triage — System Notes & Pipeline Rules
 
-Last updated: 2026-10-31
+Last updated: 2026-11-03
 
 ## 1. Frame Sampling & Normalization Strategy
 
@@ -27,6 +27,26 @@ Every ingestion job creates an isolated directory in `data/ingested/<jobId>/`:
 - `normalized/`: Standardized 800px JPEG frames ready for perception.
 - `meta.json`: Job creation timestamp, source label, and original filenames.
 - `manifest.json`: Structured list of every processable unit with relative paths, dimensions, and timestamps.
+
+The root is configurable with `DATA_DIR`; `DATABASE_PATH` controls the SQLite file and both may
+be absolute or project-relative paths. Uploaded filenames are reduced to safe single-component
+names before they are written, and duplicate names receive a numeric suffix.
+
+## 2. Job State Machine & Recovery
+
+Jobs move through `queued → ingesting → detecting → ranking → complete` or `failed`. The API
+reports `progress.processed` as normalized units completed by perception; all units remain in the
+queue even when a model call fails. SAM prompt failures are retained as dampened records, while a
+malformed Muse Spark response is retried once and then represented by low-confidence manual-review
+items instead of dropping candidates.
+
+Missing required Meta configuration is handled differently: the job fails clearly before model
+processing begins, rather than presenting a misleading successful queue made entirely of fallback
+records.
+
+On service startup, jobs left in an active state by a prior process are marked `failed` and an
+audit event explains that the work was interrupted. This avoids an indefinitely polling job; a
+reviewer can resubmit the source batch.
 
 ### 1.4 Unit Record Schema
 ```json

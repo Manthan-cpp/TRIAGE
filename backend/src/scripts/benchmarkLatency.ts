@@ -8,7 +8,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { Sam31Client } from '../perception/sam31Client';
-import { MetaClient } from '../lib/metaClient';
 
 const TEST_IMAGE = path.resolve(__dirname, '../../../data/raw/uav_sar/uav_sar_01.jpg');
 const PROMPTS = ['person', 'clothing'];
@@ -28,7 +27,6 @@ async function runSequential(imageBuffer: Buffer): Promise<number> {
 
 async function runParallel(imageBuffer: Buffer): Promise<number> {
   console.log('\n[PARALLEL] Running prompts concurrently (Promise.all)...');
-  const start = Date.now();
   const result = await Sam31Client.segmentFrame(imageBuffer, PROMPTS);
   result.perPrompt.forEach((r) => {
     console.log(`  "${r.prompt}" → ${r.boxes.length} boxes, ${r.latencyMs}ms`);

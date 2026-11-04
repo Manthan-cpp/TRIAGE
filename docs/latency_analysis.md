@@ -98,11 +98,11 @@ Frame (with Tier 1):
 ## 4. Implementation Checklist
 
 - [x] `sharp` installed as backend dependency
-- [ ] `sam31Client.ts` updated: image resize + parallel Promise.all
-- [ ] `museSparkClient.ts` updated: zero-detect early exit
-- [ ] Frame sampler in Phase 3: configurable fps (default 1fps)
-- [ ] Bounded concurrency in Phase 4: p-limit, default 6 workers
-- [ ] Server-sent events stream in Phase 6: progressive ranking push
+- [x] `sam31Client.ts` updated: image resize + parallel prompt execution
+- [x] `museSparkClient.ts` updated: zero-signal early exit
+- [x] Frame sampler in Phase 3: configurable fps (default 1fps)
+- [x] Bounded concurrency in Phase 4: three concurrent units
+- [ ] Server-sent events stream in Phase 6: polling remains the deliberate demo implementation
 
 ---
 

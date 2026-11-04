@@ -1,10 +1,11 @@
 import * as http from 'http';
-import * as path from 'path';
 import { createServer } from '../server';
 import { AppDatabase } from '../storage/database';
+import { CandidateRepository } from '../storage/candidateRepository';
+import { CandidateSignalRecord } from '../perception/candidateTypes';
 
 async function runProductionSmokeTest() {
-  console.log('=== Project Triage — Phase 10.2 Production Smoke Test ===\n');
+  console.log('=== Project Triage — Production Smoke Test (15 checks) ===\n');
 
   const PORT = 4280;
   const BASE_URL = `http://127.0.0.1:${PORT}`;
@@ -63,6 +64,18 @@ async function runProductionSmokeTest() {
       return res.status === 200 && Array.isArray(json.jobs);
     });
 
+    await check('GET /api/system returns active runtime configuration', async () => {
+      const res = await fetch(`${BASE_URL}/api/system`);
+      const json = (await res.json()) as any;
+      return res.status === 200 && json.models?.sam?.id && json.pipeline?.videoFps !== undefined;
+    });
+
+    await check('GET /api/benchmarks returns the documented evaluation record', async () => {
+      const res = await fetch(`${BASE_URL}/api/benchmarks`);
+      const json = (await res.json()) as any;
+      return res.status === 200 && json.source && json.metrics?.precisionAt10;
+    });
+
     // 5. Submit Batch via System Design Section 4 JSON Contract
     let newJobId = '';
     await check('POST /api/jobs accepts JSON units batch', async () => {
@@ -79,12 +92,51 @@ async function runProductionSmokeTest() {
       return res.status === 202 && json.status === 'queued' && Boolean(newJobId);
     });
 
+    await check('POST /api/jobs rejects unit paths outside the data directory', async () => {
+      const res = await fetch(`${BASE_URL}/api/jobs`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sourceLabel: 'Traversal Test',
+          units: [{ type: 'image', fileRef: '../package.json' }],
+        }),
+      });
+      return res.status === 400;
+    });
+
     // 6. Get Job Status
     await check('GET /api/jobs/:id returns progress and stage', async () => {
       const targetId = newJobId || existingJobId;
       const res = await fetch(`${BASE_URL}/api/jobs/${targetId}`);
       const json = (await res.json()) as any;
       return res.status === 200 && json.jobId === targetId && json.progress !== undefined;
+    });
+
+    // Seed one lightweight stored candidate for the HTTP-only decision test.
+    // The smoke test must validate the real relationship constraint without
+    // spending model credits just to create a candidate.
+    if (newJobId) {
+      const smokeCandidate: CandidateSignalRecord = {
+        candidateId: 'cand_smoke_test_unit_1',
+        unitId: 'unit_smoke_test_1',
+        sourceFile: 'sard_human_01.png',
+        sourceType: 'image',
+        filePath: 'data/raw/sard/sard_human_01.png',
+        matchedPrompts: [],
+        totalBoxesCount: 0,
+        boxes: [],
+        hasCorroboratingSignals: false,
+        dampening: { isDampened: true, reason: 'Smoke-test retained unit.', dampeningScore: 1 },
+        rawResults: [],
+        createdAt: new Date().toISOString(),
+      };
+      CandidateRepository.saveCandidates(newJobId, [smokeCandidate]);
+    }
+
+    await check('GET /api/jobs/:id/metrics returns live batch measurements', async () => {
+      const res = await fetch(`${BASE_URL}/api/jobs/${newJobId}/metrics`);
+      const json = (await res.json()) as any;
+      return res.status === 200 && json.jobId === newJobId && json.queue?.total === 1 && json.review?.reviewed === 0;
     });
 
     // 7. Media Streaming
@@ -126,7 +178,7 @@ async function runProductionSmokeTest() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          jobId: newJobId || 'job_smoke_test',
+          jobId: newJobId,
           decision: 'verified',
           notes: 'Production smoke test confirmation.',
         }),
@@ -135,7 +187,20 @@ async function runProductionSmokeTest() {
       return res.status === 200 && json.success === true && json.decision === 'verified';
     });
 
-    console.log(`\n=== Production Smoke Test Result: ${failures === 0 ? 'ALL CHECKS PASSED (10/10)' : `${failures} FAILURES`} ===\n`);
+    await check('POST /api/candidates/:id/decision rejects an unrelated job', async () => {
+      const res = await fetch(`${BASE_URL}/api/candidates/cand_smoke_test_unit_1/decision`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          jobId: 'job_unrelated',
+          decision: 'verified',
+        }),
+      });
+      return res.status === 404;
+    });
+
+    const totalChecks = 15;
+    console.log(`\n=== Production Smoke Test Result: ${failures === 0 ? `ALL CHECKS PASSED (${totalChecks}/${totalChecks})` : `${failures} FAILURES`} ===\n`);
   } finally {
     server.close();
   }
