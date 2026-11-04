@@ -6,6 +6,7 @@ import {
   Crosshair,
   Shield,
 } from 'lucide-react';
+import Particles from './Particles/Particles';
 
 interface Props {
   activeTab: TabId;
@@ -93,8 +94,33 @@ export const Layout: React.FC<Props> = ({
         </nav>
 
         {/* Dynamic Viewport with key for smooth cross-tab animation */}
-        <main key={activeTab} className="tab-viewport">
-          {children}
+        <main key={activeTab} className="tab-viewport" style={{ position: 'relative' }}>
+          {activeTab !== 'clip' && (
+            <div
+              style={{
+                position: 'absolute',
+                inset: 0,
+                pointerEvents: 'none',
+                zIndex: 0,
+                overflow: 'hidden',
+              }}
+            >
+              <Particles
+                particleColors={['#ffffff', '#a1a1aa']}
+                particleCount={200}
+                particleSpread={10}
+                speed={0.1}
+                particleBaseSize={100}
+                glow={0.5}
+                twinkle={0.3}
+                moveParticlesOnHover={true}
+                hoverEffect="parallax"
+              />
+            </div>
+          )}
+          <div style={{ position: 'relative', zIndex: 1, height: '100%' }}>
+            {children}
+          </div>
         </main>
       </div>
     </div>
