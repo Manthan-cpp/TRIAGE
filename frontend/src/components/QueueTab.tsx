@@ -61,7 +61,7 @@ export const QueueTab: React.FC<Props> = ({
             <Search size={14} color="var(--text-muted)" />
             <input
               type="text"
-              placeholder="Search file, prompt, reason..."
+              placeholder=""
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               style={{

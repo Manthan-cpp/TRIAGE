@@ -30,7 +30,7 @@ router.get('/candidates/:candidateId', (req: Request, res: Response): void => {
       matchedPrompts: candidate.matchedPrompts,
       rawResults: candidate.rawResults,
     },
-    fullReasoningText: candidate.fullReasoningText || 'Candidate signal awaiting comparative ranking.',
+    fullReasoningText: candidate.fullReasoningText || undefined,
     evidenceIds: candidate.evidenceIds || candidate.matchedPrompts,
     priorityRank: candidate.priorityRank,
     confidenceLabel: candidate.confidenceLabel,
@@ -39,7 +39,7 @@ router.get('/candidates/:candidateId', (req: Request, res: Response): void => {
       sourceType: candidate.sourceType,
       timestampSec: candidate.timestampSec,
       unitId: candidate.unitId,
-      datasetLabel: candidate.sourceFile.split('_')[0] || 'dataset',
+      datasetLabel: candidate.sourceFile.split('_')[0] || '',
     },
     dampening: {
       isDampened: candidate.isDampened,

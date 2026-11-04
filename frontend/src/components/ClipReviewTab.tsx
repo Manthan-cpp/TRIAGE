@@ -18,7 +18,7 @@ interface Props {
 
 const renderSituationalAssessment = (text?: string) => {
   if (!text) {
-    return <p style={{ fontSize: 13, color: 'var(--text-primary)', lineHeight: 1.45 }}>Comparative triage signal evaluation.</p>;
+    return <p style={{ fontSize: 13, color: 'var(--text-muted)', lineHeight: 1.45 }}>No assessment available.</p>;
   }
 
   const sections = [

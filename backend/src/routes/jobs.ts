@@ -25,7 +25,7 @@ router.post('/jobs', upload.array('files', 50), async (req: Request, res: Respon
     const jobId = `job_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
     const sourceLabel = typeof req.body.sourceLabel === 'string' && req.body.sourceLabel.trim()
       ? req.body.sourceLabel.trim().slice(0, 200)
-      : 'User Upload';
+      : '';
     const inputFiles: IngestionInputFile[] = [];
 
     // Case 1: Uploaded via multipart form-data

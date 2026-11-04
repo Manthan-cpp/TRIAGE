@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { ReviewerDecision } from '../types';
 import { CheckCircle2, XCircle, Clock } from 'lucide-react';
 
@@ -12,6 +12,10 @@ export const ReviewDecisionPanel: React.FC<Props> = ({ candidateId, decision, on
   const [reviewerNotes, setReviewerNotes] = useState(decision?.notes || '');
   const [isSaving, setIsSaving] = useState(false);
   const [decisionError, setDecisionError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setReviewerNotes(decision?.notes || '');
+  }, [candidateId, decision]);
 
   const submitDecision = async (status: 'verified' | 'false_alarm') => {
     if (isSaving) return;
@@ -40,7 +44,7 @@ export const ReviewDecisionPanel: React.FC<Props> = ({ candidateId, decision, on
       <textarea
         value={reviewerNotes}
         onChange={(event) => setReviewerNotes(event.target.value)}
-        placeholder="Reviewer operational notes (e.g. check drone battery, team dispatched to sector...)"
+        placeholder=""
         rows={2}
         style={{ width: '100%', background: 'var(--bg-tertiary)', border: '1px solid var(--border-subtle)', borderRadius: 3, color: 'var(--text-primary)', padding: 8, fontSize: 11, outline: 'none', resize: 'none' }}
       />

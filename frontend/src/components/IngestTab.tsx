@@ -15,7 +15,7 @@ export const IngestTab: React.FC<Props> = ({
   onNavigateToQueue,
 }) => {
   const [dragOver, setDragOver] = useState(false);
-  const [sourceLabel, setSourceLabel] = useState('UAV Field Sweep 01');
+  const [sourceLabel, setSourceLabel] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -122,7 +122,7 @@ export const IngestTab: React.FC<Props> = ({
           type="text"
           value={sourceLabel}
           onChange={(e) => setSourceLabel(e.target.value)}
-          placeholder="e.g. Flight Sweep Alpine Sector 4"
+          placeholder=""
           style={{
             flex: 1,
             background: 'var(--bg-tertiary)',
