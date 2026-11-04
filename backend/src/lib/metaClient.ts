@@ -1,20 +1,18 @@
-import dotenv from 'dotenv';
-import path from 'path';
 import { CostLogger } from './costLogger';
+import { getMetaApiBaseUrl, getMetaMaxRetries, getMetaRequestTimeoutMs } from './config';
 
-// Load environment from backend/.env or root .env
-dotenv.config({ path: path.resolve(__dirname, '../../.env') });
-dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
-
-const META_BASE_URL = 'https://api.meta.ai/v1';
-
-export interface MetaApiResponse<T = any> {
+export interface MetaApiResponse<T = unknown> {
   status: number;
   data: T;
   latencyMs: number;
 }
 
 export class MetaClient {
+  public static assertConfigured(): void {
+    this.getApiKey();
+    getMetaApiBaseUrl();
+  }
+
   private static getApiKey(): string {
     const key = process.env.META_MODEL_API_KEY;
     if (!key) {
@@ -29,15 +27,15 @@ export class MetaClient {
    * Execute an authenticated POST request against the Meta Model API
    * with automatic exponential backoff retry on 429 rate limit or 5xx server errors.
    */
-  public static async post<T = any>(
+  public static async post<T = unknown>(
     endpointPath: string,
-    payload: any,
+    payload: unknown,
     modelName: string,
-    timeoutMs = 45000,
-    maxRetries = 2
+    timeoutMs = getMetaRequestTimeoutMs(),
+    maxRetries = getMetaMaxRetries()
   ): Promise<MetaApiResponse<T>> {
     const apiKey = this.getApiKey();
-    const url = `${META_BASE_URL}${endpointPath}`;
+    const url = `${getMetaApiBaseUrl()}${endpointPath}`;
 
     let lastError: Error | null = null;
 
@@ -61,7 +59,8 @@ export class MetaClient {
         const latencyMs = Date.now() - startTime;
         clearTimeout(timeoutId);
 
-        // Retry on 429 Rate Limit or 502/503/504 Bad Gateway
+        // Retry only on rate limiting or server-side failures. A 4xx request
+        // error is actionable input/configuration and must not be retried.
         if ((response.status === 429 || response.status >= 500) && attempt < maxRetries) {
           const backoffMs = Math.pow(2, attempt) * 1000 + Math.floor(Math.random() * 500);
           console.warn(`[MetaClient] Status ${response.status} on ${endpointPath}. Retrying in ${backoffMs}ms (attempt ${attempt + 1}/${maxRetries})...`);
@@ -71,20 +70,22 @@ export class MetaClient {
 
         if (!response.ok) {
           const errorText = await response.text();
-          throw new Error(
-            `Meta API Error (${response.status} on ${endpointPath}): ${errorText}`
-          );
+          const error = new Error(`Meta API Error (${response.status} on ${endpointPath}): ${errorText}`);
+          if (response.status < 500 && response.status !== 429) throw new NonRetryableMetaError(error.message);
+          throw error;
         }
 
         const data = (await response.json()) as T;
         CostLogger.logCall(modelName, endpointPath, latencyMs, 1);
 
         return { status: response.status, data, latencyMs };
-      } catch (err: any) {
+      } catch (err: unknown) {
         clearTimeout(timeoutId);
-        lastError = err.name === 'AbortError'
+        if (err instanceof NonRetryableMetaError) throw err;
+        const error = err instanceof Error ? err : new Error(String(err));
+        lastError = error.name === 'AbortError'
           ? new Error(`Meta API timeout after ${timeoutMs}ms on ${endpointPath}`)
-          : err;
+          : error;
 
         if (attempt < maxRetries) {
           const backoffMs = Math.pow(2, attempt) * 1000;
@@ -97,3 +98,5 @@ export class MetaClient {
     throw lastError || new Error(`MetaClient call failed after ${maxRetries} retries`);
   }
 }
+
+class NonRetryableMetaError extends Error {}

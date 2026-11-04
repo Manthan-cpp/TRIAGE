@@ -1,9 +1,9 @@
 {
-  "totalEstimatedCostUsd": 0.746,
-  "totalApiCalls": 160,
+  "totalEstimatedCostUsd": 0.79,
+  "totalApiCalls": 170,
   "callsByModel": {
-    "sam-3.1": 142,
-    "muse-spark-1.3": 18
+    "sam-3.1": 150,
+    "muse-spark-1.3": 20
   },
   "entries": [
     {
@@ -1283,6 +1283,86 @@
       "model": "muse-spark-1.3",
       "endpoint": "/chat/completions",
       "latencyMs": 5888,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.002
+    },
+    {
+      "timestamp": "2026-11-04T07:50:39.158Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 2405,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-04T07:50:39.609Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 2862,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-04T07:50:39.827Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 3076,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-04T07:50:39.932Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 3177,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-04T07:50:48.588Z",
+      "model": "muse-spark-1.3",
+      "endpoint": "/chat/completions",
+      "latencyMs": 8638,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.002
+    },
+    {
+      "timestamp": "2026-11-04T08:01:48.100Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 1995,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-04T08:01:48.178Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 2072,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-04T08:01:48.493Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 2380,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-04T08:01:49.569Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 3467,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-04T08:01:58.445Z",
+      "model": "muse-spark-1.3",
+      "endpoint": "/chat/completions",
+      "latencyMs": 8868,
       "inputUnits": 1,
       "estimatedCostUsd": 0.002
     }

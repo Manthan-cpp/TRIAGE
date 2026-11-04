@@ -3,6 +3,7 @@ import * as path from 'path';
 import { CandidateSignalRecord } from '../perception/candidateTypes';
 import { ContextAggregator } from './contextAggregator';
 import { MuseSparkClient, ConfidenceLabel } from './museSparkClient';
+import { getIngestedDir } from '../lib/config';
 
 export interface PrioritizedQueueItem {
   candidateId: string;
@@ -28,6 +29,7 @@ export interface PrioritizedQueueResult {
   mediumPriorityCount: number;
   lowPriorityCount: number;
   totalPrioritizationTimeMs: number;
+  fallbackBatchCount: number;
   generatedAt: string;
   rankedItems: PrioritizedQueueItem[];
 }
@@ -41,12 +43,23 @@ export class Prioritizer {
 
   private static sanitizeReasoning(text: string): string {
     return text
-      .replace(/\bdetect(ed|ing|s)?\b/gi, 'flag$1')
-      .replace(/\bdetections?\b/gi, 'signal')
+      .replace(/\bdetected\b/gi, 'flagged')
+      .replace(/\bdetecting\b/gi, 'flagging')
+      .replace(/\bdetects\b/gi, 'flags')
+      .replace(/\bdetect\b/gi, 'flag')
+      .replace(/\bdetections?\b/gi, 'candidate signal')
       .replace(/\bsurvivor(s)? found\b/gi, 'candidate identified')
+      .replace(/\bsurvivor(s)? located\b/gi, 'candidate identified')
       .replace(/\bvictim(s)? located\b/gi, 'candidate identified')
+      .replace(/\bhuman confirmed\b/gi, 'visual alignment')
+      .replace(/\bguaranteed\b/gi, 'possible')
+      .replace(/\bfound\b/gi, 'observed')
+      .replace(/\blocated\b/gi, 'observed')
       .replace(/\bpositive id\b/gi, 'visual alignment')
-      .replace(/\bconfirm(ed|ing|s)?\b/gi, 'observed');
+      .replace(/\bconfirmed\b/gi, 'observed')
+      .replace(/\bconfirming\b/gi, 'observing')
+      .replace(/\bconfirms\b/gi, 'supports')
+      .replace(/\bconfirm\b/gi, 'observe');
   }
 
   /**
@@ -69,6 +82,7 @@ export class Prioritizer {
         mediumPriorityCount: 0,
         lowPriorityCount: 0,
         totalPrioritizationTimeMs: 0,
+        fallbackBatchCount: 0,
         generatedAt: new Date().toISOString(),
         rankedItems: [],
       };
@@ -79,11 +93,13 @@ export class Prioritizer {
     candidates.forEach((c) => recordMap.set(c.candidateId, c));
 
     // Prepare batches for Muse Spark
-    const batches = ContextAggregator.prepareBatches(candidates, 10);
+    const batches = ContextAggregator.prepareBatches(candidates);
     const allRankedItems: PrioritizedQueueItem[] = [];
+    let fallbackBatchCount = 0;
 
     for (const batch of batches) {
       const result = await MuseSparkClient.prioritizeBatch(batch);
+      if (result.usedFallback) fallbackBatchCount += 1;
 
       for (const item of result.rankedItems) {
         const raw = recordMap.get(item.candidateId);
@@ -111,6 +127,29 @@ export class Prioritizer {
           dampened: raw.dampening.isDampened,
         });
       }
+    }
+
+    // A malformed or incomplete model response must never remove a unit from
+    // the reviewer queue. This is a final zero-dismissal guard.
+    const includedIds = new Set(allRankedItems.map((item) => item.candidateId));
+    for (const raw of candidates) {
+      if (includedIds.has(raw.candidateId)) continue;
+      allRankedItems.push({
+        candidateId: raw.candidateId,
+        unitId: raw.unitId,
+        priorityRank: Number.MAX_SAFE_INTEGER,
+        confidenceLabel: 'possible-low',
+        reasoningSummary: 'Could not rank this candidate; flagged for manual review.',
+        evidenceIds: raw.matchedPrompts,
+        sourceFile: raw.sourceFile,
+        sourceType: raw.sourceType,
+        timestampSec: raw.timestampSec,
+        filePath: raw.filePath,
+        thumbnailUrl: `/api/media/${raw.filePath.replace(/\\/g, '/')}`,
+        matchedPrompts: raw.matchedPrompts,
+        boxesCount: raw.totalBoxesCount,
+        dampened: raw.dampening.isDampened,
+      });
     }
 
     // Sort globally by rank and assign contiguous 1..N ranks
@@ -144,12 +183,15 @@ export class Prioritizer {
       mediumPriorityCount: medCount,
       lowPriorityCount: lowCount,
       totalPrioritizationTimeMs,
+      fallbackBatchCount,
       generatedAt: new Date().toISOString(),
       rankedItems: allRankedItems,
     };
 
     // Persist to data/ingested/<jobId>/prioritized_queue.json
-    const jobDir = path.resolve(rootDir, 'data/ingested', jobId);
+    const jobDir = projectRootDir
+      ? path.resolve(rootDir, 'data/ingested', jobId)
+      : path.resolve(getIngestedDir(), jobId);
     fs.mkdirSync(jobDir, { recursive: true });
     const queuePath = path.join(jobDir, 'prioritized_queue.json');
     fs.writeFileSync(queuePath, JSON.stringify(queueResult, null, 2), 'utf-8');

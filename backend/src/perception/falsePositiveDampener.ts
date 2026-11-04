@@ -21,8 +21,8 @@ export class FalsePositiveDampener {
   public static evaluate(
     boxes: BoundingBox[],
     matchedPrompts: string[],
-    frameWidth = 800,
-    frameHeight = 800
+    _frameWidth = 800,
+    _frameHeight = 800
   ): DampeningEvaluation {
     if (boxes.length === 0) {
       return {

@@ -5,32 +5,35 @@ import { Sam31Client } from './sam31Client';
 import { getActivePromptStrings } from './prompts';
 import { FalsePositiveDampener } from './falsePositiveDampener';
 import { CandidateSignalRecord, PerceptionBatchResult } from './candidateTypes';
+import { getIngestedDir, getPerceptionConcurrency, isPathInside, resolveInside } from '../lib/config';
+import { MetaClient } from '../lib/metaClient';
 
 export class PerceptionRunner {
   // Max concurrent frames to process simultaneously
-  private static readonly CONCURRENCY_LIMIT = 3;
-
   /**
    * Run SAM 3.1 perception pass across all units in a JobManifest.
    */
   public static async processManifest(
     manifest: JobManifest,
-    projectRootDir?: string
+    projectRootDir?: string,
+    onProgress?: (processed: number, total: number) => void
   ): Promise<PerceptionBatchResult> {
+    MetaClient.assertConfigured();
     const rootDir = projectRootDir || path.resolve(__dirname, '../../../');
     const prompts = getActivePromptStrings();
     const startTime = Date.now();
 
     const candidates: CandidateSignalRecord[] = [];
+    let failedUnitsCount = 0;
     const units = [...manifest.units];
 
     // Worker pool for bounded concurrency
     const worker = async (unit: IngestionUnit): Promise<CandidateSignalRecord> => {
       const candidateId = `cand_${manifest.jobId}_${unit.unitId}`;
-      const fullPath = path.resolve(rootDir, unit.filePath);
+      const fullPath = resolveInside(rootDir, unit.filePath);
 
       try {
-        if (!fs.existsSync(fullPath)) {
+        if (!fullPath || !isPathInside(getIngestedDir(), fullPath) || !fs.existsSync(fullPath)) {
           throw new Error(`Unit image file not found at ${fullPath}`);
         }
 
@@ -56,6 +59,10 @@ export class PerceptionRunner {
           unit.height
         );
 
+        const partialPromptNote = frameResult.errors?.length
+          ? ` Partial prompt failures retained: ${frameResult.errors.join('; ')}`
+          : '';
+
         return {
           candidateId,
           unitId: unit.unitId,
@@ -69,13 +76,14 @@ export class PerceptionRunner {
           hasCorroboratingSignals: hasCorroboration,
           dampening: {
             isDampened: dampening.isDampened,
-            reason: dampening.reason,
+            reason: `${dampening.reason || 'Candidate signal retained for review.'}${partialPromptNote}`,
             dampeningScore: dampening.dampeningScore,
           },
           rawResults: frameResult.perPrompt,
           createdAt: new Date().toISOString(),
         };
       } catch (err: any) {
+        failedUnitsCount += 1;
         console.warn(`[PerceptionRunner] Non-fatal error processing unit ${unit.unitId}: ${err.message}`);
         // Zero-dismissal resilience: preserve unit as dampened record rather than aborting batch
         return {
@@ -101,10 +109,12 @@ export class PerceptionRunner {
     };
 
     // Execute units in chunks of CONCURRENCY_LIMIT
-    for (let i = 0; i < units.length; i += this.CONCURRENCY_LIMIT) {
-      const chunk = units.slice(i, i + this.CONCURRENCY_LIMIT);
+    const concurrencyLimit = getPerceptionConcurrency();
+    for (let i = 0; i < units.length; i += concurrencyLimit) {
+      const chunk = units.slice(i, i + concurrencyLimit);
       const chunkResults = await Promise.all(chunk.map((u) => worker(u)));
       candidates.push(...chunkResults);
+      onProgress?.(candidates.length, units.length);
     }
 
     const totalPerceptionTimeMs = Date.now() - startTime;
@@ -117,13 +127,16 @@ export class PerceptionRunner {
       totalUnitsProcessed: candidates.length,
       unitsWithDetections,
       dampenedUnitsCount: dampenedCount,
+      failedUnitsCount,
       totalSignalsCount,
       totalPerceptionTimeMs,
       candidates,
     };
 
     // Save candidates to job directory
-    const jobDir = path.resolve(rootDir, 'data/ingested', manifest.jobId);
+    const jobDir = projectRootDir
+      ? path.resolve(projectRootDir, 'data/ingested', manifest.jobId)
+      : path.resolve(getIngestedDir(), manifest.jobId);
     fs.mkdirSync(jobDir, { recursive: true });
     const candidatesPath = path.join(jobDir, 'candidates.json');
     fs.writeFileSync(candidatesPath, JSON.stringify(batchResult, null, 2), 'utf-8');

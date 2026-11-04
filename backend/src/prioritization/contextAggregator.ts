@@ -1,5 +1,6 @@
 import { CandidateSignalRecord } from '../perception/candidateTypes';
 import { CandidateToRank } from './museSparkClient';
+import { getRankingBatchSize } from '../lib/config';
 
 export interface EnrichedCandidateToRank extends CandidateToRank {
   timestampSec?: number;
@@ -21,8 +22,8 @@ export class ContextAggregator {
       const h = b.height || Math.abs(b.y2 - b.y1);
       if (w * h > maxArea) maxArea = w * h;
     }
-    // Normalized to 800x800 coordinate frame
-    const maxBoxAreaFraction = Math.round((maxArea / (800 * 800)) * 1000) / 1000;
+    // SAM returns coordinates normalized to a 1000x1000 frame.
+    const maxBoxAreaFraction = Math.round((maxArea / (1000 * 1000)) * 1000) / 1000;
 
     let summary = '';
     if (record.totalBoxesCount === 0) {
@@ -42,6 +43,7 @@ export class ContextAggregator {
       detectionSummary: summary,
       detectedBoxesCount: record.totalBoxesCount,
       promptsMatched: record.matchedPrompts,
+      evidenceIds: [record.candidateId, ...record.matchedPrompts.map((prompt) => `${record.candidateId}:${prompt}`)],
       dampened: record.dampening.isDampened,
       dampenReason: record.dampening.reason,
       isCorroborated: record.hasCorroboratingSignals,
@@ -56,7 +58,7 @@ export class ContextAggregator {
    */
   public static prepareBatches(
     records: CandidateSignalRecord[],
-    maxBatchSize = 10
+    maxBatchSize = getRankingBatchSize()
   ): EnrichedCandidateToRank[][] {
     const summarized = records.map((r) => this.summarizeCandidate(r));
     const batches: EnrichedCandidateToRank[][] = [];

@@ -1,5 +1,7 @@
 import fs from 'fs';
 import path from 'path';
+import { getCostLogPath } from './config';
+import { getEstimatedModelRate, getMuseModel, getSamModel } from './config';
 
 export interface CostLogEntry {
   timestamp: string;
@@ -18,21 +20,15 @@ export interface CostLogState {
 }
 
 // Approximate free-tier cost tracking rates per call/unit
-const MODEL_RATES_USD: Record<string, number> = {
-  'sam-3.1': 0.005, // ~$0.005 per image segmentation call
-  'muse-spark-1.3': 0.002, // ~$0.002 per prioritization batch call
-};
-
-const LOG_FILE = path.resolve(__dirname, '../../../data/cost_log.json');
-
 export class CostLogger {
   private static state: CostLogState | null = null;
 
   private static loadState(): CostLogState {
     if (this.state) return this.state;
+    const logFile = getCostLogPath();
     try {
-      if (fs.existsSync(LOG_FILE)) {
-        const raw = fs.readFileSync(LOG_FILE, 'utf-8');
+      if (fs.existsSync(logFile)) {
+        const raw = fs.readFileSync(logFile, 'utf-8');
         this.state = JSON.parse(raw);
         return this.state!;
       }
@@ -50,10 +46,11 @@ export class CostLogger {
 
   private static saveState(): void {
     if (!this.state) return;
+    const logFile = getCostLogPath();
     try {
-      const dir = path.dirname(LOG_FILE);
+      const dir = path.dirname(logFile);
       if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-      fs.writeFileSync(LOG_FILE, JSON.stringify(this.state, null, 2), 'utf-8');
+      fs.writeFileSync(logFile, JSON.stringify(this.state, null, 2), 'utf-8');
     } catch (err) {
       console.error('Failed to persist cost log:', err);
     }
@@ -66,7 +63,11 @@ export class CostLogger {
     inputUnits = 1
   ): CostLogEntry {
     const state = this.loadState();
-    const rate = MODEL_RATES_USD[model] || 0.003;
+    const rate = model === getSamModel()
+      ? getEstimatedModelRate('sam')
+      : model === getMuseModel()
+        ? getEstimatedModelRate('muse')
+        : 0;
     const cost = rate * inputUnits;
 
     const entry: CostLogEntry = {

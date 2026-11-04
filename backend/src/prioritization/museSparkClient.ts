@@ -1,4 +1,5 @@
 import { MetaClient } from '../lib/metaClient';
+import { getMuseEndpoint, getMuseModel } from '../lib/config';
 
 export type ConfidenceLabel = 'possible-high' | 'possible-medium' | 'possible-low';
 
@@ -8,6 +9,7 @@ export interface CandidateToRank {
   detectionSummary: string;
   detectedBoxesCount: number;
   promptsMatched: string[];
+  evidenceIds?: string[];
 }
 
 export interface RankedItem {
@@ -22,12 +24,11 @@ export interface PrioritizationResult {
   rankedItems: RankedItem[];
   latencyMs: number;
   model: string;
+  usedFallback?: boolean;
+  warning?: string;
 }
 
 export class MuseSparkClient {
-  private static readonly MODEL = 'muse-spark-1.3';
-  private static readonly ENDPOINT = '/chat/completions';
-
   /**
    * Prioritize a batch of candidates via Muse Spark 1.3.
    *
@@ -44,17 +45,19 @@ export class MuseSparkClient {
     const withDetections = candidates.filter((c) => c.detectedBoxesCount > 0);
     const noDetections = candidates.filter((c) => c.detectedBoxesCount === 0);
 
-    // If nothing to rank via model, return early — saves ~11s
+    // If nothing to rank via model, return early — saves ~11s.
     if (withDetections.length === 0) {
       const autoRanked: RankedItem[] = noDetections.map((c, idx) => ({
         candidateId: c.candidateId,
         priorityRank: idx + 1,
         confidenceLabel: 'possible-low' as ConfidenceLabel,
-        reasoningSummary: 'No candidate signals flagged; assigned baseline priority without model call.',
+        reasoningSummary: 'No candidate signal output; retained at baseline priority for manual review.',
         evidenceIds: [],
       }));
-      return { rankedItems: autoRanked, latencyMs: 0, model: this.MODEL + ':early-exit' };
+      return { rankedItems: autoRanked, latencyMs: 0, model: `${getMuseModel()}:early-exit` };
     }
+
+    MetaClient.assertConfigured();
 
     const systemPrompt = `You are the prioritization engine for Project Triage (SAR decision-support).
 Your sole task is to comparatively rank visual candidate drone frames for human reviewer attention.
@@ -79,7 +82,7 @@ MANDATORY CONSTRAINTS:
     const userPrompt = `Rank the following ${withDetections.length} visual candidates:\n${JSON.stringify(withDetections, null, 2)}`;
 
     const payload = {
-      model: this.MODEL,
+      model: getMuseModel(),
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userPrompt },
@@ -88,61 +91,122 @@ MANDATORY CONSTRAINTS:
       temperature: 0.1,
     };
 
-    const response = await MetaClient.post(this.ENDPOINT, payload, this.MODEL, 45000);
-    const content = response.data?.choices?.[0]?.message?.content;
+    let lastError = 'Muse Spark returned no usable ranking.';
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      try {
+        const response = await MetaClient.post<{
+          choices?: Array<{ message?: { content?: unknown } }>;
+        }>(getMuseEndpoint(), payload, getMuseModel());
+        const content = response.data?.choices?.[0]?.message?.content;
+        const parsed = this.parseAndValidate(content, withDetections, validLabels);
+        const merged = this.appendNoSignalCandidates(parsed, noDetections);
+        return {
+          rankedItems: merged,
+          latencyMs: response.latencyMs,
+          model: getMuseModel(),
+        };
+      } catch (error) {
+        lastError = error instanceof Error ? error.message : String(error);
+        if (attempt === 0) {
+          console.warn(`[MuseSparkClient] Invalid ranking response; retrying once: ${lastError}`);
+        }
+      }
+    }
 
-    if (!content) {
+    const fallback = [...withDetections, ...noDetections].map((candidate, index) => ({
+      candidateId: candidate.candidateId,
+      priorityRank: index + 1,
+      confidenceLabel: 'possible-low' as ConfidenceLabel,
+      reasoningSummary: 'Could not rank this batch; flagged for manual review.',
+      evidenceIds: candidate.evidenceIds || candidate.promptsMatched,
+    }));
+    return {
+      rankedItems: fallback,
+      latencyMs: 0,
+      model: getMuseModel(),
+      usedFallback: true,
+      warning: lastError,
+    };
+  }
+
+  private static parseAndValidate(
+    content: unknown,
+    candidates: CandidateToRank[],
+    validLabels: ConfidenceLabel[]
+  ): RankedItem[] {
+    const textContent = typeof content === 'string'
+      ? content
+      : Array.isArray(content)
+        ? content.flatMap((part) => part && typeof part === 'object' && 'text' in part && typeof part.text === 'string' ? [part.text] : []).join('')
+        : '';
+    if (!textContent.trim()) {
       throw new Error('Muse Spark returned an empty response body.');
     }
 
-    let cleanJson = content.trim();
+    let cleanJson = textContent.trim();
     if (cleanJson.startsWith('```')) {
       cleanJson = cleanJson.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim();
     }
     const firstBrace = cleanJson.indexOf('{');
     const lastBrace = cleanJson.lastIndexOf('}');
-    if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
-      cleanJson = cleanJson.substring(firstBrace, lastBrace + 1);
+    if (firstBrace === -1 || lastBrace <= firstBrace) throw new Error('Muse Spark response was not a JSON object.');
+    const parsed = JSON.parse(cleanJson.substring(firstBrace, lastBrace + 1)) as { rankedItems?: unknown };
+    if (!Array.isArray(parsed.rankedItems) || parsed.rankedItems.length !== candidates.length) {
+      throw new Error('Muse Spark returned an incomplete rankedItems array.');
     }
 
-    let parsed: { rankedItems?: RankedItem[] };
-    try {
-      parsed = JSON.parse(cleanJson);
-    } catch (err) {
-      throw new Error(`Failed to parse Muse Spark JSON output: ${content}`);
-    }
+    const candidateIds = new Set(candidates.map((candidate) => candidate.candidateId));
+    const seen = new Set<string>();
+    return parsed.rankedItems.map((rawItem, index) => {
+      if (!rawItem || typeof rawItem !== 'object') throw new Error(`Invalid Muse Spark item at index ${index}.`);
+      const item = rawItem as Record<string, unknown>;
+      const candidateId = item.candidateId;
+      const confidenceLabel = item.confidenceLabel;
+      const reasoningSummary = item.reasoningSummary;
+      const evidenceIds = item.evidenceIds;
+      if (typeof candidateId !== 'string' || !candidateIds.has(candidateId) || seen.has(candidateId)) {
+        throw new Error(`Muse Spark returned an unknown or duplicate candidate at index ${index}.`);
+      }
+      if (!validLabels.includes(confidenceLabel as ConfidenceLabel)) {
+        throw new Error(`Muse Spark returned an invalid confidence label for ${candidateId}.`);
+      }
+      if (
+        typeof reasoningSummary !== 'string' ||
+        !reasoningSummary.trim() ||
+        /\b(confirmed|detected|detection|survivor\s+(found|located)|human\s+confirmed|guaranteed|victim\s+located|found|located)\b/i.test(reasoningSummary)
+      ) {
+        throw new Error(`Muse Spark returned disallowed reasoning for ${candidateId}.`);
+      }
+      const candidate = candidates.find((entry) => entry.candidateId === candidateId);
+      const knownEvidenceIds = new Set(candidate?.evidenceIds || candidate?.promptsMatched || []);
+      if (!Array.isArray(evidenceIds) || evidenceIds.length === 0 || evidenceIds.some((id) => typeof id !== 'string' || !knownEvidenceIds.has(id))) {
+        throw new Error(`Muse Spark returned invalid evidence IDs for ${candidateId}.`);
+      }
+      seen.add(candidateId);
+      return {
+        candidateId,
+        priorityRank: typeof item.priorityRank === 'number' && Number.isFinite(item.priorityRank)
+          ? item.priorityRank
+          : index + 1,
+        confidenceLabel: confidenceLabel as ConfidenceLabel,
+        reasoningSummary,
+        evidenceIds: evidenceIds as string[],
+      };
+    });
+  }
 
-    if (!parsed.rankedItems || !Array.isArray(parsed.rankedItems)) {
-      throw new Error(`Invalid JSON schema from Muse Spark (missing rankedItems array): ${content}`);
-    }
-
-    // Sanitize and validate vocabulary constraints
-    const sanitized = parsed.rankedItems.map((item, idx) => ({
-      candidateId: item.candidateId || `item_${idx + 1}`,
-      priorityRank: typeof item.priorityRank === 'number' ? item.priorityRank : idx + 1,
-      confidenceLabel: validLabels.includes(item.confidenceLabel)
-        ? item.confidenceLabel
-        : 'possible-low' as ConfidenceLabel,
-      reasoningSummary: item.reasoningSummary || 'Candidate flagged for manual review.',
-      evidenceIds: item.evidenceIds || [],
+  private static appendNoSignalCandidates(
+    ranked: RankedItem[],
+    noDetections: CandidateToRank[]
+  ): RankedItem[] {
+    const baseRank = ranked.length;
+    const autoBottom: RankedItem[] = noDetections.map((candidate, index) => ({
+      candidateId: candidate.candidateId,
+      priorityRank: baseRank + index + 1,
+      confidenceLabel: 'possible-low',
+      reasoningSummary: 'No candidate signal output; retained at baseline priority for manual review.',
+      evidenceIds: candidate.evidenceIds || candidate.promptsMatched,
     }));
-
-    // Append zero-detect candidates at the bottom, re-ranked after model results
-    const baseRank = sanitized.length;
-    const autoBottom: RankedItem[] = noDetections.map((c, idx) => ({
-      candidateId: c.candidateId,
-      priorityRank: baseRank + idx + 1,
-      confidenceLabel: 'possible-low' as ConfidenceLabel,
-      reasoningSummary: 'No candidate signals flagged; assigned baseline priority.',
-      evidenceIds: [],
-    }));
-
-    const merged = [...sanitized, ...autoBottom].sort((a, b) => a.priorityRank - b.priorityRank);
-
-    return {
-      rankedItems: merged,
-      latencyMs: response.latencyMs,
-      model: this.MODEL,
-    };
+    return [...ranked, ...autoBottom].sort((a, b) => a.priorityRank - b.priorityRank);
   }
 }

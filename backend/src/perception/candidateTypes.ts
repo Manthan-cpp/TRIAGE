@@ -33,6 +33,7 @@ export interface PerceptionBatchResult {
   totalUnitsProcessed: number;
   unitsWithDetections: number;
   dampenedUnitsCount: number;
+  failedUnitsCount: number;
   totalSignalsCount: number;
   totalPerceptionTimeMs: number;
   candidates: CandidateSignalRecord[];

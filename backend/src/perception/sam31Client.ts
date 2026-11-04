@@ -1,8 +1,7 @@
 import sharp from 'sharp';
 import { MetaClient } from '../lib/metaClient';
-
-// Max image dimension before encoding — reduces payload ~2-3x vs full-res
-const MAX_IMAGE_DIM = 800;
+import { getJpegQuality, getMaxImageDimension, getSamEndpoint, getSamModel } from '../lib/config';
+import { getActivePromptStrings } from './prompts';
 
 export interface BoundingBox {
   x1: number;
@@ -30,12 +29,11 @@ export interface SamFrameResult {
   wallTimeMs: number;
   /** Whether any detections were found — used to skip Muse Spark */
   hasDetections: boolean;
+  /** Prompt-level failures when at least one other prompt completed. */
+  errors?: string[];
 }
 
 export class Sam31Client {
-  private static readonly MODEL = 'sam-3.1';
-  private static readonly ENDPOINT = '/responses';
-
   /**
    * Resize an image buffer to MAX_IMAGE_DIM on its longest side (JPEG output).
    * Reduces base64 payload size by ~2-4x vs full-res PNG, cutting upload and
@@ -44,11 +42,11 @@ export class Sam31Client {
   public static async resizeImage(inputBuffer: Buffer): Promise<string> {
     const resized = await sharp(inputBuffer)
       .rotate() // auto-orient based on EXIF
-      .resize(MAX_IMAGE_DIM, MAX_IMAGE_DIM, {
+      .resize(getMaxImageDimension(), getMaxImageDimension(), {
         fit: 'inside',        // preserve aspect ratio
         withoutEnlargement: true,
       })
-      .jpeg({ quality: 85 }) // JPEG ~3-4x smaller than PNG for photos
+      .jpeg({ quality: getJpegQuality() })
       .toBuffer();
 
     return `data:image/jpeg;base64,${resized.toString('base64')}`;
@@ -62,7 +60,7 @@ export class Sam31Client {
     prompt: string
   ): Promise<SamDetectionResult> {
     const payload = {
-      model: this.MODEL,
+      model: getSamModel(),
       input: [
         {
           role: 'user',
@@ -79,7 +77,9 @@ export class Sam31Client {
       ],
     };
 
-    const response = await MetaClient.post(this.ENDPOINT, payload, this.MODEL, 45000);
+    const response = await MetaClient.post<{
+      output?: Array<{ content?: Array<{ text?: string }> }>;
+    }>(getSamEndpoint(), payload, getSamModel());
     const data = response.data;
 
     let outText = '';
@@ -137,7 +137,7 @@ export class Sam31Client {
    */
   public static async segmentFrame(
     imageInput: Buffer | string,
-    prompts: string[] = ['person', 'clothing']
+    prompts?: string[]
   ): Promise<SamFrameResult> {
     const wallStart = Date.now();
 
@@ -147,9 +147,19 @@ export class Sam31Client {
       : await Sam31Client.resizeImage(imageInput);
 
     // Step 2: Fire all prompt calls concurrently
-    const results = await Promise.all(
-      prompts.map((p) => Sam31Client.segmentConcept(imageDataUrl, p))
+    const activePrompts = prompts || getActivePromptStrings();
+    const settled = await Promise.allSettled(
+      activePrompts.map((p) => Sam31Client.segmentConcept(imageDataUrl, p))
     );
+    const results = settled.flatMap((result) => result.status === 'fulfilled' ? [result.value] : []);
+    const errors = settled.flatMap((result) => {
+      if (result.status === 'fulfilled') return [];
+      return [result.reason instanceof Error ? result.reason.message : String(result.reason)];
+    });
+
+    if (results.length === 0 && errors.length > 0) {
+      throw new Error(`All perception prompts failed: ${errors.join('; ')}`);
+    }
 
     const wallTimeMs = Date.now() - wallStart;
 
@@ -161,6 +171,7 @@ export class Sam31Client {
       perPrompt: results,
       wallTimeMs,
       hasDetections: allBoxes.length > 0,
+      errors: errors.length > 0 ? errors : undefined,
     };
   }
 }
