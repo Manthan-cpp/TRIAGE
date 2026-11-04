@@ -51,7 +51,9 @@ export class PerceptionRunner {
           }
         }
 
-        const hasCorroboration = matchedPrompts.includes('person') && matchedPrompts.includes('clothing');
+        const hasPersonCue = matchedPrompts.includes('person') || matchedPrompts.includes('hiker');
+        const hasGearCue = matchedPrompts.includes('clothing') || matchedPrompts.includes('backpack');
+        const hasCorroboration = (hasPersonCue && hasGearCue) || matchedPrompts.length >= 2;
         const dampening = FalsePositiveDampener.evaluate(
           frameResult.boxes,
           matchedPrompts,

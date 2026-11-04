@@ -49,7 +49,6 @@
     display: none;
   }
 
-  .ingest-grid,
   .clip-review-grid {
     grid-template-columns: 1fr !important;
     height: auto !important;
@@ -63,9 +62,7 @@
     min-width: 720px;
   }
 
-  .overview-kpis,
   .telemetry-kpis,
-  .benchmark-kpis,
   .telemetry-grid {
     grid-template-columns: 1fr 1fr;
   }

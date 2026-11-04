@@ -108,8 +108,8 @@ export class Sam31Client {
         y1,
         x2,
         y2,
-        width: match[5] ? parseInt(match[5], 10) : x2 - x1,
-        height: match[6] ? parseInt(match[6], 10) : y2 - y1,
+        width: x2 - x1,
+        height: y2 - y1,
       });
     }
 

@@ -28,8 +28,20 @@ export const VALIDATED_PROMPTS: PerceptionPrompt[] = [
   {
     id: 'clothing',
     text: 'clothing',
-    weight: 0.8,
+    weight: 0.85,
     description: 'High-contrast fabric, apparel, or protective gear in natural debris.',
+  },
+  {
+    id: 'hiker',
+    text: 'hiker',
+    weight: 0.95,
+    description: 'Stranded person, explorer, or outdoor subject in wilderness terrain.',
+  },
+  {
+    id: 'backpack',
+    text: 'backpack',
+    weight: 0.8,
+    description: 'Survival pack, gear, or personal items in outdoor setting.',
   },
 ];
 

@@ -9,7 +9,6 @@ import {
   fetchQueue,
   fetchCandidate,
   submitFilesJob,
-  submitDemoJob,
   saveCandidateDecision,
   fetchJobDecisions,
 } from './api';
@@ -17,9 +16,6 @@ import { Layout } from './components/Layout';
 import { IngestTab } from './components/IngestTab';
 import { QueueTab } from './components/QueueTab';
 import { ClipReviewTab } from './components/ClipReviewTab';
-import { AuditTab } from './components/AuditTab';
-import { OverviewTab } from './components/OverviewTab';
-import { BenchmarksTab } from './components/BenchmarksTab';
 import { TelemetryTab } from './components/TelemetryTab';
 import { SettingsTab } from './components/SettingsTab';
 
@@ -112,21 +108,6 @@ export function App() {
     setJobMetrics(null);
   };
 
-  // Handler: Launch demo dataset
-  const handleTriggerDemo = async (datasetKey: string, label: string) => {
-    const res = await submitDemoJob(datasetKey, label);
-    setCurrentJob({
-      jobId: res.jobId,
-      status: 'queued',
-      progress: { total: 0, processed: 0 },
-      currentStage: `Demo dataset "${datasetKey}" initializing...`,
-    });
-    setQueueItems([]);
-    setSelectedCandidate(null);
-    setReviewerDecisions({});
-    setJobMetrics(null);
-  };
-
   // Handler: Select a candidate for detailed inspection
   const handleSelectCandidate = async (candidateId: string) => {
     try {
@@ -169,11 +150,8 @@ export function App() {
       if (e.key === '1') setActiveTab('ingest');
       else if (e.key === '2') setActiveTab('queue');
       else if (e.key === '3' && selectedCandidate) setActiveTab('clip');
-      else if (e.key === '4') setActiveTab('audit');
-      else if (e.key === '5') setActiveTab('overview');
-      else if (e.key === '6') setActiveTab('benchmarks');
-      else if (e.key === '7') setActiveTab('telemetry');
-      else if (e.key === '8') setActiveTab('settings');
+      else if (e.key === '4') setActiveTab('telemetry');
+      else if (e.key === '5') setActiveTab('settings');
       else if (activeTab === 'clip' && (e.key === 'j' || e.key === 'ArrowRight')) handleNextCandidate();
       else if (activeTab === 'clip' && (e.key === 'k' || e.key === 'ArrowLeft')) handlePrevCandidate();
     };
@@ -196,7 +174,6 @@ export function App() {
         <IngestTab
           currentJob={currentJob}
           onUploadFiles={handleUploadFiles}
-          onTriggerDemo={handleTriggerDemo}
           onNavigateToQueue={() => setActiveTab('queue')}
         />
       )}
@@ -225,11 +202,6 @@ export function App() {
         />
       )}
 
-      {activeTab === 'audit' && <AuditTab activeJobId={currentJob?.jobId} />}
-      {activeTab === 'overview' && (
-        <OverviewTab items={queueItems} reviewerDecisions={reviewerDecisions} currentJob={currentJob} metrics={jobMetrics} />
-      )}
-      {activeTab === 'benchmarks' && <BenchmarksTab />}
       {activeTab === 'telemetry' && (
         <TelemetryTab healthInfo={healthInfo} metrics={jobMetrics} systemInfo={systemInfo} />
       )}

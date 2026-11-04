@@ -99,8 +99,10 @@ export const ClipReviewTab: React.FC<Props> = ({
                 {boxes.map((b, i) => {
                   const x = Math.max(0, Math.min(990, Math.min(b.x1, b.x2)));
                   const y = Math.max(0, Math.min(990, Math.min(b.y1, b.y2)));
-                  const w = Math.max(12, Math.min(1000 - x, b.width || Math.abs(b.x2 - b.x1)));
-                  const h = Math.max(12, Math.min(1000 - y, b.height || Math.abs(b.y2 - b.y1)));
+                  const rawW = Math.abs(b.x2 - b.x1);
+                  const rawH = Math.abs(b.y2 - b.y1);
+                  const w = Math.max(14, Math.min(1000 - x, rawW > 0 ? rawW : 20));
+                  const h = Math.max(14, Math.min(1000 - y, rawH > 0 ? rawH : 20));
                   const labelY = y > 24 ? y - 6 : y + 20;
                   return (
                     <g key={i}>

@@ -54,7 +54,7 @@ export function getVideoFps(): number {
 }
 
 export function getMaxImageDimension(): number {
-  return getPositiveNumber('MAX_IMAGE_DIMENSION', 800, 320, 4096);
+  return getPositiveNumber('MAX_IMAGE_DIMENSION', 1280, 320, 4096);
 }
 
 export function getJpegQuality(): number {

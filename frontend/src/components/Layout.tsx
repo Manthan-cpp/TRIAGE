@@ -4,11 +4,8 @@ import {
   UploadCloud,
   ListOrdered,
   Crosshair,
-  BarChart2,
   Sliders,
   Shield,
-  FileCheck,
-  Compass,
   Activity,
 } from 'lucide-react';
 
@@ -114,38 +111,9 @@ export const Layout: React.FC<Props> = ({
                 <span>Clip Review</span>
               </button>
             </div>
-
-            {/* Group 2: Operational Intel */}
-            <div className="nav-group">
-              <span className="nav-label">Operational Intel</span>
-
-              <button
-                className={`nav-btn ${activeTab === 'audit' ? 'active' : ''}`}
-                onClick={() => onSelectTab('audit')}
-              >
-                <FileCheck size={15} />
-                <span>Forensic Audit</span>
-              </button>
-
-              <button
-                className={`nav-btn ${activeTab === 'overview' ? 'active' : ''}`}
-                onClick={() => onSelectTab('overview')}
-              >
-                <BarChart2 size={15} />
-                <span>Overview</span>
-              </button>
-
-              <button
-                className={`nav-btn ${activeTab === 'benchmarks' ? 'active' : ''}`}
-                onClick={() => onSelectTab('benchmarks')}
-              >
-                <Compass size={15} />
-                <span>Benchmarks</span>
-              </button>
-            </div>
           </div>
 
-          {/* Group 3: System & Scope */}
+          {/* Group 2: System & Scope */}
           <div className="nav-group" style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: 8 }}>
             <span className="nav-label">System & Scope</span>
 

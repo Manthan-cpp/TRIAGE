@@ -6,9 +6,6 @@ export type TabId =
   | 'ingest'
   | 'queue'
   | 'clip'
-  | 'audit'
-  | 'overview'
-  | 'benchmarks'
   | 'telemetry'
   | 'settings';
 

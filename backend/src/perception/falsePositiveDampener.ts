@@ -7,16 +7,16 @@ export interface DampeningEvaluation {
 }
 
 export class FalsePositiveDampener {
-  // Box area threshold below which solitary detections are dampened (0.3% of 800x800 = ~1920 px^2)
-  private static readonly MIN_AREA_FRACTION = 0.003;
+  // Box area threshold below which solitary detections are dampened (0.01% of frame for distant drone search)
+  private static readonly MIN_AREA_FRACTION = 0.0001;
 
   /**
    * Evaluate a candidate detection for false-positive dampening.
    *
-   * Rules derived from Phase 0 feasibility testing on negative controls:
+   * Rules derived from SAR aerial search calibration:
    * 1. If 0 boxes detected -> dampened (empty frame).
-   * 2. If corroborating prompts match (person + clothing) -> NEVER dampened (strong candidate).
-   * 3. If solitary prompt match and all boxes are tiny slivers (< 0.3% frame area) -> dampened.
+   * 2. If corroborating prompts match (person/hiker + clothing/backpack) -> NEVER dampened (strong candidate).
+   * 3. If solitary prompt match and area is above minimal threshold -> retained as clean solitary candidate.
    */
   public static evaluate(
     boxes: BoundingBox[],
@@ -32,11 +32,13 @@ export class FalsePositiveDampener {
       };
     }
 
-    const hasCorroboration = matchedPrompts.includes('person') && matchedPrompts.includes('clothing');
+    const hasPersonCue = matchedPrompts.includes('person') || matchedPrompts.includes('hiker');
+    const hasGearCue = matchedPrompts.includes('clothing') || matchedPrompts.includes('backpack');
+    const hasCorroboration = (hasPersonCue && hasGearCue) || matchedPrompts.length >= 2;
     if (hasCorroboration) {
       return {
         isDampened: false,
-        reason: 'Corroborated by both person and clothing cues.',
+        reason: `Corroborated by multiple visual cues (${matchedPrompts.join(' + ')}).`,
         dampeningScore: 0.0,
       };
     }
