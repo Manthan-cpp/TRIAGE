@@ -197,30 +197,30 @@ code that "worked" in the development environment was not actually deployable wi
 significant manual rework. Every item here is something that should be true continuously, not
 discovered and fixed only at the end:
 
-- [ ] **No hardcoded `localhost` URLs anywhere** — frontend-to-backend communication uses an
+- [x] **No hardcoded `localhost` URLs anywhere** — frontend-to-backend communication uses an
       environment-configured base URL, so the exact same build works locally and once deployed.
-- [ ] **A real start script exists** (`npm start` or equivalent) that runs the production build,
+- [x] **A real start script exists** (`npm start` or equivalent) that runs the production build,
       not the dev server — confirm this is what the hosting platform will actually invoke.
-- [ ] **The backend binds to the port provided by the hosting platform's environment variable**
+- [x] **The backend binds to the port provided by the hosting platform's environment variable**
       (e.g. `process.env.PORT`), not a hardcoded port number — this is one of the most common,
       entirely avoidable reasons a Node service fails to deploy on Render/Railway/similar
       platforms.
-- [ ] **A health-check endpoint exists** (e.g. `GET /health` returning a simple 200 OK) — hosting
+- [x] **A health-check endpoint exists** (e.g. `GET /health` returning a simple 200 OK) — hosting
       platforms use this to confirm the service is actually running, and it is also useful for
       the Phase 10.5 remote smoke test.
-- [ ] **No secrets committed to the repository, ever** — verify this explicitly before each
+- [x] **No secrets committed to the repository, ever** — verify this explicitly before each
       deploy, not just assumed from `.gitignore` being present.
-- [ ] **The lightweight local data store's file path is configurable**, not hardcoded to a path
+- [x] **The lightweight local data store's file path is configurable**, not hardcoded to a path
       that only exists on the development machine — on most free-tier hosts, local filesystem
       writes may not persist across restarts/redeploys, so document this limitation explicitly
       in `docs/system_notes.md` rather than being surprised by it during Phase 10.
-- [ ] **Dependencies are pinned to real, installed versions** (a real `package-lock.json`
+- [x] **Dependencies are pinned to real, installed versions** (a real `package-lock.json`
       committed, not just a loose `package.json` range) — this is what makes "it works on my
       machine" actually reproducible on a fresh deploy.
-- [ ] **The app does not crash on missing/invalid optional configuration** — it should fail
+- [x] **The app does not crash on missing/invalid optional configuration** — it should fail
       clearly and loudly for genuinely required config (like a missing API key) but not crash on
       anything that has a sensible default.
-- [ ] **A production build has actually been run and smoke-tested locally** (Phase 10.2) before
+- [x] **A production build has actually been run and smoke-tested locally** (Phase 10.2) before
       the first real deploy attempt — do not let the hosting platform's deploy step be the first
       time the production build is actually exercised.
 

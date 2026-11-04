@@ -11,3 +11,19 @@ services:
         value: production
       - key: META_MODEL_API_KEY
         sync: false
+      - key: META_MODEL_API_BASE_URL
+        value: https://api.meta.ai/v1
+      - key: DATA_DIR
+        value: ./data
+      - key: DATABASE_PATH
+        value: ./data/triage.db
+      - key: VIDEO_FPS
+        value: "1"
+      - key: MAX_IMAGE_DIMENSION
+        value: "800"
+      - key: JPEG_QUALITY
+        value: "85"
+      - key: PERCEPTION_CONCURRENCY
+        value: "3"
+      - key: RANKING_BATCH_SIZE
+        value: "10"
