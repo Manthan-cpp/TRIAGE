@@ -150,8 +150,6 @@ export function App() {
       if (e.key === '1') setActiveTab('ingest');
       else if (e.key === '2') setActiveTab('queue');
       else if (e.key === '3' && selectedCandidate) setActiveTab('clip');
-      else if (e.key === '4') setActiveTab('telemetry');
-      else if (e.key === '5') setActiveTab('settings');
       else if (activeTab === 'clip' && (e.key === 'j' || e.key === 'ArrowRight')) handleNextCandidate();
       else if (activeTab === 'clip' && (e.key === 'k' || e.key === 'ArrowLeft')) handlePrevCandidate();
     };

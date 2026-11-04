@@ -4,9 +4,7 @@ import {
   UploadCloud,
   ListOrdered,
   Crosshair,
-  Sliders,
   Shield,
-  Activity,
 } from 'lucide-react';
 
 interface Props {
@@ -24,8 +22,6 @@ export const Layout: React.FC<Props> = ({
   onSelectTab,
   queueCount,
   hasSelectedCandidate,
-  activeJobId,
-  isProcessing,
   children,
 }) => {
   const [timeStr, setTimeStr] = useState<string>('');
@@ -51,25 +47,7 @@ export const Layout: React.FC<Props> = ({
         </div>
 
         <div className="telemetry-strip">
-          {activeJobId && (
-            <div className="telemetry-item">
-              <span style={{ color: 'var(--text-muted)' }}>BATCH:</span>
-              <span style={{ color: 'var(--text-primary)' }}>{activeJobId}</span>
-            </div>
-          )}
           <div className="telemetry-item">
-            <span
-              className={`status-dot ${isProcessing ? 'status-dot-active' : ''}`}
-              style={{ backgroundColor: isProcessing ? '#f59e0b' : '#10b981' }}
-            />
-            <span style={{ color: isProcessing ? '#fbbf24' : '#34d399' }}>
-              {isProcessing ? 'PROCESSING' : 'SYSTEM READY'}
-            </span>
-          </div>
-          <div
-            className="telemetry-item"
-            style={{ borderLeft: '1px solid var(--border-subtle)', paddingLeft: 12 }}
-          >
             <span>{timeStr}</span>
           </div>
         </div>
@@ -111,27 +89,6 @@ export const Layout: React.FC<Props> = ({
                 <span>Clip Review</span>
               </button>
             </div>
-          </div>
-
-          {/* Group 2: System & Scope */}
-          <div className="nav-group" style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: 8 }}>
-            <span className="nav-label">System & Scope</span>
-
-            <button
-              className={`nav-btn ${activeTab === 'telemetry' ? 'active' : ''}`}
-              onClick={() => onSelectTab('telemetry')}
-            >
-              <Activity size={15} />
-              <span>API Telemetry</span>
-            </button>
-
-            <button
-              className={`nav-btn ${activeTab === 'settings' ? 'active' : ''}`}
-              onClick={() => onSelectTab('settings')}
-            >
-              <Sliders size={15} />
-              <span>Settings & Ethics</span>
-            </button>
           </div>
         </nav>
 

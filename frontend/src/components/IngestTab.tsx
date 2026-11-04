@@ -15,7 +15,6 @@ export const IngestTab: React.FC<Props> = ({
   onNavigateToQueue,
 }) => {
   const [dragOver, setDragOver] = useState(false);
-  const [sourceLabel, setSourceLabel] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -36,13 +35,13 @@ export const IngestTab: React.FC<Props> = ({
     e.preventDefault();
     setDragOver(false);
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      void runSubmission(() => onUploadFiles(Array.from(e.dataTransfer.files), sourceLabel));
+      void runSubmission(() => onUploadFiles(Array.from(e.dataTransfer.files), ''));
     }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      void runSubmission(() => onUploadFiles(Array.from(e.target.files!), sourceLabel));
+      void runSubmission(() => onUploadFiles(Array.from(e.target.files!), ''));
       e.currentTarget.value = '';
     }
   };
@@ -111,29 +110,6 @@ export const IngestTab: React.FC<Props> = ({
         <button className="btn btn-primary" style={{ marginTop: 6 }} disabled={isSubmitting}>
           Select Files from Computer
         </button>
-      </div>
-
-      {/* Batch Name Config */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, backgroundColor: 'var(--bg-secondary)', padding: '10px 16px', borderRadius: 4, border: '1px solid var(--border-subtle)' }}>
-        <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase' }}>
-          Batch Source Label:
-        </span>
-        <input
-          type="text"
-          value={sourceLabel}
-          onChange={(e) => setSourceLabel(e.target.value)}
-          placeholder=""
-          style={{
-            flex: 1,
-            background: 'var(--bg-tertiary)',
-            border: '1px solid var(--border-subtle)',
-            borderRadius: 3,
-            color: 'var(--text-primary)',
-            padding: '6px 10px',
-            fontSize: 12,
-            outline: 'none',
-          }}
-        />
       </div>
 
       {errorMessage && (
