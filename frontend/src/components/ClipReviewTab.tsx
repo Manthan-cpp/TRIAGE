@@ -16,6 +16,64 @@ interface Props {
   hasPrev: boolean;
 }
 
+const renderSituationalAssessment = (text?: string) => {
+  if (!text) {
+    return <p style={{ fontSize: 13, color: 'var(--text-primary)', lineHeight: 1.45 }}>Comparative triage signal evaluation.</p>;
+  }
+
+  const sections = [
+    { label: 'The Person & Appearance', regex: /\*\*The Person & Appearance\*\*:\s*([^\n*]+(?:\n(?!\*\*)[^\n*]+)*)/i, color: '#3b82f6' },
+    { label: 'Posture & Physical State', regex: /\*\*Posture & Physical State\*\*:\s*([^\n*]+(?:\n(?!\*\*)[^\n*]+)*)/i, color: '#f59e0b' },
+    { label: 'Surroundings & Terrain', regex: /\*\*Surroundings & Terrain\*\*:\s*([^\n*]+(?:\n(?!\*\*)[^\n*]+)*)/i, color: '#10b981' },
+    { label: 'Urgency/Risk Context', regex: /\*\*Urgency\/Risk Context\*\*:\s*([^\n*]+(?:\n(?!\*\*)[^\n*]+)*)/i, color: '#ef4444' },
+  ];
+
+  const matched = sections.map((s) => {
+    const m = text.match(s.regex);
+    return m ? { label: s.label, content: m[1].trim(), color: s.color } : null;
+  }).filter(Boolean);
+
+  if (matched.length > 0) {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        {matched.map((item, idx) => (
+          <div
+            key={idx}
+            style={{
+              background: 'rgba(255, 255, 255, 0.03)',
+              borderLeft: `3px solid ${item!.color}`,
+              borderRadius: '0 4px 4px 0',
+              padding: '8px 12px',
+            }}
+          >
+            <div
+              style={{
+                fontSize: 11,
+                fontWeight: 700,
+                color: item!.color,
+                textTransform: 'uppercase',
+                letterSpacing: '0.04em',
+                marginBottom: 3,
+              }}
+            >
+              {item!.label}
+            </div>
+            <div style={{ fontSize: 13, color: 'var(--text-primary)', lineHeight: 1.45 }}>
+              {item!.content}
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  return (
+    <p style={{ fontSize: 13, color: 'var(--text-primary)', lineHeight: 1.45, whiteSpace: 'pre-wrap' }}>
+      {text}
+    </p>
+  );
+};
+
 export const ClipReviewTab: React.FC<Props> = ({
   candidate, queueItem, onDecision, decision, onNext, onPrev, hasNext, hasPrev,
 }) => {
@@ -158,12 +216,10 @@ export const ClipReviewTab: React.FC<Props> = ({
           </span>
         </div>
 
-        {/* Muse Spark Reasoning Card */}
-        <div className="stat-card" style={{ gap: 8 }}>
-          <span className="stat-label">Model Reasoning Justification (Muse Spark 1.3)</span>
-          <p style={{ fontSize: 13, color: 'var(--text-primary)', lineHeight: 1.45 }}>
-            {candidate.fullReasoningText || queueItem?.reasoningSummary || 'Comparative triage signal evaluation.'}
-          </p>
+        {/* Muse Spark Situational Assessment Card */}
+        <div className="stat-card" style={{ gap: 10 }}>
+          <span className="stat-label">Situational Assessment & Scene Reasoning (Muse Spark 1.3)</span>
+          {renderSituationalAssessment(candidate.fullReasoningText || queueItem?.fullReasoningText || queueItem?.reasoningSummary)}
         </div>
 
         {/* Dampener & Evidence Card */}

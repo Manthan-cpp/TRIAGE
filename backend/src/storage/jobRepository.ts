@@ -113,10 +113,10 @@ export class JobRepository {
     const stmt = db.prepare(`
       INSERT INTO queue_items (
         job_id, candidate_id, unit_id, priority_rank, confidence_label,
-        reasoning_summary, evidence_ids_json, source_file, source_type,
+        reasoning_summary, full_reasoning_text, evidence_ids_json, source_file, source_type,
         timestamp_sec, file_path, thumbnail_url, matched_prompts,
         boxes_count, dampened
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
 
     const insertMany = db.transaction((records: PrioritizedQueueItem[]) => {
@@ -129,6 +129,7 @@ export class JobRepository {
           i.priorityRank,
           i.confidenceLabel,
           i.reasoningSummary,
+          i.fullReasoningText || null,
           JSON.stringify(i.evidenceIds),
           i.sourceFile,
           i.sourceType,
@@ -159,6 +160,7 @@ export class JobRepository {
       priorityRank: r.priority_rank,
       confidenceLabel: r.confidence_label as ConfidenceLabel,
       reasoningSummary: r.reasoning_summary,
+      fullReasoningText: r.full_reasoning_text || undefined,
       evidenceIds: JSON.parse(r.evidence_ids_json),
       sourceFile: r.source_file,
       sourceType: r.source_type,

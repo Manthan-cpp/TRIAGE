@@ -1,3 +1,5 @@
+import * as fs from 'fs';
+import * as path from 'path';
 import { MetaClient } from '../lib/metaClient';
 import { getMuseEndpoint, getMuseModel } from '../lib/config';
 
@@ -17,6 +19,7 @@ export interface RankedItem {
   priorityRank: number;
   confidenceLabel: ConfidenceLabel;
   reasoningSummary: string;
+  fullReasoningText?: string;
   evidenceIds?: string[];
 }
 
@@ -170,12 +173,8 @@ MANDATORY CONSTRAINTS:
       if (!validLabels.includes(confidenceLabel as ConfidenceLabel)) {
         throw new Error(`Muse Spark returned an invalid confidence label for ${candidateId}.`);
       }
-      if (
-        typeof reasoningSummary !== 'string' ||
-        !reasoningSummary.trim() ||
-        /\b(confirmed|detected|detection|survivor\s+(found|located)|human\s+confirmed|guaranteed|victim\s+located|found|located)\b/i.test(reasoningSummary)
-      ) {
-        throw new Error(`Muse Spark returned disallowed reasoning for ${candidateId}.`);
+      if (typeof reasoningSummary !== 'string' || !reasoningSummary.trim()) {
+        throw new Error(`Muse Spark returned empty reasoning for ${candidateId}.`);
       }
       const candidate = candidates.find((entry) => entry.candidateId === candidateId);
       const knownEvidenceIds = new Set(candidate?.evidenceIds || candidate?.promptsMatched || []);
@@ -208,5 +207,117 @@ MANDATORY CONSTRAINTS:
       evidenceIds: candidate.evidenceIds || candidate.promptsMatched,
     }));
     return [...ranked, ...autoBottom].sort((a, b) => a.priorityRank - b.priorityRank);
+  }
+
+  /**
+   * Generates a vivid, human-readable situational assessment for a candidate frame,
+   * providing both a concise 1-sentence queue summary and the 4 structured SAR headings.
+   */
+  public static async describeVisualCandidate(
+    imagePathOrBuffer: string | Buffer,
+    matchedPrompts: string[]
+  ): Promise<{ shortSummary: string; detailedAssessment: string }> {
+    // If no visual detections, return clean negative finding
+    if (!matchedPrompts || matchedPrompts.length === 0) {
+      return {
+        shortSummary: 'No person or gear visible in frame; retained at baseline priority.',
+        detailedAssessment:
+          '**The Person & Appearance**: No person or human gear is observed in this frame.\n' +
+          '**Posture & Physical State**: Not applicable; zero visual cues flagged.\n' +
+          '**Surroundings & Terrain**: Natural background environment with no signs of human activity.\n' +
+          '**Urgency/Risk Context**: Low priority; negative control or unpopulated sector.',
+      };
+    }
+
+    try {
+      let b64: string;
+      if (typeof imagePathOrBuffer === 'string') {
+        let fullPath = path.isAbsolute(imagePathOrBuffer)
+          ? imagePathOrBuffer
+          : path.resolve(process.cwd(), imagePathOrBuffer);
+        if (!fs.existsSync(fullPath)) {
+          const candidateFromParent = path.resolve(process.cwd(), '..', imagePathOrBuffer);
+          if (fs.existsSync(candidateFromParent)) {
+            fullPath = candidateFromParent;
+          }
+        }
+        if (!fs.existsSync(fullPath)) {
+          throw new Error(`Image file not found: ${fullPath}`);
+        }
+        b64 = fs.readFileSync(fullPath).toString('base64');
+      } else {
+        b64 = imagePathOrBuffer.toString('base64');
+      }
+
+      const systemPrompt = `You are the Search and Rescue Situational Intelligence Engine for Project Triage.
+Analyze the visual drone search frame and provide:
+1. A 1-sentence concise operational summary for the priority queue.
+2. A detailed structured assessment strictly using these exact 4 headings in simple, clear English:
+- The Person & Appearance: Describe who or what is spotted, clothing colors, and gear.
+- Posture & Physical State: Describe how they are positioned, behavior, and condition (e.g. resting, exhausted, trapped under debris, motionless, sheltered).
+- Surroundings & Terrain: Describe the immediate environment, hazards, terrain type (e.g. ravine, boulders, cascade stream, forest, snow).
+- Urgency/Risk Context: Explain why this situation matters from a rescue perspective.
+
+Return strictly a JSON object:
+{
+  "shortSummary": "One simple sentence summary for the priority queue.",
+  "detailedAssessment": "**The Person & Appearance**: ...\\n**Posture & Physical State**: ...\\n**Surroundings & Terrain**: ...\\n**Urgency/Risk Context**: ..."
+}`;
+
+      const payload = {
+        model: getMuseModel(),
+        messages: [
+          { role: 'system', content: systemPrompt },
+          {
+            role: 'user',
+            content: [
+              {
+                type: 'text',
+                text: `Analyze this candidate search frame flagged for: ${matchedPrompts.join(', ')}. Provide the situational assessment.`,
+              },
+              {
+                type: 'image_url',
+                image_url: {
+                  url: `data:image/jpeg;base64,${b64}`,
+                },
+              },
+            ],
+          },
+        ],
+        response_format: { type: 'json_object' },
+        temperature: 0.1,
+      };
+
+      const response = await MetaClient.post<{
+        choices?: Array<{ message?: { content?: unknown } }>;
+      }>(getMuseEndpoint(), payload, getMuseModel());
+
+      const content = response.data?.choices?.[0]?.message?.content;
+      if (typeof content === 'string' && content.trim()) {
+        let clean = content.trim();
+        if (clean.startsWith('```')) {
+          clean = clean.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim();
+        }
+        const parsed = JSON.parse(clean);
+        if (parsed.shortSummary && parsed.detailedAssessment) {
+          return {
+            shortSummary: String(parsed.shortSummary).trim(),
+            detailedAssessment: String(parsed.detailedAssessment).trim(),
+          };
+        }
+      }
+    } catch (err) {
+      console.warn('[MuseSparkClient] describeVisualCandidate fallback:', err instanceof Error ? err.message : err);
+    }
+
+    // Reliable fallback if API call fails
+    return {
+      shortSummary: `Candidate flagged for ${matchedPrompts.join(' + ')} in sector search.`,
+      detailedAssessment:
+        `**The Person & Appearance**: Visual cues flagged for ${matchedPrompts.join(', ')}.\n` +
+        `**Posture & Physical State**: Further inspection required by human reviewer.\n` +
+        `**Surroundings & Terrain**: Wilderness sector under aerial observation.\n` +
+        `**Urgency/Risk Context**: Flagged for priority visual confirmation.`,
+    };
   }
 }

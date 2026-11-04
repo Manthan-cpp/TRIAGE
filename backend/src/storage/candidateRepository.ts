@@ -65,7 +65,7 @@ export class CandidateRepository {
     if (!row) return null;
 
     const queueRow = db.prepare(
-      'SELECT reasoning_summary, evidence_ids_json, priority_rank, confidence_label FROM queue_items WHERE candidate_id = ?'
+      'SELECT reasoning_summary, full_reasoning_text, evidence_ids_json, priority_rank, confidence_label FROM queue_items WHERE candidate_id = ?'
     ).get(candidateId) as any;
 
     return {
@@ -84,7 +84,7 @@ export class CandidateRepository {
       dampeningScore: row.dampening_score,
       boxes: JSON.parse(row.boxes_json),
       rawResults: JSON.parse(row.raw_results_json),
-      fullReasoningText: queueRow?.reasoning_summary || undefined,
+      fullReasoningText: queueRow?.full_reasoning_text || queueRow?.reasoning_summary || undefined,
       evidenceIds: queueRow?.evidence_ids_json ? JSON.parse(queueRow.evidence_ids_json) : undefined,
       priorityRank: queueRow?.priority_rank || undefined,
       confidenceLabel: queueRow?.confidence_label || undefined,

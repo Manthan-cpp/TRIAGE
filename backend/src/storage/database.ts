@@ -63,6 +63,7 @@ export class AppDatabase {
         priority_rank INTEGER NOT NULL,
         confidence_label TEXT NOT NULL,
         reasoning_summary TEXT NOT NULL,
+        full_reasoning_text TEXT,
         evidence_ids_json TEXT NOT NULL,
         source_file TEXT NOT NULL,
         source_type TEXT NOT NULL,
@@ -100,6 +101,12 @@ export class AppDatabase {
       );
       CREATE INDEX IF NOT EXISTS idx_reviewer_job ON reviewer_decisions(job_id);
     `);
+
+    try {
+      db.exec('ALTER TABLE queue_items ADD COLUMN full_reasoning_text TEXT;');
+    } catch (_) {
+      // Column already exists
+    }
   }
 
   public static close(): void {

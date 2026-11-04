@@ -175,6 +175,7 @@ router.get('/jobs/:jobId/queue', (req: Request, res: Response): void => {
       priorityRank: item.priorityRank,
       confidenceLabel: item.confidenceLabel,
       reasoningSummary: item.reasoningSummary,
+      fullReasoningText: item.fullReasoningText,
       thumbnailUrl: item.thumbnailUrl,
       sourceFile: item.sourceFile,
       sourceType: item.sourceType,

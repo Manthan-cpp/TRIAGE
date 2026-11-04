@@ -40,6 +40,7 @@ export interface QueueItem {
   priorityRank: number;
   confidenceLabel: ConfidenceLabel;
   reasoningSummary: string;
+  fullReasoningText?: string;
   thumbnailUrl: string;
   sourceFile: string;
   sourceType: 'image' | 'video';

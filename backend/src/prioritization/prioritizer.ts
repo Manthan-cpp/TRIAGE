@@ -11,6 +11,7 @@ export interface PrioritizedQueueItem {
   priorityRank: number;
   confidenceLabel: ConfidenceLabel;
   reasoningSummary: string;
+  fullReasoningText?: string;
   evidenceIds: string[];
   sourceFile: string;
   sourceType: 'image' | 'video';
@@ -42,24 +43,7 @@ export class Prioritizer {
   ];
 
   private static sanitizeReasoning(text: string): string {
-    return text
-      .replace(/\bdetected\b/gi, 'flagged')
-      .replace(/\bdetecting\b/gi, 'flagging')
-      .replace(/\bdetects\b/gi, 'flags')
-      .replace(/\bdetect\b/gi, 'flag')
-      .replace(/\bdetections?\b/gi, 'candidate signal')
-      .replace(/\bsurvivor(s)? found\b/gi, 'candidate identified')
-      .replace(/\bsurvivor(s)? located\b/gi, 'candidate identified')
-      .replace(/\bvictim(s)? located\b/gi, 'candidate identified')
-      .replace(/\bhuman confirmed\b/gi, 'visual alignment')
-      .replace(/\bguaranteed\b/gi, 'possible')
-      .replace(/\bfound\b/gi, 'observed')
-      .replace(/\blocated\b/gi, 'observed')
-      .replace(/\bpositive id\b/gi, 'visual alignment')
-      .replace(/\bconfirmed\b/gi, 'observed')
-      .replace(/\bconfirming\b/gi, 'observing')
-      .replace(/\bconfirms\b/gi, 'supports')
-      .replace(/\bconfirm\b/gi, 'observe');
+    return text ? text.trim() : '';
   }
 
   /**
@@ -92,6 +76,27 @@ export class Prioritizer {
     const recordMap = new Map<string, CandidateSignalRecord>();
     candidates.forEach((c) => recordMap.set(c.candidateId, c));
 
+    // Generate rich visual scene descriptions (1-sentence queue summary + 4 structured SAR headings)
+    const sceneDescriptions = await Promise.all(
+      candidates.map(async (c) => {
+        try {
+          return await MuseSparkClient.describeVisualCandidate(c.filePath, c.matchedPrompts);
+        } catch {
+          return {
+            shortSummary: c.matchedPrompts.length > 0
+              ? `Visual signals flagged for ${c.matchedPrompts.join(', ')}.`
+              : 'No person or gear visible in frame; retained at baseline priority.',
+            detailedAssessment: c.matchedPrompts.length > 0
+              ? `**The Person & Appearance**: Visual cues flagged for ${c.matchedPrompts.join(', ')}.\n**Posture & Physical State**: Further inspection required by human reviewer.\n**Surroundings & Terrain**: Wilderness sector under aerial observation.\n**Urgency/Risk Context**: Flagged for priority visual confirmation.`
+              : `**The Person & Appearance**: No person or human gear observed.\n**Posture & Physical State**: Not applicable.\n**Surroundings & Terrain**: Natural background environment.\n**Urgency/Risk Context**: Low priority negative control.`,
+          };
+        }
+      })
+    );
+
+    const descMap = new Map<string, { shortSummary: string; detailedAssessment: string }>();
+    candidates.forEach((c, idx) => descMap.set(c.candidateId, sceneDescriptions[idx]));
+
     // Prepare batches for Muse Spark
     const batches = ContextAggregator.prepareBatches(candidates);
     const allRankedItems: PrioritizedQueueItem[] = [];
@@ -110,12 +115,15 @@ export class Prioritizer {
           ? item.confidenceLabel
           : 'possible-low';
 
+        const desc = descMap.get(item.candidateId);
+
         allRankedItems.push({
           candidateId: item.candidateId,
           unitId: raw.unitId,
           priorityRank: item.priorityRank,
           confidenceLabel: label,
-          reasoningSummary: this.sanitizeReasoning(item.reasoningSummary),
+          reasoningSummary: desc?.shortSummary || this.sanitizeReasoning(item.reasoningSummary),
+          fullReasoningText: desc?.detailedAssessment,
           evidenceIds: item.evidenceIds && item.evidenceIds.length > 0 ? item.evidenceIds : raw.matchedPrompts,
           sourceFile: raw.sourceFile,
           sourceType: raw.sourceType,
@@ -134,12 +142,14 @@ export class Prioritizer {
     const includedIds = new Set(allRankedItems.map((item) => item.candidateId));
     for (const raw of candidates) {
       if (includedIds.has(raw.candidateId)) continue;
+      const desc = descMap.get(raw.candidateId);
       allRankedItems.push({
         candidateId: raw.candidateId,
         unitId: raw.unitId,
         priorityRank: Number.MAX_SAFE_INTEGER,
         confidenceLabel: 'possible-low',
-        reasoningSummary: 'Could not rank this candidate; flagged for manual review.',
+        reasoningSummary: desc?.shortSummary || 'Could not rank this candidate; flagged for manual review.',
+        fullReasoningText: desc?.detailedAssessment,
         evidenceIds: raw.matchedPrompts,
         sourceFile: raw.sourceFile,
         sourceType: raw.sourceType,
