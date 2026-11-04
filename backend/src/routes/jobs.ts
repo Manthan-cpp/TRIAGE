@@ -185,6 +185,7 @@ router.get('/jobs/:jobId/queue', (req: Request, res: Response): void => {
       boxesCount: item.boxesCount,
       dampened: item.dampened,
     })),
+    clipReports: JobRepository.getClipReports(jobId),
   });
 });
 

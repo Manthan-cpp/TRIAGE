@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import type { TabId, JobRecord, QueueItem, CandidateDetail, ReviewerDecision, HealthInfo, JobMetrics, SystemInfo } from './types';
+import type { TabId, JobRecord, QueueItem, ClipDetectionReport, CandidateDetail, ReviewerDecision, HealthInfo, JobMetrics, SystemInfo } from './types';
 import {
   fetchHealth,
   fetchJobs,
@@ -23,6 +23,7 @@ export function App() {
   const [activeTab, setActiveTab] = useState<TabId>('ingest');
   const [currentJob, setCurrentJob] = useState<JobRecord | null>(null);
   const [queueItems, setQueueItems] = useState<QueueItem[]>([]);
+  const [clipReports, setClipReports] = useState<ClipDetectionReport[]>([]);
   const [selectedCandidate, setSelectedCandidate] = useState<CandidateDetail | null>(null);
   const [reviewerDecisions, setReviewerDecisions] = useState<Record<string, ReviewerDecision>>({});
   const [healthInfo, setHealthInfo] = useState<HealthInfo | null>(null);
@@ -52,7 +53,10 @@ export function App() {
           fetchJobMetrics(latest.id).catch(() => null),
           fetchJobDecisions(latest.id).catch(() => ({})),
         ]);
-        if (q) setQueueItems(q.rankedItems);
+        if (q) {
+          setQueueItems(q.rankedItems);
+          if (q.clipReports) setClipReports(q.clipReports);
+        }
         if (metrics) setJobMetrics(metrics);
         setReviewerDecisions(decs);
       }
@@ -82,6 +86,7 @@ export function App() {
         ]);
         setCurrentJob(updated);
         setQueueItems(q.rankedItems);
+        if (q.clipReports) setClipReports(q.clipReports);
         setJobMetrics(metrics);
         setReviewerDecisions(decs);
         if (updated.status === 'complete' || updated.status === 'failed') fetchHealth().then(setHealthInfo).catch(() => {});
@@ -103,6 +108,7 @@ export function App() {
       currentStage: 'Job submitted to background queue...',
     });
     setQueueItems([]);
+    setClipReports([]);
     setSelectedCandidate(null);
     setReviewerDecisions({});
     setJobMetrics(null);
@@ -179,6 +185,7 @@ export function App() {
       {activeTab === 'queue' && (
         <QueueTab
           items={queueItems}
+          clipReports={clipReports}
           selectedCandidateId={selectedCandidate?.candidateId || null}
           onSelectCandidate={handleSelectCandidate}
           reviewerDecisions={reviewerDecisions}

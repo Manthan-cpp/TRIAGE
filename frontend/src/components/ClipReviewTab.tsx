@@ -2,8 +2,15 @@ import React, { useState } from 'react';
 import type { CandidateDetail, ConfidenceLabel, ReviewerDecision, QueueItem } from '../types';
 import { ConfidencePill } from './ConfidencePill';
 import { resolveMediaUrl } from '../api';
-import { ArrowLeft, ArrowRight, Crosshair } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Crosshair, Clock } from 'lucide-react';
 import { ReviewDecisionPanel } from './ReviewDecisionPanel';
+
+function formatTimecode(sec?: number): string {
+  if (sec === undefined || sec === null || isNaN(sec)) return 'Photo';
+  const m = Math.floor(sec / 60);
+  const s = sec % 60;
+  return `${String(m).padStart(2, '0')}:${s.toFixed(1).padStart(4, '0')}s`;
+}
 
 interface Props {
   candidate: CandidateDetail | null;
@@ -96,13 +103,32 @@ export const ClipReviewTab: React.FC<Props> = ({
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         {/* Viewer Toolbar */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <span style={{ fontWeight: 700, fontSize: 13, color: 'var(--text-primary)' }}>
               {candidate.sourceMetadata.clipId}
             </span>
-            <span style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
-              {candidate.sourceMetadata.timestampSec !== undefined ? `T+${candidate.sourceMetadata.timestampSec}s` : 'Single Frame'}
-            </span>
+            {candidate.sourceMetadata.timestampSec !== undefined ? (
+              <span style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 5,
+                backgroundColor: 'rgba(16, 185, 129, 0.15)',
+                border: '1px solid rgba(16, 185, 129, 0.4)',
+                color: '#34d399',
+                padding: '3px 9px',
+                borderRadius: 4,
+                fontSize: 11,
+                fontWeight: 700,
+                fontFamily: 'var(--font-mono)',
+              }}>
+                <Clock size={12} />
+                TIMECODE: {formatTimecode(candidate.sourceMetadata.timestampSec)}
+              </span>
+            ) : (
+              <span style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+                Single Frame
+              </span>
+            )}
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -135,6 +161,32 @@ export const ClipReviewTab: React.FC<Props> = ({
           }}
         >
           <div style={{ position: 'relative', display: 'inline-block', maxWidth: '100%', maxHeight: '100%' }}>
+            {/* On-screen HUD timestamp badge */}
+            {candidate.sourceMetadata.timestampSec !== undefined && (
+              <div style={{
+                position: 'absolute',
+                top: 10,
+                left: 10,
+                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                border: '1px solid rgba(16, 185, 129, 0.6)',
+                color: '#34d399',
+                padding: '3px 8px',
+                borderRadius: 3,
+                fontFamily: 'var(--font-mono)',
+                fontSize: 12,
+                fontWeight: 700,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 5,
+                zIndex: 10,
+                letterSpacing: '0.04em',
+                boxShadow: '0 2px 6px rgba(0,0,0,0.5)',
+              }}>
+                <Clock size={12} />
+                <span>⏱ {formatTimecode(candidate.sourceMetadata.timestampSec)}</span>
+              </div>
+            )}
+
             <img
               src={resolveMediaUrl(candidate.sourceFrameUrl)}
               alt={candidate.sourceMetadata.clipId}

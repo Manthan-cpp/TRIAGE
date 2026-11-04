@@ -1,5 +1,5 @@
 import { AppDatabase } from './database';
-import { PrioritizedQueueItem } from '../prioritization/prioritizer';
+import { PrioritizedQueueItem, ClipDetectionReport } from '../prioritization/prioritizer';
 import { ConfidenceLabel } from '../prioritization/museSparkClient';
 
 export type JobStatus = 'queued' | 'ingesting' | 'detecting' | 'ranking' | 'complete' | 'failed';
@@ -173,6 +173,45 @@ export class JobRepository {
     }));
   }
 
+  public static saveClipReports(jobId: string, reports: ClipDetectionReport[]): void {
+    const db = AppDatabase.getInstance();
+    const stmt = db.prepare(`
+      INSERT INTO clip_reports (
+        job_id, source_file, duration_sec, total_frames, flagged_frames,
+        timeline_json, clip_summary, created_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `);
+
+    db.transaction((items: ClipDetectionReport[]) => {
+      db.prepare('DELETE FROM clip_reports WHERE job_id = ?').run(jobId);
+      for (const r of items) {
+        stmt.run(
+          jobId,
+          r.sourceFile,
+          r.durationSec,
+          r.totalFrames,
+          r.flaggedFramesCount,
+          JSON.stringify(r.timeline),
+          r.clipSummary,
+          new Date().toISOString()
+        );
+      }
+    })(reports);
+  }
+
+  public static getClipReports(jobId: string): ClipDetectionReport[] {
+    const db = AppDatabase.getInstance();
+    const rows = db.prepare('SELECT * FROM clip_reports WHERE job_id = ?').all(jobId) as any[];
+    return rows.map((r) => ({
+      sourceFile: r.source_file,
+      durationSec: r.duration_sec,
+      totalFrames: r.total_frames,
+      flaggedFramesCount: r.flagged_frames,
+      timeline: JSON.parse(r.timeline_json),
+      clipSummary: r.clip_summary,
+    }));
+  }
+
   /**
    * Build a reviewable interim queue while perception has finished but the
    * comparative model has not yet produced a final queue.
@@ -181,7 +220,7 @@ export class JobRepository {
     const db = AppDatabase.getInstance();
     const rows = db.prepare(`
       SELECT * FROM candidates
-      WHERE job_id = ?
+      WHERE job_id = ? AND (total_boxes > 0 OR matched_prompts != '[]')
       ORDER BY has_corroboration DESC, total_boxes DESC, is_dampened ASC, created_at ASC
     `).all(jobId) as any[];
 

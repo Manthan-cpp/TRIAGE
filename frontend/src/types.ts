@@ -35,6 +35,23 @@ export interface JobSummary {
   errorMessage?: string;
 }
 
+export interface ClipTimelineEvent {
+  timestampSec: number;
+  timecode: string;
+  matchedPrompts: string[];
+  boxCount: number;
+  candidateId: string;
+}
+
+export interface ClipDetectionReport {
+  sourceFile: string;
+  durationSec: number;
+  totalFrames: number;
+  flaggedFramesCount: number;
+  timeline: ClipTimelineEvent[];
+  clipSummary: string;
+}
+
 export interface QueueItem {
   candidateId: string;
   priorityRank: number;

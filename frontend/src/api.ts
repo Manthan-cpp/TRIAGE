@@ -1,4 +1,4 @@
-import type { JobRecord, JobSummary, JobMetrics, QueueItem, CandidateDetail, HealthInfo, AuditLogEntry, ReviewerDecision, SystemInfo, BenchmarkRecord } from './types';
+import type { JobRecord, JobSummary, JobMetrics, QueueItem, ClipDetectionReport, CandidateDetail, HealthInfo, AuditLogEntry, ReviewerDecision, SystemInfo, BenchmarkRecord } from './types';
 
 const rawBase = import.meta.env.VITE_API_BASE_URL || '';
 const API_BASE = rawBase.endsWith('/') ? rawBase.slice(0, -1) : rawBase;
@@ -30,7 +30,7 @@ export async function fetchJob(jobId: string): Promise<JobRecord> {
   return res.json();
 }
 
-export async function fetchQueue(jobId: string): Promise<{ jobId: string; total: number; rankedItems: QueueItem[] }> {
+export async function fetchQueue(jobId: string): Promise<{ jobId: string; total: number; rankedItems: QueueItem[]; clipReports?: ClipDetectionReport[] }> {
   const res = await fetch(`${API_BASE}/api/jobs/${jobId}/queue`);
   if (!res.ok) throw new Error(`Failed to get queue for ${jobId}: ${res.status}`);
   return res.json();

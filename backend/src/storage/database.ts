@@ -100,6 +100,20 @@ export class AppDatabase {
         updated_at TEXT NOT NULL
       );
       CREATE INDEX IF NOT EXISTS idx_reviewer_job ON reviewer_decisions(job_id);
+
+      CREATE TABLE IF NOT EXISTS clip_reports (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        job_id TEXT NOT NULL,
+        source_file TEXT NOT NULL,
+        duration_sec REAL,
+        total_frames INTEGER NOT NULL,
+        flagged_frames INTEGER NOT NULL,
+        timeline_json TEXT NOT NULL,
+        clip_summary TEXT NOT NULL,
+        created_at TEXT NOT NULL,
+        FOREIGN KEY (job_id) REFERENCES jobs(id) ON DELETE CASCADE
+      );
+      CREATE INDEX IF NOT EXISTS idx_clip_reports_job ON clip_reports(job_id);
     `);
 
     try {

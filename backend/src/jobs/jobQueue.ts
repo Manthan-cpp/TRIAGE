@@ -139,6 +139,9 @@ export class JobQueue {
 
     // Save final ranked queue to DB
     JobRepository.saveQueue(jobId, prioResult.rankedItems);
+    if (prioResult.clipReports && prioResult.clipReports.length > 0) {
+      JobRepository.saveClipReports(jobId, prioResult.clipReports);
+    }
 
     AuditRepository.recordEvent({
       jobId,
