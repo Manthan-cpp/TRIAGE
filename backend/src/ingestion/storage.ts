@@ -1,5 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { getIngestedDir, isPathInside } from '../lib/config';
+import { safeFileName } from '../lib/fileNames';
 
 export interface JobMeta {
   jobId: string;
@@ -9,8 +11,6 @@ export interface JobMeta {
 }
 
 export class IngestionStorage {
-  private static readonly BASE_DIR = path.resolve(__dirname, '../../../data/ingested');
-
   /**
    * Get job directories and ensure they exist.
    */
@@ -19,7 +19,7 @@ export class IngestionStorage {
     rawDir: string;
     normalizedDir: string;
   } {
-    const jobDir = path.join(this.BASE_DIR, jobId);
+    const jobDir = path.join(getIngestedDir(), jobId);
     const rawDir = path.join(jobDir, 'raw');
     const normalizedDir = path.join(jobDir, 'normalized');
 
@@ -34,7 +34,15 @@ export class IngestionStorage {
    */
   public static saveRawFile(jobId: string, fileName: string, buffer: Buffer): string {
     const { rawDir } = this.initJobDir(jobId);
-    const targetPath = path.join(rawDir, fileName);
+    const cleanName = safeFileName(fileName);
+    let targetPath = path.join(rawDir, cleanName);
+    let suffix = 1;
+    const extension = path.extname(cleanName);
+    const stem = path.basename(cleanName, extension);
+    while (fs.existsSync(targetPath)) {
+      targetPath = path.join(rawDir, `${stem}_${suffix++}${extension}`);
+    }
+    if (!isPathInside(rawDir, targetPath)) throw new Error('Invalid raw file path.');
     fs.writeFileSync(targetPath, buffer);
     return targetPath;
   }
@@ -52,7 +60,7 @@ export class IngestionStorage {
    * Read job metadata if it exists.
    */
   public static readJobMeta(jobId: string): JobMeta | null {
-    const metaPath = path.join(this.BASE_DIR, jobId, 'meta.json');
+    const metaPath = path.join(getIngestedDir(), jobId, 'meta.json');
     if (!fs.existsSync(metaPath)) return null;
     return JSON.parse(fs.readFileSync(metaPath, 'utf-8')) as JobMeta;
   }

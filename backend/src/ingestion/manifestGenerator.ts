@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { getIngestedDir } from '../lib/config';
 
 export interface IngestionUnit {
   unitId: string;
@@ -20,8 +21,6 @@ export interface JobManifest {
 }
 
 export class ManifestGenerator {
-  private static readonly BASE_DIR = path.resolve(__dirname, '../../../data/ingested');
-
   /**
    * Create manifest object from ingestion units.
    */
@@ -43,7 +42,7 @@ export class ManifestGenerator {
    * Save manifest to data/ingested/<jobId>/manifest.json.
    */
   public static save(manifest: JobManifest): string {
-    const jobDir = path.join(this.BASE_DIR, manifest.jobId);
+    const jobDir = path.join(getIngestedDir(), manifest.jobId);
     fs.mkdirSync(jobDir, { recursive: true });
 
     const manifestPath = path.join(jobDir, 'manifest.json');
@@ -55,7 +54,7 @@ export class ManifestGenerator {
    * Read manifest from disk.
    */
   public static load(jobId: string): JobManifest {
-    const manifestPath = path.join(this.BASE_DIR, jobId, 'manifest.json');
+    const manifestPath = path.join(getIngestedDir(), jobId, 'manifest.json');
     if (!fs.existsSync(manifestPath)) {
       throw new Error(`Manifest not found for job: ${jobId}`);
     }

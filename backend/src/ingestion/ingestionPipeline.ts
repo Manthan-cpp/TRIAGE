@@ -3,6 +3,7 @@ import { FileValidator } from './fileValidator';
 import { IngestionStorage } from './storage';
 import { FrameSampler } from './frameSampler';
 import { ManifestGenerator, IngestionUnit, JobManifest } from './manifestGenerator';
+import { PROJECT_ROOT } from '../lib/config';
 
 export interface IngestionInputFile {
   originalName: string;
@@ -36,7 +37,8 @@ export class IngestionPipeline {
       }
 
       const rawPath = IngestionStorage.saveRawFile(jobId, file.originalName, file.buffer);
-      savedRawFileNames.push(file.originalName);
+      const storedFileName = path.basename(rawPath);
+      savedRawFileNames.push(storedFileName);
 
       if (validation.fileType === 'image') {
         const unitId = `unit_${String(units.length + 1).padStart(4, '0')}`;
@@ -44,9 +46,9 @@ export class IngestionPipeline {
 
         units.push({
           unitId,
-          sourceFile: file.originalName,
+            sourceFile: storedFileName,
           sourceType: 'image',
-          filePath: path.relative(path.resolve(__dirname, '../../../'), normalized.filePath).replace(/\\/g, '/'),
+          filePath: path.relative(PROJECT_ROOT, normalized.filePath).replace(/\\/g, '/'),
           width: normalized.width,
           height: normalized.height,
         });
@@ -57,10 +59,10 @@ export class IngestionPipeline {
           const unitId = `unit_${String(units.length + 1).padStart(4, '0')}`;
           units.push({
             unitId,
-            sourceFile: file.originalName,
+           sourceFile: storedFileName,
             sourceType: 'video',
             timestampSec: frame.timestampSec,
-            filePath: path.relative(path.resolve(__dirname, '../../../'), frame.filePath).replace(/\\/g, '/'),
+            filePath: path.relative(PROJECT_ROOT, frame.filePath).replace(/\\/g, '/'),
             width: frame.width,
             height: frame.height,
           });

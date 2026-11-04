@@ -3,6 +3,7 @@ import * as path from 'path';
 import { execFile } from 'child_process';
 import { promisify } from 'util';
 import sharp from 'sharp';
+import { getJpegQuality, getMaxImageDimension, getVideoFps } from '../lib/config';
 
 const execFileAsync = promisify(execFile);
 
@@ -15,9 +16,6 @@ export interface NormalizedFrame {
 }
 
 export class FrameSampler {
-  public static readonly MAX_DIMENSION = 800;
-  public static readonly JPEG_QUALITY = 85;
-
   /**
    * Normalize a single image:
    * 1. Scale down to MAX_DIMENSION if larger (maintains aspect ratio).
@@ -31,15 +29,14 @@ export class FrameSampler {
     const outputPath = path.join(outputDir, `${frameId}.jpg`);
 
     const image = sharp(inputPath);
-    const metadata = await image.metadata();
 
     const transformed = await image
       .rotate() // auto-orient based on EXIF before resizing
-      .resize(this.MAX_DIMENSION, this.MAX_DIMENSION, {
+      .resize(getMaxImageDimension(), getMaxImageDimension(), {
         fit: 'inside',
         withoutEnlargement: true,
       })
-      .jpeg({ quality: this.JPEG_QUALITY })
+      .jpeg({ quality: getJpegQuality() })
       .toFile(outputPath);
 
     return {
@@ -57,12 +54,12 @@ export class FrameSampler {
   public static async sampleVideo(
     videoPath: string,
     outputDir: string,
-    fps = 1
+    fps = getVideoFps()
   ): Promise<NormalizedFrame[]> {
     const tempPattern = path.join(outputDir, 'temp_frame_%04d.jpg');
 
     // Run ffmpeg with scale filter to max 800px and specified fps
-    const scaleFilter = `fps=${fps},scale='min(${this.MAX_DIMENSION},iw)':-1:flags=lanczos`;
+    const scaleFilter = `fps=${fps},scale='min(${getMaxImageDimension()},iw)':-1:flags=lanczos`;
     const args = [
       '-y',
       '-i', videoPath,

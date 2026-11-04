@@ -1,4 +1,5 @@
 import * as path from 'path';
+import { getPositiveUploadLimitBytes } from '../lib/config';
 
 export interface ValidationResult {
   isValid: boolean;
@@ -8,9 +9,6 @@ export interface ValidationResult {
 
 const SUPPORTED_IMAGE_EXTS = new Set(['.jpg', '.jpeg', '.png', '.webp']);
 const SUPPORTED_VIDEO_EXTS = new Set(['.mp4', '.mov', '.avi', '.mkv']);
-
-const MAX_IMAGE_SIZE_BYTES = 25 * 1024 * 1024; // 25 MB
-const MAX_VIDEO_SIZE_BYTES = 150 * 1024 * 1024; // 150 MB
 
 export class FileValidator {
   /**
@@ -24,22 +22,24 @@ export class FileValidator {
     const ext = path.extname(fileName).toLowerCase();
 
     if (SUPPORTED_IMAGE_EXTS.has(ext)) {
-      if (sizeBytes > MAX_IMAGE_SIZE_BYTES) {
+      const maxImageSize = getPositiveUploadLimitBytes('MAX_IMAGE_SIZE_MB', 25, 1, 1024);
+      if (sizeBytes > maxImageSize) {
         return {
           isValid: false,
           fileType: 'image',
-          error: `Image size ${Math.round(sizeBytes / 1024 / 1024)}MB exceeds max limit of 25MB.`,
+           error: `Image size ${Math.round(sizeBytes / 1024 / 1024)}MB exceeds max limit of ${maxImageSize / 1024 / 1024}MB.`,
         };
       }
       return { isValid: true, fileType: 'image' };
     }
 
     if (SUPPORTED_VIDEO_EXTS.has(ext)) {
-      if (sizeBytes > MAX_VIDEO_SIZE_BYTES) {
+      const maxVideoSize = getPositiveUploadLimitBytes('MAX_VIDEO_SIZE_MB', 150, 1, 4096);
+      if (sizeBytes > maxVideoSize) {
         return {
           isValid: false,
           fileType: 'video',
-          error: `Video size ${Math.round(sizeBytes / 1024 / 1024)}MB exceeds max limit of 150MB.`,
+          error: `Video size ${Math.round(sizeBytes / 1024 / 1024)}MB exceeds max limit of ${maxVideoSize / 1024 / 1024}MB.`,
         };
       }
       return { isValid: true, fileType: 'video' };
