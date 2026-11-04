@@ -1,23 +1,16 @@
 import Database, { Database as DatabaseType } from 'better-sqlite3';
-import * as fs from 'fs';
 import * as path from 'path';
+import { ensureDirectory, getDatabasePath } from '../lib/config';
 
 export class AppDatabase {
   private static instance: DatabaseType | null = null;
 
   public static getInstance(): DatabaseType {
     if (!this.instance) {
-      const rootDir = path.resolve(__dirname, '../../../');
-      const dbPath = process.env.DATABASE_PATH
-        ? (path.isAbsolute(process.env.DATABASE_PATH)
-            ? process.env.DATABASE_PATH
-            : path.resolve(rootDir, process.env.DATABASE_PATH))
-        : path.resolve(rootDir, 'data/triage.db');
+      const dbPath = getDatabasePath();
 
       const dir = path.dirname(dbPath);
-      if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, { recursive: true });
-      }
+      if (dir) ensureDirectory(dir);
 
       this.instance = new Database(dbPath);
       this.instance.pragma('journal_mode = WAL');

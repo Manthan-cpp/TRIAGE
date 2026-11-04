@@ -2,6 +2,8 @@ import { IngestionPipeline, IngestionInputFile } from '../ingestion/ingestionPip
 import { PerceptionRunner } from '../perception/perceptionRunner';
 import { Prioritizer } from '../prioritization/prioritizer';
 import { JobRepository } from '../storage/jobRepository';
+import { CandidateRepository } from '../storage/candidateRepository';
+import { getVideoFps } from '../lib/config';
 import { AuditRepository } from '../storage/auditRepository';
 
 export class JobQueue {
@@ -13,7 +15,7 @@ export class JobQueue {
     jobId: string,
     sourceLabel: string,
     files: IngestionInputFile[],
-    videoFps = 1
+    videoFps = getVideoFps()
   ): void {
     // Record initial queued state
     JobRepository.createJob(jobId, sourceLabel);
@@ -43,6 +45,21 @@ export class JobQueue {
         });
       }
     });
+  }
+
+  /** Mark work that could not survive a process restart instead of leaving it polling forever. */
+  public static recoverInterruptedJobs(): void {
+    const recovered = JobRepository.markInterruptedJobsFailed();
+    for (const jobId of recovered) {
+      AuditRepository.recordEvent({
+        jobId,
+        timestamp: new Date().toISOString(),
+        stage: 'system',
+        eventType: 'JOB_INTERRUPTED',
+        details: 'Background work was interrupted by a service restart and marked failed for retry.',
+        status: 'error',
+      });
+    }
   }
 
   /**
@@ -82,20 +99,29 @@ export class JobQueue {
     // Stage 2: Perception (SAM 3.1)
     const perceptionStart = Date.now();
     JobRepository.updateStatus(jobId, 'detecting', `Segmenting candidate signals across ${manifest.totalUnits} frames...`);
-    const perceptionResult = await PerceptionRunner.processManifest(manifest);
+    const perceptionResult = await PerceptionRunner.processManifest(
+      manifest,
+      undefined,
+      (processed, total) => JobRepository.updateProgress(
+        jobId,
+        processed,
+        total,
+        `Processing candidate signals: ${processed}/${total} units...`
+      )
+    );
     const perceptionDuration = Date.now() - perceptionStart;
     
     // Save structured candidates to DB
-    JobRepository.saveCandidates(jobId, perceptionResult.candidates);
+    CandidateRepository.saveCandidates(jobId, perceptionResult.candidates);
 
     AuditRepository.recordEvent({
       jobId,
       timestamp: new Date().toISOString(),
       stage: 'perception',
       eventType: 'SAM31_PERCEPTION_COMPLETED',
-      details: `Segmented ${perceptionResult.totalSignalsCount} candidate signal(s) across ${manifest.totalUnits} frames. Dampened: ${perceptionResult.candidates.filter(c => c.dampening.isDampened).length}.`,
+      details: `Segmented ${perceptionResult.totalSignalsCount} candidate signal(s) across ${manifest.totalUnits} frames. Dampened: ${perceptionResult.candidates.filter(c => c.dampening.isDampened).length}. Unit failures retained for review: ${perceptionResult.failedUnitsCount}.`,
       durationMs: perceptionDuration,
-      status: 'success',
+      status: perceptionResult.failedUnitsCount > 0 ? 'warn' : 'success',
     });
 
     JobRepository.updateProgress(
@@ -119,9 +145,9 @@ export class JobQueue {
       timestamp: new Date().toISOString(),
       stage: 'prioritization',
       eventType: 'MUSE_SPARK_RANKING_COMPLETED',
-      details: `Prioritized ${prioResult.totalItems} candidate(s) into contiguous ranks 1..${prioResult.totalItems}. Approved vocabulary enforced.`,
+      details: `Prioritized ${prioResult.totalItems} candidate(s) into contiguous ranks 1..${prioResult.totalItems}. Fallback batches: ${prioResult.fallbackBatchCount}. Approved vocabulary enforced.`,
       durationMs: prioDuration,
-      status: 'success',
+      status: prioResult.fallbackBatchCount > 0 ? 'warn' : 'success',
     });
 
     // Stage 4: Complete

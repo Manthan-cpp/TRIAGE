@@ -1,5 +1,4 @@
 import { AppDatabase } from './database';
-import { CandidateSignalRecord } from '../perception/candidateTypes';
 import { PrioritizedQueueItem } from '../prioritization/prioritizer';
 import { ConfidenceLabel } from '../prioritization/museSparkClient';
 
@@ -15,29 +14,6 @@ export interface JobRecord {
   errorMessage?: string;
   createdAt: string;
   completedAt?: string;
-}
-
-export interface CandidateDetailRecord {
-  candidateId: string;
-  jobId: string;
-  unitId: string;
-  sourceFile: string;
-  sourceType: 'image' | 'video';
-  timestampSec?: number;
-  filePath: string;
-  matchedPrompts: string[];
-  totalBoxes: number;
-  hasCorroboration: boolean;
-  isDampened: boolean;
-  dampeningReason?: string;
-  dampeningScore: number;
-  boxes: any[];
-  rawResults: any[];
-  fullReasoningText?: string;
-  evidenceIds?: string[];
-  priorityRank?: number;
-  confidenceLabel?: string;
-  createdAt: string;
 }
 
 export class JobRepository {
@@ -75,6 +51,22 @@ export class JobRepository {
       WHERE id = ?
     `);
     stmt.run(processedUnits, totalUnits !== undefined ? totalUnits : null, currentStage || null, id);
+  }
+
+  public static markInterruptedJobsFailed(): string[] {
+    const db = AppDatabase.getInstance();
+    const rows = db.prepare(`
+      SELECT id FROM jobs WHERE status IN ('queued', 'ingesting', 'detecting', 'ranking')
+    `).all() as Array<{ id: string }>;
+    if (rows.length === 0) return [];
+
+    db.prepare(`
+      UPDATE jobs
+      SET status = 'failed', current_stage = 'Service restart interrupted background processing',
+          error_message = 'The service restarted before this job completed.', completed_at = ?
+      WHERE status IN ('queued', 'ingesting', 'detecting', 'ranking')
+    `).run(new Date().toISOString());
+    return rows.map((row) => row.id);
   }
 
   public static getJob(id: string): JobRecord | null {
@@ -116,75 +108,6 @@ export class JobRepository {
     }));
   }
 
-  public static saveCandidates(jobId: string, candidates: CandidateSignalRecord[]): void {
-    const db = AppDatabase.getInstance();
-    const stmt = db.prepare(`
-      INSERT OR REPLACE INTO candidates (
-        candidate_id, job_id, unit_id, source_file, source_type, timestamp_sec,
-        file_path, matched_prompts, total_boxes, has_corroboration, is_dampened,
-        dampening_reason, dampening_score, boxes_json, raw_results_json, created_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `);
-
-    const insertMany = db.transaction((records: CandidateSignalRecord[]) => {
-      for (const r of records) {
-        stmt.run(
-          r.candidateId,
-          jobId,
-          r.unitId,
-          r.sourceFile,
-          r.sourceType,
-          r.timestampSec || null,
-          r.filePath,
-          JSON.stringify(r.matchedPrompts),
-          r.totalBoxesCount,
-          r.hasCorroboratingSignals ? 1 : 0,
-          r.dampening.isDampened ? 1 : 0,
-          r.dampening.reason || null,
-          r.dampening.dampeningScore,
-          JSON.stringify(r.boxes),
-          JSON.stringify(r.rawResults),
-          r.createdAt
-        );
-      }
-    });
-
-    insertMany(candidates);
-  }
-
-  public static getCandidate(candidateId: string): CandidateDetailRecord | null {
-    const db = AppDatabase.getInstance();
-    const row = db.prepare('SELECT * FROM candidates WHERE candidate_id = ?').get(candidateId) as any;
-    if (!row) return null;
-
-    const qRow = db.prepare(
-      'SELECT reasoning_summary, evidence_ids_json, priority_rank, confidence_label FROM queue_items WHERE candidate_id = ?'
-    ).get(candidateId) as any;
-
-    return {
-      candidateId: row.candidate_id,
-      jobId: row.job_id,
-      unitId: row.unit_id,
-      sourceFile: row.source_file,
-      sourceType: row.source_type,
-      timestampSec: row.timestamp_sec !== null ? row.timestamp_sec : undefined,
-      filePath: row.file_path,
-      matchedPrompts: JSON.parse(row.matched_prompts),
-      totalBoxes: row.total_boxes,
-      hasCorroboration: Boolean(row.has_corroboration),
-      isDampened: Boolean(row.is_dampened),
-      dampeningReason: row.dampening_reason || undefined,
-      dampeningScore: row.dampening_score,
-      boxes: JSON.parse(row.boxes_json),
-      rawResults: JSON.parse(row.raw_results_json),
-      fullReasoningText: qRow?.reasoning_summary || undefined,
-      evidenceIds: qRow?.evidence_ids_json ? JSON.parse(qRow.evidence_ids_json) : undefined,
-      priorityRank: qRow?.priority_rank || undefined,
-      confidenceLabel: qRow?.confidence_label || undefined,
-      createdAt: row.created_at,
-    };
-  }
-
   public static saveQueue(jobId: string, items: PrioritizedQueueItem[]): void {
     const db = AppDatabase.getInstance();
     const stmt = db.prepare(`
@@ -197,6 +120,7 @@ export class JobRepository {
     `);
 
     const insertMany = db.transaction((records: PrioritizedQueueItem[]) => {
+      db.prepare('DELETE FROM queue_items WHERE job_id = ?').run(jobId);
       for (const i of records) {
         stmt.run(
           jobId,
@@ -208,7 +132,7 @@ export class JobRepository {
           JSON.stringify(i.evidenceIds),
           i.sourceFile,
           i.sourceType,
-          i.timestampSec || null,
+           i.timestampSec ?? null,
           i.filePath,
           i.thumbnailUrl || `/api/media/${i.filePath.replace(/\\/g, '/')}`,
           JSON.stringify(i.matchedPrompts),
@@ -246,4 +170,45 @@ export class JobRepository {
       dampened: Boolean(r.dampened),
     }));
   }
+
+  /**
+   * Build a reviewable interim queue while perception has finished but the
+   * comparative model has not yet produced a final queue.
+   */
+  public static getPartialQueue(jobId: string): PrioritizedQueueItem[] {
+    const db = AppDatabase.getInstance();
+    const rows = db.prepare(`
+      SELECT * FROM candidates
+      WHERE job_id = ?
+      ORDER BY has_corroboration DESC, total_boxes DESC, is_dampened ASC, created_at ASC
+    `).all(jobId) as any[];
+
+    return rows.map((row, index) => {
+      const matchedPrompts = JSON.parse(row.matched_prompts) as string[];
+      const confidenceLabel: ConfidenceLabel = row.has_corroboration
+        ? 'possible-high'
+        : row.total_boxes > 0 && !row.is_dampened
+          ? 'possible-medium'
+          : 'possible-low';
+      return {
+        candidateId: row.candidate_id,
+        unitId: row.unit_id,
+        priorityRank: index + 1,
+        confidenceLabel,
+        reasoningSummary: row.total_boxes > 0
+          ? 'Interim candidate signal retained while comparative prioritization runs.'
+          : 'No candidate signal output yet; retained for manual review.',
+        evidenceIds: matchedPrompts,
+        sourceFile: row.source_file,
+        sourceType: row.source_type,
+        timestampSec: row.timestamp_sec !== null ? row.timestamp_sec : undefined,
+        filePath: row.file_path,
+        thumbnailUrl: `/api/media/${row.file_path.replace(/\\/g, '/')}`,
+        matchedPrompts,
+        boxesCount: row.total_boxes,
+        dampened: Boolean(row.is_dampened),
+      };
+    });
+  }
+
 }
