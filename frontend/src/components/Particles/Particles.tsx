@@ -187,6 +187,7 @@ void main() {
   screen += shift;
 
   float diameter = (uRandomness <= 0.0 ? uSize : uSize * (1.0 + uRandomness * (aRandom.x - 0.5)) / dist) * (1.0 + min(flash, 1.0) * 0.6);
+  diameter = clamp(diameter, 0.8, 6.0);
   float device = diameter * uRatio;
   float radius = max(diameter, 1.0 / uRatio) * 0.5;
   float coverage = min(1.0, device * device);
@@ -423,20 +424,21 @@ export const Particles = ({
   settingsRef.current = settings;
 
   useEffect(() => {
-    const container = containerRef.current;
-    const canvas = canvasRef.current;
-    const gl = canvas?.getContext('webgl2', {
-      alpha: true,
-      premultipliedAlpha: true,
-      antialias: false,
-      depth: false,
-      stencil: false
-    });
-    if (!container || !canvas || !gl) return undefined;
+    try {
+      const container = containerRef.current;
+      const canvas = canvasRef.current;
+      const gl = canvas?.getContext('webgl2', {
+        alpha: true,
+        premultipliedAlpha: true,
+        antialias: false,
+        depth: false,
+        stencil: false
+      });
+      if (!container || !canvas || !gl) return undefined;
 
-    const dots = link(gl, PARTICLE_VERTEX, PARTICLE_FRAGMENT);
-    const lines = link(gl, LINE_VERTEX, LINE_FRAGMENT);
-    if (!dots || !lines) return undefined;
+      const dots = link(gl, PARTICLE_VERTEX, PARTICLE_FRAGMENT);
+      const lines = link(gl, LINE_VERTEX, LINE_FRAGMENT);
+      if (!dots || !lines) return undefined;
 
     const corners = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, corners);
@@ -936,8 +938,11 @@ export const Particles = ({
       [corners, positionBuffer, randomBuffer, colorBuffer, lineBuffer].forEach(buffer => gl.deleteBuffer(buffer));
       gl.deleteVertexArray(dotVao);
       gl.deleteVertexArray(lineVao);
-      gl.getExtension('WEBGL_lose_context')?.loseContext();
     };
+  } catch (err) {
+    console.warn('[Particles] Failed to initialize WebGL2 particles:', err);
+    return undefined;
+  }
   }, []);
 
   useEffect(() => {

@@ -55,9 +55,35 @@ export const Layout: React.FC<Props> = ({
       </header>
 
       {/* Main Layout */}
-      <div className="main-body">
+      <div className="main-body" style={{ position: 'relative' }}>
+        {/* Ambient Particles Background - active for all tabs except Clip Review */}
+        {activeTab !== 'clip' && (
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              pointerEvents: 'none',
+              zIndex: 0,
+              overflow: 'hidden',
+            }}
+          >
+            <Particles
+              particleColors={['#ffffff', '#e4e4e7', '#a1a1aa', '#71717a']}
+              particleCount={100}
+              particleSpread={10}
+              speed={0.07}
+              particleBaseSize={45}
+              glow={0.25}
+              twinkle={0.3}
+              moveParticlesOnHover={true}
+              hoverEffect="parallax"
+              opacity={0.75}
+            />
+          </div>
+        )}
+
         {/* Left Rail Navigation */}
-        <nav className="nav-rail" aria-label="Operational Navigation">
+        <nav className="nav-rail" aria-label="Operational Navigation" style={{ position: 'relative', zIndex: 2 }}>
           <div>
             {/* Group 1: Triage Workflow */}
             <div className="nav-group">
@@ -94,33 +120,16 @@ export const Layout: React.FC<Props> = ({
         </nav>
 
         {/* Dynamic Viewport with key for smooth cross-tab animation */}
-        <main key={activeTab} className="tab-viewport" style={{ position: 'relative' }}>
-          {activeTab !== 'clip' && (
-            <div
-              style={{
-                position: 'absolute',
-                inset: 0,
-                pointerEvents: 'none',
-                zIndex: 0,
-                overflow: 'hidden',
-              }}
-            >
-              <Particles
-                particleColors={['#ffffff', '#a1a1aa']}
-                particleCount={200}
-                particleSpread={10}
-                speed={0.1}
-                particleBaseSize={100}
-                glow={0.5}
-                twinkle={0.3}
-                moveParticlesOnHover={true}
-                hoverEffect="parallax"
-              />
-            </div>
-          )}
-          <div style={{ position: 'relative', zIndex: 1, height: '100%' }}>
-            {children}
-          </div>
+        <main
+          key={activeTab}
+          className="tab-viewport"
+          style={{
+            position: 'relative',
+            zIndex: 1,
+            backgroundColor: activeTab === 'clip' ? 'var(--bg-primary)' : 'transparent',
+          }}
+        >
+          {children}
         </main>
       </div>
     </div>
