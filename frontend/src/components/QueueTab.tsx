@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import type { QueueItem, ConfidenceLabel, ReviewerDecision, ClipDetectionReport } from '../types';
 import { ConfidencePill } from './ConfidencePill';
 import { resolveMediaUrl } from '../api';
-import { Search, Filter, Eye, CheckCircle, AlertOctagon, ShieldCheck, Film } from 'lucide-react';
+import { Search, Filter, Eye, CheckCircle, AlertOctagon, ShieldCheck } from 'lucide-react';
 
 export function formatTimecode(sec?: number): string {
   if (sec === undefined || sec === null || isNaN(sec)) return 'Photo';
@@ -22,7 +22,6 @@ interface Props {
 
 export const QueueTab: React.FC<Props> = ({
   items,
-  clipReports,
   selectedCandidateId,
   onSelectCandidate,
   reviewerDecisions,
@@ -47,90 +46,6 @@ export const QueueTab: React.FC<Props> = ({
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 14, height: '100%' }}>
-      {/* Aerial Clip Detection Report (if video sweep analyzed) */}
-      {clipReports && clipReports.length > 0 && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          {clipReports.map((report) => (
-            <div
-              key={report.sourceFile}
-              style={{
-                backgroundColor: 'var(--bg-secondary)',
-                border: '1px solid var(--border-subtle)',
-                borderRadius: 4,
-                padding: '12px 16px',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 10,
-              }}
-            >
-              {/* Header row */}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <Film size={15} color="var(--text-muted)" />
-                  <div>
-                    <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <span>Aerial Clip Detection Report</span>
-                      <span className="mono-chip">{report.sourceFile}</span>
-                    </div>
-                    <div style={{ fontSize: 11, color: 'var(--text-secondary)', marginTop: 2, fontFamily: 'var(--font-mono)' }}>
-                      Duration: {report.durationSec.toFixed(1)}s · Scanned: {report.totalFrames} frames @ 2 FPS · Flagged: {report.flaggedFramesCount} frames
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mono-chip">
-                  {report.flaggedFramesCount > 0 ? `${report.flaggedFramesCount} Targets Flagged` : 'No Targets Flagged'}
-                </div>
-              </div>
-
-              {/* Timeline bar with clickable timestamp markers */}
-              {report.timeline.length > 0 && (
-                <div>
-                  <div style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', color: 'var(--text-muted)', letterSpacing: '0.05em', marginBottom: 6 }}>
-                    Detection Timeline:
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 5, flexWrap: 'wrap' }}>
-                    {report.timeline.map((evt, idx) => {
-                      const isSelected = selectedCandidateId === evt.candidateId;
-                      return (
-                        <button
-                          key={`${evt.candidateId}-${idx}`}
-                          onClick={() => onSelectCandidate(evt.candidateId)}
-                          className="mono-chip"
-                          style={{
-                            cursor: 'pointer',
-                            backgroundColor: isSelected ? 'var(--accent-subtle)' : 'var(--bg-tertiary)',
-                            borderColor: isSelected ? 'var(--accent-primary)' : 'var(--border-subtle)',
-                            color: isSelected ? 'var(--text-primary)' : 'var(--text-secondary)',
-                            fontWeight: isSelected ? 600 : 500,
-                            padding: '3px 8px',
-                            transition: 'all var(--transition-fast)',
-                          }}
-                          title={`Click to inspect frame at ${evt.timecode}`}
-                        >
-                          {evt.timecode}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-
-              {/* Clip Executive Summary */}
-              <div style={{
-                fontSize: 12,
-                lineHeight: 1.45,
-                color: 'var(--text-secondary)',
-                borderTop: '1px solid var(--border-subtle)',
-                paddingTop: 8,
-              }}>
-                {report.clipSummary}
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
       {/* Table Toolbar */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
         <div>
