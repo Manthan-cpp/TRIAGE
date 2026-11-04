@@ -96,20 +96,32 @@ export class Sam31Client {
       const rawY1 = parseInt(match[2], 10);
       const rawX2 = parseInt(match[3], 10);
       const rawY2 = parseInt(match[4], 10);
+      const frameW = match[5] ? parseInt(match[5], 10) : 1000;
+      const frameH = match[6] ? parseInt(match[6], 10) : 1000;
 
-      // Ensure x1 <= x2 and y1 <= y2 even if model returns inverted coordinates
-      const x1 = Math.min(rawX1, rawX2);
-      const x2 = Math.max(rawX1, rawX2);
-      const y1 = Math.min(rawY1, rawY2);
-      const y2 = Math.max(rawY1, rawY2);
+      // Order min and max correctly
+      const minX = Math.min(rawX1, rawX2);
+      const maxX = Math.max(rawX1, rawX2);
+      const minY = Math.min(rawY1, rawY2);
+      const maxY = Math.max(rawY1, rawY2);
+
+      // Meta SAM 3.1 returns coordinates relative to the frame dimensions (w and h).
+      // Normalize strictly to standard 0..1000 coordinate space for UI and spatial filters.
+      const scaleX = frameW > 0 ? 1000 / frameW : 1;
+      const scaleY = frameH > 0 ? 1000 / frameH : 1;
+
+      const x1 = Math.max(0, Math.min(1000, Math.round(minX * scaleX)));
+      const x2 = Math.max(0, Math.min(1000, Math.round(maxX * scaleX)));
+      const y1 = Math.max(0, Math.min(1000, Math.round(minY * scaleY)));
+      const y2 = Math.max(0, Math.min(1000, Math.round(maxY * scaleY)));
 
       boxes.push({
         x1,
         y1,
         x2,
         y2,
-        width: x2 - x1,
-        height: y2 - y1,
+        width: Math.max(1, x2 - x1),
+        height: Math.max(1, y2 - y1),
       });
     }
 
