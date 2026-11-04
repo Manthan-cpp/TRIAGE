@@ -1,9 +1,10 @@
 import { Router, Request, Response } from 'express';
 import * as fs from 'fs';
 import * as path from 'path';
+import { getDataDir, getIngestedDir, isPathInside, PROJECT_ROOT } from '../lib/config';
 
 const router = Router();
-const PROJECT_ROOT = path.resolve(__dirname, '../../../');
+const MEDIA_ROOTS = [path.join(getDataDir(), 'raw'), getIngestedDir()];
 
 /**
  * GET /api/media/*
@@ -26,7 +27,7 @@ router.get(/^\/media\/(.+)$/, (req: Request, res: Response): void => {
   }
 
   const resolvedPath = path.resolve(PROJECT_ROOT, relativeSubpath);
-  if (!resolvedPath.startsWith(PROJECT_ROOT)) {
+  if (!MEDIA_ROOTS.some((root) => isPathInside(root, resolvedPath))) {
     res.status(403).json({ error: 'Access denied: Invalid path traversal attempt' });
     return;
   }
@@ -36,7 +37,20 @@ router.get(/^\/media\/(.+)$/, (req: Request, res: Response): void => {
     return;
   }
 
-  const ext = path.extname(resolvedPath).toLowerCase();
+  let realPath: string;
+  try {
+    realPath = fs.realpathSync(resolvedPath);
+  } catch {
+    res.status(404).json({ error: 'Media asset is no longer available' });
+    return;
+  }
+  const realRoots = MEDIA_ROOTS.filter((root) => fs.existsSync(root)).map((root) => fs.realpathSync(root));
+  if (!realRoots.some((root) => isPathInside(root, realPath))) {
+    res.status(403).json({ error: 'Access denied: Media link escapes the configured media roots' });
+    return;
+  }
+
+  const ext = path.extname(realPath).toLowerCase();
   const mimeTypes: Record<string, string> = {
     '.jpg': 'image/jpeg',
     '.jpeg': 'image/jpeg',
@@ -46,11 +60,20 @@ router.get(/^\/media\/(.+)$/, (req: Request, res: Response): void => {
     '.mov': 'video/quicktime',
   };
 
-  const contentType = mimeTypes[ext] || 'application/octet-stream';
+  if (!mimeTypes[ext]) {
+    res.status(403).json({ error: 'Access denied: Unsupported media asset type' });
+    return;
+  }
+
+  const contentType = mimeTypes[ext];
   res.setHeader('Content-Type', contentType);
   res.setHeader('Cache-Control', 'public, max-age=86400'); // Cache for 24h
 
-  const stream = fs.createReadStream(resolvedPath);
+  const stream = fs.createReadStream(realPath);
+  stream.on('error', () => {
+    if (!res.headersSent) res.status(404).json({ error: 'Media asset could not be read' });
+    else res.destroy();
+  });
   stream.pipe(res);
 });
 

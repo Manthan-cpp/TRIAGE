@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { JobRepository } from '../storage/jobRepository';
+import { CandidateRepository } from '../storage/candidateRepository';
 
 const router = Router();
 
@@ -12,7 +12,7 @@ router.get('/candidates/:candidateId', (req: Request, res: Response): void => {
   const candidateId = Array.isArray(req.params.candidateId)
     ? req.params.candidateId[0]
     : req.params.candidateId;
-  const candidate = JobRepository.getCandidate(candidateId);
+  const candidate = CandidateRepository.getCandidate(candidateId);
 
   if (!candidate) {
     res.status(404).json({ error: `Candidate not found: ${candidateId}` });

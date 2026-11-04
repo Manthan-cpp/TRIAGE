@@ -1,0 +1,30 @@
+{
+  "source": "docs/test_results.md",
+  "evaluatedAt": "2026-11-01T17:53:00+05:30",
+  "dataset": {
+    "totalUnits": 38,
+    "lightOcclusionUnits": 14,
+    "heavyOcclusionUnits": 16,
+    "negativeControlUnits": 8
+  },
+  "metrics": {
+    "lightStrictRecall": { "value": 100, "hits": 14, "total": 14 },
+    "heavyStrictRecall": { "value": 93.8, "hits": 15, "total": 16 },
+    "negativeFalseAlarmRate": { "value": 12.5, "hits": 1, "total": 8 },
+    "precisionAt10": { "value": 100, "hits": 10, "total": 10 },
+    "precisionAt18": { "value": 100, "hits": 18, "total": 18 },
+    "networkPayloadReduction": { "value": 71.4, "fromKb": 336, "toKb": 96 },
+    "parallelLatencyReduction": { "value": 74, "fromMs": 6722, "toMs": 1722 }
+  },
+  "promptSensitivity": [
+    { "prompt": "person", "weight": 1, "lightRate": 85.7, "heavyRate": 62.5, "finding": "Strong on upright figures; weaker on buried or prone figures." },
+    { "prompt": "clothing", "weight": 0.8, "lightRate": 71.4, "heavyRate": 75, "finding": "Useful corroborating signal for high-contrast fabric." },
+    { "prompt": "human limb", "weight": 0, "lightRate": 15, "heavyRate": 15, "finding": "Excluded from production prompts after low aerial recall." }
+  ],
+  "failurePatterns": [
+    "Terrain shadows can resemble elongated human silhouettes.",
+    "Deep camouflage and low contrast can produce weak or missing signals.",
+    "Solitary micro-signals can be pushed to the lowest review tier while remaining retained."
+  ],
+  "note": "Documented academic evaluation results. They are not live mission telemetry or a field guarantee."
+}

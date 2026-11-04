@@ -1,5 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { AuditRepository } from '../storage/auditRepository';
+import { JobRepository } from '../storage/jobRepository';
+import { CandidateRepository } from '../storage/candidateRepository';
 
 const router = Router();
 
@@ -22,7 +24,8 @@ router.get('/jobs/:jobId/audit', (req: Request, res: Response): void => {
  * Get recent system-wide audit events.
  */
 router.get('/audit', (req: Request, res: Response): void => {
-  const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 100;
+  const requestedLimit = req.query.limit ? Number.parseInt(req.query.limit as string, 10) : 100;
+  const limit = Number.isFinite(requestedLimit) ? Math.min(Math.max(requestedLimit, 1), 500) : 100;
   const events = AuditRepository.getRecentAuditLogs(limit);
   res.json({
     totalEvents: events.length,
@@ -63,7 +66,19 @@ router.post('/candidates/:candidateId/decision', (req: Request, res: Response): 
     return;
   }
 
-  AuditRepository.saveReviewDecision(candidateId, jobId, decision, notes);
+  const job = JobRepository.getJob(jobId);
+  const candidate = CandidateRepository.getCandidate(candidateId);
+  if (!job || !candidate || candidate.jobId !== jobId) {
+    res.status(404).json({ error: 'Candidate and job must refer to the same stored item.' });
+    return;
+  }
+
+  if (notes !== undefined && (typeof notes !== 'string' || notes.length > 2000)) {
+    res.status(400).json({ error: 'notes must be text no longer than 2000 characters.' });
+    return;
+  }
+
+  AuditRepository.saveReviewDecision(candidateId, jobId, decision, typeof notes === 'string' ? notes.trim() : undefined);
   res.json({
     success: true,
     candidateId,

@@ -2,16 +2,19 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { createServer } from './server';
 import { AppDatabase } from './storage/database';
+import { getPort } from './lib/config';
+import { JobQueue } from './jobs/jobQueue';
 
 // Load environment configuration
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
-const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 4000;
+const PORT = getPort();
 const app = createServer();
 
 // Initialize DB schema on startup
 AppDatabase.getInstance();
+JobQueue.recoverInterruptedJobs();
 
 const server = app.listen(PORT, () => {
   console.log(`[Triage Backend] Listening on port ${PORT}`);
