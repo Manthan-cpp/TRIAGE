@@ -4,7 +4,6 @@ import {
   UploadCloud,
   ListOrdered,
   Crosshair,
-  Shield,
 } from 'lucide-react';
 import Particles from './Particles/Particles';
 
@@ -42,7 +41,18 @@ export const Layout: React.FC<Props> = ({
       {/* Top Header */}
       <header className="top-header">
         <div className="brand-section">
-          <Shield size={16} color="var(--accent-highlight)" />
+          <img
+            src="/logo.png"
+            alt="Project Triage Emblem"
+            className="brand-logo"
+            style={{
+              width: 24,
+              height: 24,
+              objectFit: 'contain',
+              display: 'block',
+              filter: 'drop-shadow(0 2px 8px rgba(37, 99, 235, 0.4))',
+            }}
+          />
           <span className="brand-title">Project Triage</span>
           <span className="brand-tag">SAR Decision Support</span>
         </div>
