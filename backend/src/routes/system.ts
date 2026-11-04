@@ -2,9 +2,26 @@ import { Router, Request, Response } from 'express';
 import * as fs from 'fs';
 import { getBenchmarksPath, getDataDir, getJpegQuality, getMaxImageDimension, getMuseEndpoint, getMuseModel, getPerceptionConcurrency, getRankingBatchSize, getSamEndpoint, getSamModel, getVideoFps } from '../lib/config';
 import { getActivePromptStrings } from '../perception/prompts';
+import { resetAllData } from '../scripts/resetData';
 
 const router = Router();
 const startedAt = new Date().toISOString();
+
+router.post('/system/reset', (_req: Request, res: Response): void => {
+  try {
+    const result = resetAllData();
+    res.json({
+      success: true,
+      message: 'Workspace completely reset. All jobs, queue items, clips, and decisions cleared.',
+      ...result,
+    });
+  } catch (err) {
+    res.status(500).json({
+      error: 'Failed to reset workspace',
+      details: err instanceof Error ? err.message : String(err),
+    });
+  }
+});
 
 router.get('/system', (_req: Request, res: Response): void => {
   res.json({

@@ -11,6 +11,7 @@ import {
   submitFilesJob,
   saveCandidateDecision,
   fetchJobDecisions,
+  resetSystemState,
 } from './api';
 import { Layout } from './components/Layout';
 import { IngestTab } from './components/IngestTab';
@@ -163,6 +164,20 @@ export function App() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [activeTab, selectedCandidate, handleNextCandidate, handlePrevCandidate]);
 
+  const handleResetWorkspace = useCallback(async () => {
+    try {
+      await resetSystemState();
+      setCurrentJob(null);
+      setQueueItems([]);
+      setClipReports([]);
+      setSelectedCandidate(null);
+      setReviewerDecisions({});
+      setActiveTab('ingest');
+    } catch (err) {
+      console.error('Reset failed:', err);
+    }
+  }, []);
+
   const isProcessing = currentJob ? ['queued', 'ingesting', 'detecting', 'ranking'].includes(currentJob.status) : false;
 
   return (
@@ -173,6 +188,7 @@ export function App() {
       hasSelectedCandidate={Boolean(selectedCandidate)}
       activeJobId={currentJob?.jobId}
       isProcessing={isProcessing}
+      onResetWorkspace={handleResetWorkspace}
     >
       {activeTab === 'ingest' && (
         <IngestTab

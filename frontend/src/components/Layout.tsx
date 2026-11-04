@@ -4,6 +4,7 @@ import {
   UploadCloud,
   ListOrdered,
   Crosshair,
+  RotateCcw,
 } from 'lucide-react';
 import Particles from './Particles/Particles';
 
@@ -14,6 +15,7 @@ interface Props {
   hasSelectedCandidate: boolean;
   activeJobId?: string;
   isProcessing: boolean;
+  onResetWorkspace?: () => void;
   children: React.ReactNode;
 }
 
@@ -22,6 +24,7 @@ export const Layout: React.FC<Props> = ({
   onSelectTab,
   queueCount,
   hasSelectedCandidate,
+  onResetWorkspace,
   children,
 }) => {
   const [timeStr, setTimeStr] = useState<string>('');
@@ -58,6 +61,29 @@ export const Layout: React.FC<Props> = ({
         </div>
 
         <div className="telemetry-strip">
+          {onResetWorkspace && (
+            <button
+              onClick={() => {
+                if (window.confirm('Reset all operational data? This will clear all clips, queue candidates, and reviewer decisions.')) {
+                  onResetWorkspace();
+                }
+              }}
+              className="btn btn-secondary"
+              style={{
+                padding: '4px 10px',
+                fontSize: 11,
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                color: 'var(--text-muted)',
+                cursor: 'pointer',
+              }}
+              title="Clear evaluated clips & queue data"
+            >
+              <RotateCcw size={12} />
+              <span>Reset Data</span>
+            </button>
+          )}
           <div className="telemetry-item">
             <span>{timeStr}</span>
           </div>

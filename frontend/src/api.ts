@@ -127,3 +127,12 @@ export async function fetchJobDecisions(jobId: string): Promise<Record<string, R
   const data = await res.json();
   return data.decisions || {};
 }
+
+export async function resetSystemState(): Promise<{ success: boolean; message: string }> {
+  const res = await fetch(`${API_BASE}/api/system/reset`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+  });
+  if (!res.ok) throw new Error('Failed to reset system state');
+  return res.json();
+}
