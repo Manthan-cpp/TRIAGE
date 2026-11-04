@@ -1,7 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import type { AuditLogEntry } from '../types';
 import { fetchJobAudit, fetchRecentAudit } from '../api';
 import { Filter, Download, RefreshCw, Terminal } from 'lucide-react';
+
+// Remote audit loading intentionally synchronizes component state from an external API.
+// oxlint-disable react(set-state-in-effect)
 
 interface Props {
   activeJobId?: string;
@@ -12,17 +15,12 @@ export const AuditTab: React.FC<Props> = ({ activeJobId }) => {
   const [filterStage, setFilterStage] = useState<string>('all');
   const [loading, setLoading] = useState(false);
 
-  const loadAudit = async () => {
+  const loadAudit = useCallback(async () => {
     setLoading(true);
     try {
       if (activeJobId) {
         const data = await fetchJobAudit(activeJobId);
-        if (data && data.length > 0) {
-          setEvents(data);
-        } else {
-          const recent = await fetchRecentAudit(100);
-          setEvents(recent);
-        }
+        setEvents(data);
       } else {
         const data = await fetchRecentAudit(100);
         setEvents(data);
@@ -32,11 +30,13 @@ export const AuditTab: React.FC<Props> = ({ activeJobId }) => {
     } finally {
       setLoading(false);
     }
-  };
-
-  useEffect(() => {
-    loadAudit();
   }, [activeJobId]);
+
+  // Loading remote audit data is an intentional external-system synchronization.
+  // oxlint-disable-next-line react(set-state-in-effect)
+  useEffect(() => {
+    void loadAudit();
+  }, [loadAudit]);
 
   const filteredEvents = events.filter((e) => {
     if (filterStage !== 'all' && e.stage !== filterStage) return false;
@@ -112,21 +112,23 @@ export const AuditTab: React.FC<Props> = ({ activeJobId }) => {
           <span className="stat-subtext">Tamper-evident trail</span>
         </div>
         <div className="stat-card" style={{ padding: 12 }}>
-          <span className="stat-label">Chain Completeness</span>
-          <span className="stat-value" style={{ fontSize: 18, color: '#10b981' }}>100%</span>
-          <span className="stat-subtext">0 unlinked candidates</span>
+          <span className="stat-label">Audit Availability</span>
+          <span className="stat-value" style={{ fontSize: 18, color: events.length > 0 ? '#10b981' : 'var(--text-muted)' }}>
+            {events.length > 0 ? 'Recorded' : 'Pending'}
+          </span>
+          <span className="stat-subtext">Append-only events loaded from storage</span>
         </div>
         <div className="stat-card" style={{ padding: 12 }}>
           <span className="stat-label">Target Batch</span>
           <span className="stat-value" style={{ fontSize: 14, fontFamily: 'var(--font-mono)', color: 'var(--text-primary)' }}>
             {activeJobId ? activeJobId.slice(0, 16) + '...' : 'System Global'}
           </span>
-          <span className="stat-subtext">SQLite WAL Persisted</span>
+          <span className="stat-subtext">Current job scope</span>
         </div>
         <div className="stat-card" style={{ padding: 12 }}>
-          <span className="stat-label">Verification Standard</span>
-          <span className="stat-value" style={{ fontSize: 14, color: '#38bdf8' }}>SAR Protocol</span>
-          <span className="stat-subtext">Citations locked</span>
+          <span className="stat-label">Event Errors</span>
+          <span className="stat-value" style={{ fontSize: 18 }}>{events.filter((event) => event.status === 'error').length}</span>
+          <span className="stat-subtext">Warnings: {events.filter((event) => event.status === 'warn').length}</span>
         </div>
       </div>
 

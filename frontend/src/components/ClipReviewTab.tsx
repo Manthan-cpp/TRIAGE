@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import type { CandidateDetail, ConfidenceLabel, ReviewerDecision, QueueItem } from '../types';
 import { ConfidencePill } from './ConfidencePill';
 import { resolveMediaUrl } from '../api';
-import { CheckCircle2, XCircle, ArrowLeft, ArrowRight, Crosshair, Clock } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Crosshair } from 'lucide-react';
+import { ReviewDecisionPanel } from './ReviewDecisionPanel';
 
 interface Props {
   candidate: CandidateDetail | null;
   queueItem?: QueueItem;
-  onDecision: (candidateId: string, status: 'verified' | 'false_alarm', notes?: string) => void;
+  onDecision: (candidateId: string, status: 'verified' | 'false_alarm', notes?: string) => Promise<void>;
   decision?: ReviewerDecision;
   onNext: () => void;
   onPrev: () => void;
@@ -19,12 +20,6 @@ export const ClipReviewTab: React.FC<Props> = ({
   candidate, queueItem, onDecision, decision, onNext, onPrev, hasNext, hasPrev,
 }) => {
   const [showBoxes, setShowBoxes] = useState(true);
-  const [reviewerNotes, setReviewerNotes] = useState(decision?.notes || '');
-
-  useEffect(() => {
-    setReviewerNotes(decision?.notes || '');
-  }, [candidate?.candidateId, decision?.notes]);
-
   if (!candidate) {
     return (
       <div style={{ textAlign: 'center', padding: 64, color: 'var(--text-muted)' }}>
@@ -38,7 +33,7 @@ export const ClipReviewTab: React.FC<Props> = ({
   const boxes = candidate.maskOverlayData?.boxes || [];
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '1.3fr 1fr', gap: 20, height: '100%' }}>
+    <div className="clip-review-grid" style={{ display: 'grid', gridTemplateColumns: '1.3fr 1fr', gap: 20, height: '100%' }}>
       {/* Left Column: Image Canvas with Overlay */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         {/* Viewer Toolbar */}
@@ -193,54 +188,7 @@ export const ClipReviewTab: React.FC<Props> = ({
           </div>
         </div>
 
-        {/* Human-in-the-Loop Review Decision Section */}
-        <div className="stat-card" style={{ gap: 12, marginTop: 'auto' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span className="stat-label">Human Reviewer Action (Decision Support)</span>
-            {decision?.status && decision.status !== 'pending' && (
-              <span style={{ fontSize: 11, fontFamily: 'var(--font-mono)', color: decision.status === 'verified' ? '#34d399' : '#f87171', display: 'flex', alignItems: 'center', gap: 4 }}>
-                <Clock size={12} /> {decision.status === 'verified' ? 'VERIFIED' : 'FALSE ALARM'}
-              </span>
-            )}
-          </div>
-
-          <textarea
-            value={reviewerNotes}
-            onChange={(e) => setReviewerNotes(e.target.value)}
-            placeholder="Reviewer operational notes (e.g. check drone battery, team dispatched to sector...)"
-            rows={2}
-            style={{
-              width: '100%',
-              background: 'var(--bg-tertiary)',
-              border: '1px solid var(--border-subtle)',
-              borderRadius: 3,
-              color: 'var(--text-primary)',
-              padding: 8,
-              fontSize: 11,
-              outline: 'none',
-              resize: 'none',
-            }}
-          />
-
-          <div style={{ display: 'flex', gap: 8 }}>
-            <button
-              className="btn btn-primary"
-              style={{ flex: 1 }}
-              onClick={() => onDecision(candidate.candidateId, 'verified', reviewerNotes)}
-            >
-              <CheckCircle2 size={14} />
-              <span>Mark Verified</span>
-            </button>
-            <button
-              className="btn btn-secondary"
-              style={{ flex: 1, borderColor: '#7f1d1d', color: '#f87171' }}
-              onClick={() => onDecision(candidate.candidateId, 'false_alarm', reviewerNotes)}
-            >
-              <XCircle size={14} />
-              <span>Flag False Alarm</span>
-            </button>
-          </div>
-        </div>
+        <ReviewDecisionPanel candidateId={candidate.candidateId} decision={decision} onDecision={onDecision} />
       </div>
     </div>
   );

@@ -1,9 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
-import type { TabId, JobRecord, QueueItem, CandidateDetail, ReviewerDecision, HealthInfo } from './types';
+import type { TabId, JobRecord, QueueItem, CandidateDetail, ReviewerDecision, HealthInfo, JobMetrics, SystemInfo } from './types';
 import {
   fetchHealth,
   fetchJobs,
   fetchJob,
+  fetchJobMetrics,
+  fetchSystemInfo,
   fetchQueue,
   fetchCandidate,
   submitFilesJob,
@@ -28,10 +30,13 @@ export function App() {
   const [selectedCandidate, setSelectedCandidate] = useState<CandidateDetail | null>(null);
   const [reviewerDecisions, setReviewerDecisions] = useState<Record<string, ReviewerDecision>>({});
   const [healthInfo, setHealthInfo] = useState<HealthInfo | null>(null);
+  const [jobMetrics, setJobMetrics] = useState<JobMetrics | null>(null);
+  const [systemInfo, setSystemInfo] = useState<SystemInfo | null>(null);
 
   // Poll health and load latest job on mount
   useEffect(() => {
     fetchHealth().then(setHealthInfo).catch(() => {});
+    fetchSystemInfo().then(setSystemInfo).catch(() => {});
     
     // Auto-load latest existing job from backend store
     fetchJobs(1).then(async (res) => {
@@ -46,12 +51,14 @@ export function App() {
           completedAt: latest.completedAt,
         });
 
-        if (latest.status === 'complete') {
-          const q = await fetchQueue(latest.id).catch(() => null);
-          if (q) setQueueItems(q.rankedItems);
-          const decs = await fetchJobDecisions(latest.id).catch(() => ({}));
-          setReviewerDecisions(decs);
-        }
+        const [q, metrics, decs] = await Promise.all([
+          fetchQueue(latest.id).catch(() => null),
+          fetchJobMetrics(latest.id).catch(() => null),
+          fetchJobDecisions(latest.id).catch(() => ({})),
+        ]);
+        if (q) setQueueItems(q.rankedItems);
+        if (metrics) setJobMetrics(metrics);
+        setReviewerDecisions(decs);
       }
     }).catch(() => {});
 
@@ -62,30 +69,33 @@ export function App() {
   }, []);
 
   // Poll active job status while in progress
+  const activeJobId = currentJob?.jobId;
+  const activeJobStatus = currentJob?.status;
   useEffect(() => {
-    if (!currentJob) return;
-    const isWorking = ['queued', 'ingesting', 'detecting', 'ranking'].includes(currentJob.status);
+    if (!activeJobId) return;
+    const isWorking = ['queued', 'ingesting', 'detecting', 'ranking'].includes(activeJobStatus || '');
     if (!isWorking) return;
 
     const timer = setInterval(async () => {
       try {
-        const updated = await fetchJob(currentJob.jobId);
+        const [updated, q, metrics, decs] = await Promise.all([
+          fetchJob(activeJobId),
+          fetchQueue(activeJobId),
+          fetchJobMetrics(activeJobId),
+          fetchJobDecisions(activeJobId),
+        ]);
         setCurrentJob(updated);
-
-        if (updated.status === 'complete') {
-          const q = await fetchQueue(updated.jobId);
-          setQueueItems(q.rankedItems);
-          const decs = await fetchJobDecisions(updated.jobId);
-          setReviewerDecisions(decs);
-          fetchHealth().then(setHealthInfo).catch(() => {});
-        }
+        setQueueItems(q.rankedItems);
+        setJobMetrics(metrics);
+        setReviewerDecisions(decs);
+        if (updated.status === 'complete' || updated.status === 'failed') fetchHealth().then(setHealthInfo).catch(() => {});
       } catch (err) {
         console.warn('Error polling job status:', err);
       }
     }, 1200);
 
     return () => clearInterval(timer);
-  }, [currentJob?.jobId, currentJob?.status]);
+  }, [activeJobId, activeJobStatus]);
 
   // Handler: Upload local files
   const handleUploadFiles = async (files: File[], label: string) => {
@@ -93,11 +103,13 @@ export function App() {
     setCurrentJob({
       jobId: res.jobId,
       status: 'queued',
-      progress: { total: files.length, processed: 0 },
+      progress: { total: 0, processed: 0 },
       currentStage: 'Job submitted to background queue...',
     });
     setQueueItems([]);
     setSelectedCandidate(null);
+    setReviewerDecisions({});
+    setJobMetrics(null);
   };
 
   // Handler: Launch demo dataset
@@ -106,11 +118,13 @@ export function App() {
     setCurrentJob({
       jobId: res.jobId,
       status: 'queued',
-      progress: { total: 5, processed: 0 },
+      progress: { total: 0, processed: 0 },
       currentStage: `Demo dataset "${datasetKey}" initializing...`,
     });
     setQueueItems([]);
     setSelectedCandidate(null);
+    setReviewerDecisions({});
+    setJobMetrics(null);
   };
 
   // Handler: Select a candidate for detailed inspection
@@ -126,16 +140,12 @@ export function App() {
 
   // Handler: Reviewer human-in-the-loop decision with backend persistence
   const handleReviewDecision = async (candidateId: string, status: 'verified' | 'false_alarm', notes?: string) => {
-    const now = new Date().toISOString();
-    setReviewerDecisions((prev) => ({ ...prev, [candidateId]: { status, notes, updatedAt: now } }));
-
-    if (currentJob?.jobId) {
-      try {
-        await saveCandidateDecision(candidateId, currentJob.jobId, status, notes);
-      } catch (err) {
-        console.warn('Failed to persist decision to backend:', err);
-      }
-    }
+    if (!currentJob?.jobId) throw new Error('No active job is available for this review action.');
+    await saveCandidateDecision(candidateId, currentJob.jobId, status, notes);
+    setReviewerDecisions((prev) => ({
+      ...prev,
+      [candidateId]: { status, notes, updatedAt: new Date().toISOString() },
+    }));
   };
 
   // Next / Previous navigation in Clip Review
@@ -203,6 +213,7 @@ export function App() {
 
       {activeTab === 'clip' && (
         <ClipReviewTab
+          key={selectedCandidate?.candidateId || 'no-candidate'}
           candidate={selectedCandidate}
           queueItem={queueItems.find((q) => q.candidateId === selectedCandidate?.candidateId)}
           onDecision={handleReviewDecision}
@@ -214,28 +225,15 @@ export function App() {
         />
       )}
 
-      {activeTab === 'audit' && (
-        <AuditTab activeJobId={currentJob?.jobId} />
-      )}
-
+      {activeTab === 'audit' && <AuditTab activeJobId={currentJob?.jobId} />}
       {activeTab === 'overview' && (
-        <OverviewTab
-          items={queueItems}
-          reviewerDecisions={reviewerDecisions}
-        />
+        <OverviewTab items={queueItems} reviewerDecisions={reviewerDecisions} currentJob={currentJob} metrics={jobMetrics} />
       )}
-
-      {activeTab === 'benchmarks' && (
-        <BenchmarksTab />
-      )}
-
+      {activeTab === 'benchmarks' && <BenchmarksTab />}
       {activeTab === 'telemetry' && (
-        <TelemetryTab healthInfo={healthInfo} />
+        <TelemetryTab healthInfo={healthInfo} metrics={jobMetrics} systemInfo={systemInfo} />
       )}
-
-      {activeTab === 'settings' && (
-        <SettingsTab healthInfo={healthInfo} />
-      )}
+      {activeTab === 'settings' && <SettingsTab healthInfo={healthInfo} systemInfo={systemInfo} />}
     </Layout>
   );
 }

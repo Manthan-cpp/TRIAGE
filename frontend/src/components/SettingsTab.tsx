@@ -1,12 +1,13 @@
 import React from 'react';
-import type { HealthInfo } from '../types';
+import type { HealthInfo, SystemInfo } from '../types';
 import { Cpu, ShieldAlert, XCircle, CheckCircle2, Scale } from 'lucide-react';
 
 interface Props {
   healthInfo: HealthInfo | null;
+  systemInfo: SystemInfo | null;
 }
 
-export const SettingsTab: React.FC<Props> = () => {
+export const SettingsTab: React.FC<Props> = ({ healthInfo, systemInfo }) => {
   return (
     <div style={{ maxWidth: 860, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 20 }}>
       {/* Header */}
@@ -27,10 +28,10 @@ export const SettingsTab: React.FC<Props> = () => {
             <span className="stat-label">Candidate Perception Model</span>
           </div>
           <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', fontFamily: 'var(--font-mono)' }}>
-            Meta SAM 3.1 (<code>sam-3.1</code>)
+            {systemInfo?.models.sam.id || 'Unavailable'}
           </div>
           <p style={{ fontSize: 11, color: 'var(--text-secondary)', lineHeight: 1.45 }}>
-            Zero-shot prompt-driven segmentation via <code>/v1/responses</code>. Evaluates parallel prompts <code>person</code> and <code>clothing</code> with Sharp 800px compressed payloads.
+            Perception endpoint: <code>{systemInfo?.models.sam.endpoint || 'Unavailable'}</code>. Active prompts: <code>{systemInfo?.prompts.join(', ') || 'Unavailable'}</code>.
           </p>
         </div>
 
@@ -40,12 +41,26 @@ export const SettingsTab: React.FC<Props> = () => {
             <span className="stat-label">Comparative Prioritizer</span>
           </div>
           <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', fontFamily: 'var(--font-mono)' }}>
-            Meta Muse Spark 1.3 (<code>muse-spark-1.3</code>)
+            {systemInfo?.models.muse.id || 'Unavailable'}
           </div>
           <p style={{ fontSize: 11, color: 'var(--text-secondary)', lineHeight: 1.45 }}>
-            Cross-frame comparative ranking with JSON schema adherence. Generates contiguous 1..N priorities with strict vocabulary compliance.
+            Ranking endpoint: <code>{systemInfo?.models.muse.endpoint || 'Unavailable'}</code>. Output is schema-validated before persistence.
           </p>
         </div>
+      </div>
+
+      <div className="stat-card" style={{ gap: 8 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <Cpu size={14} color="var(--accent-highlight)" />
+          <span className="stat-label">Current API Usage</span>
+        </div>
+        <div style={{ display: 'flex', gap: 24, fontFamily: 'var(--font-mono)', fontSize: 12 }}>
+          <span>{healthInfo?.costSummary.totalCalls ?? 0} calls</span>
+          <span>${(healthInfo?.costSummary.totalCost ?? 0).toFixed(4)} estimated</span>
+        </div>
+        <span style={{ fontSize: 11, color: 'var(--text-secondary)' }}>
+          Usage is estimated locally from successful model calls; external billing and spend limits remain account-level controls.
+        </span>
       </div>
 
       {/* Ethical Rules & Banned Vocabulary Card (Lucide icons, NO emojis) */}
@@ -106,8 +121,8 @@ export const SettingsTab: React.FC<Props> = () => {
           <tbody>
             <tr>
               <td style={{ fontFamily: 'var(--font-mono)', fontWeight: 600, color: 'var(--text-primary)' }}>SARD</td>
-              <td style={{ fontFamily: 'var(--font-mono)' }}>Academic Research</td>
-              <td style={{ fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>Non-Commercial</td>
+              <td style={{ fontFamily: 'var(--font-mono)' }}>CC BY 4.0</td>
+              <td style={{ fontFamily: 'var(--font-mono)', color: '#34d399' }}>With Attribution</td>
               <td style={{ fontSize: 11 }}>Search-and-Rescue aerial drone dataset. Permitted for hackathon research and evaluation benchmarking.</td>
             </tr>
             <tr>

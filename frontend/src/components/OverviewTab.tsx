@@ -1,109 +1,75 @@
 import React from 'react';
-import type { QueueItem, ReviewerDecision } from '../types';
-import { Clock, ShieldCheck, Activity, Target } from 'lucide-react';
+import type { JobMetrics, JobRecord, QueueItem, ReviewerDecision } from '../types';
+import { Activity, Clock, Database, ShieldCheck } from 'lucide-react';
 
 interface Props {
   items: QueueItem[];
   reviewerDecisions: Record<string, ReviewerDecision>;
+  currentJob: JobRecord | null;
+  metrics: JobMetrics | null;
 }
 
-export const OverviewTab: React.FC<Props> = ({ items, reviewerDecisions }) => {
-  const total = items.length;
-  const highCount = items.filter((i) => i.confidenceLabel === 'possible-high').length;
-  const medCount = items.filter((i) => i.confidenceLabel === 'possible-medium').length;
-  const lowCount = items.filter((i) => i.confidenceLabel === 'possible-low').length;
+function formatDuration(milliseconds?: number): string {
+  if (milliseconds === undefined) return '—';
+  if (milliseconds < 1000) return `${milliseconds}ms`;
+  return `${(milliseconds / 1000).toFixed(1)}s`;
+}
 
-  const reviewedCount = Object.keys(reviewerDecisions).length;
+export const OverviewTab: React.FC<Props> = ({ items, reviewerDecisions, currentJob, metrics }) => {
+  const total = metrics?.queue.total ?? items.length;
+  const highCount = metrics?.queue.possibleHigh ?? items.filter((item) => item.confidenceLabel === 'possible-high').length;
+  const mediumCount = metrics?.queue.possibleMedium ?? items.filter((item) => item.confidenceLabel === 'possible-medium').length;
+  const lowCount = metrics?.queue.possibleLow ?? items.filter((item) => item.confidenceLabel === 'possible-low').length;
+  const reviewedCount = metrics?.review.reviewed ?? items.filter((item) => {
+    const status = reviewerDecisions[item.candidateId]?.status;
+    return status === 'verified' || status === 'false_alarm';
+  }).length;
   const reviewedPct = total > 0 ? Math.round((reviewedCount / total) * 100) : 0;
 
   return (
-    <div style={{ maxWidth: 860, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 20 }}>
-      {/* Header */}
+    <div className="overview-page">
       <div>
-        <h2 style={{ fontSize: 16, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-          Mission Operations & Triage Metrics
-        </h2>
-        <p style={{ color: 'var(--text-secondary)', fontSize: 12, marginTop: 4 }}>
-          Live operational statistics for the active Search-and-Rescue video review backlog.
-        </p>
+        <h2 className="page-title">Mission Operations & Triage Metrics</h2>
+        <p className="page-subtitle">Live measurements for the selected batch. Documented evaluation results are kept in Benchmarks.</p>
       </div>
 
-      {/* Summary KPI Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14 }}>
-        <div className="stat-card">
-          <span className="stat-label">Total Ingested Units</span>
-          <span className="stat-value">{total}</span>
-          <span className="stat-subtext">100% reviewable in queue</span>
+      {!currentJob ? (
+        <div className="empty-state">
+          <Database size={28} />
+          <strong>No batch selected</strong>
+          <span>Start an ingestion batch to populate live operational metrics.</span>
         </div>
-
-        <div className="stat-card">
-          <span className="stat-label" style={{ color: '#fbbf24' }}>Possible-High Priority</span>
-          <span className="stat-value" style={{ color: '#fbbf24' }}>{highCount}</span>
-          <span className="stat-subtext">Multi-prompt corroborated</span>
-        </div>
-
-        <div className="stat-card">
-          <span className="stat-label" style={{ color: '#38bdf8' }}>Possible-Medium</span>
-          <span className="stat-value" style={{ color: '#38bdf8' }}>{medCount}</span>
-          <span className="stat-subtext">Moderate visual contrast</span>
-        </div>
-
-        <div className="stat-card">
-          <span className="stat-label">Possible-Low (Calm)</span>
-          <span className="stat-value" style={{ color: 'var(--text-secondary)' }}>{lowCount}</span>
-          <span className="stat-subtext">Weak or empty terrain</span>
-        </div>
-      </div>
-
-      {/* Review Progress Section */}
-      <div className="stat-card" style={{ gap: 14 }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <Activity size={15} color="var(--accent-highlight)" />
-            <span className="stat-label">Human Review Queue Completion</span>
+      ) : (
+        <>
+          <div className="overview-context">
+            <span>Batch <strong>{currentJob.jobId}</strong></span>
+            <span className={`status-chip status-${currentJob.status}`}>{currentJob.status}</span>
+            <span>{currentJob.progress.processed} / {currentJob.progress.total || '—'} units processed</span>
           </div>
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>
-            {reviewedCount} / {total} Reviewed ({reviewedPct}%)
-          </span>
-        </div>
 
-        {/* Progress Bar with smooth transition */}
-        <div style={{ width: '100%', height: 7, background: 'var(--bg-tertiary)', borderRadius: 3, overflow: 'hidden' }}>
-          <div
-            style={{
-              width: `${reviewedPct}%`,
-              height: '100%',
-              backgroundColor: 'var(--accent-primary)',
-              transition: 'width var(--transition-normal)',
-            }}
-          />
-        </div>
+          <div className="overview-kpis">
+            <div className="stat-card"><span className="stat-label">Queue Items</span><span className="stat-value">{total}</span><span className="stat-subtext">Current batch output</span></div>
+            <div className="stat-card"><span className="stat-label">Possible-High</span><span className="stat-value confidence-value-high">{highCount}</span><span className="stat-subtext">Current queue tier</span></div>
+            <div className="stat-card"><span className="stat-label">Possible-Medium</span><span className="stat-value confidence-value-medium">{mediumCount}</span><span className="stat-subtext">Current queue tier</span></div>
+            <div className="stat-card"><span className="stat-label">Possible-Low</span><span className="stat-value">{lowCount}</span><span className="stat-subtext">Retained for review</span></div>
+          </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, borderTop: '1px solid var(--border-subtle)', paddingTop: 12 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12 }}>
-            <Clock size={14} color="var(--text-muted)" />
-            <span>Time to 1st Candidate: <strong>&lt; 5s</strong></span>
+          <div className="stat-card review-progress-card">
+            <div className="section-heading"><Activity size={15} /><span className="stat-label">Human Review Progress</span><strong>{reviewedCount} / {total} ({reviewedPct}%)</strong></div>
+            <div className="progress-track"><div className="progress-fill" style={{ width: `${reviewedPct}%` }} /></div>
+            <div className="live-facts">
+              <span><Clock size={14} /> Batch elapsed: <strong>{formatDuration(metrics?.timing.elapsedMs)}</strong></span>
+              <span><Database size={14} /> Processing: <strong>{currentJob.status}</strong></span>
+              <span><ShieldCheck size={14} /> Source retention: <strong>Enabled</strong></span>
+            </div>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12 }}>
-            <Target size={14} color="#34d399" />
-            <span>Top-10 Precision: <strong>100%</strong> (Phase 9 Calibrated)</span>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12 }}>
-            <ShieldCheck size={14} color="#38bdf8" />
-            <span>Zero-Dismissal Rule: <strong>100% Retained</strong></span>
-          </div>
-        </div>
-      </div>
 
-      {/* Decision-Support Framing Banner */}
-      <div style={{ backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-subtle)', borderRadius: 4, padding: 16 }}>
-        <div style={{ fontWeight: 600, fontSize: 12, color: 'var(--text-primary)', marginBottom: 4 }}>
-          Operational Decision-Support Protocol
-        </div>
-        <p style={{ fontSize: 11, color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-          Project Triage reorders incoming aerial sweeps to optimize human reviewer attention during the critical first 20 minutes of operations. The system functions exclusively as decision support; incident commanders retain full authority over team dispatch and confirmation.
-        </p>
-      </div>
+          <div className="stat-card operational-note">
+            <strong>Decision-support boundary</strong>
+            <p>Rankings organize reviewer attention. They do not establish human presence, replace field judgment, or trigger dispatch decisions.</p>
+          </div>
+        </>
+      )}
     </div>
   );
 };

@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import type { JobRecord } from '../types';
-import { UploadCloud, Play, CheckCircle2, AlertTriangle, Layers, Film } from 'lucide-react';
+import { UploadCloud, Play, AlertTriangle, Layers, Film } from 'lucide-react';
+import { PipelineStageTracker } from './PipelineStageTracker';
 
 interface Props {
   currentJob: JobRecord | null;
@@ -18,52 +19,39 @@ export const IngestTab: React.FC<Props> = ({
   const [dragOver, setDragOver] = useState(false);
   const [sourceLabel, setSourceLabel] = useState('UAV Field Sweep 01');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const handleDrop = async (e: React.DragEvent) => {
+  const runSubmission = async (action: () => Promise<void>) => {
+    setIsSubmitting(true);
+    setErrorMessage(null);
+    try {
+      await action();
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : 'The batch could not be submitted.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setDragOver(false);
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      setIsSubmitting(true);
-      try {
-        await onUploadFiles(Array.from(e.dataTransfer.files), sourceLabel);
-      } finally {
-        setIsSubmitting(false);
-      }
+      void runSubmission(() => onUploadFiles(Array.from(e.dataTransfer.files), sourceLabel));
     }
   };
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      setIsSubmitting(true);
-      try {
-        await onUploadFiles(Array.from(e.target.files), sourceLabel);
-      } finally {
-        setIsSubmitting(false);
-      }
+      void runSubmission(() => onUploadFiles(Array.from(e.target.files!), sourceLabel));
+      e.currentTarget.value = '';
     }
   };
 
-  const stages = [
-    { key: 'queued', label: 'Queued' },
-    { key: 'ingesting', label: 'Frame Ingestion (1 fps)' },
-    { key: 'detecting', label: 'SAM 3.1 Candidate Segmentation' },
-    { key: 'ranking', label: 'Muse Spark Prioritization' },
-    { key: 'complete', label: 'Review Ready' },
-  ];
-
-  const getStageIndex = (status?: string) => {
-    switch (status) {
-      case 'queued': return 0;
-      case 'ingesting': return 1;
-      case 'detecting': return 2;
-      case 'ranking': return 3;
-      case 'complete': return 4;
-      default: return -1;
-    }
+  const handleDemo = (datasetKey: string, label: string) => {
+    void runSubmission(() => onTriggerDemo(datasetKey, label));
   };
-
-  const currentIdx = getStageIndex(currentJob?.status);
 
   return (
     <div style={{ maxWidth: 860, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 24 }}>
@@ -78,7 +66,7 @@ export const IngestTab: React.FC<Props> = ({
       </div>
 
       {/* Upload & Demo Launcher Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: 16 }}>
+      <div className="ingest-grid" style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: 16 }}>
         {/* Drag and Drop Box */}
         <div
           onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
@@ -105,7 +93,7 @@ export const IngestTab: React.FC<Props> = ({
             ref={fileInputRef}
             onChange={handleFileChange}
             multiple
-            accept="image/*,video/*"
+               accept=".jpg,.jpeg,.png,.webp,.mp4,.mov,.avi,.mkv"
             style={{ display: 'none' }}
           />
           <UploadCloud size={32} color="#71717a" />
@@ -137,7 +125,7 @@ export const IngestTab: React.FC<Props> = ({
               className="btn btn-primary"
               style={{ justifyContent: 'flex-start' }}
               disabled={isSubmitting}
-              onClick={() => onTriggerDemo('eval_mix', 'Mixed Academic Benchmark (SARD + UAV + Negatives)')}
+              onClick={() => handleDemo('eval_mix', 'Mixed Academic Benchmark (SARD + UAV + Negatives)')}
             >
               <Play size={14} />
               <span>Launch Balanced Eval Batch (Recommended)</span>
@@ -147,7 +135,7 @@ export const IngestTab: React.FC<Props> = ({
               className="btn btn-secondary"
               style={{ justifyContent: 'flex-start' }}
               disabled={isSubmitting}
-              onClick={() => onTriggerDemo('uav_sar', 'UAV-SAR Aerial Wilderness Sweep')}
+              onClick={() => handleDemo('uav_sar', 'UAV-SAR Aerial Wilderness Sweep')}
             >
               <Film size={14} />
               <span>UAV-SAR Aerial Wilderness (High Occlusion)</span>
@@ -157,7 +145,7 @@ export const IngestTab: React.FC<Props> = ({
               className="btn btn-secondary"
               style={{ justifyContent: 'flex-start' }}
               disabled={isSubmitting}
-              onClick={() => onTriggerDemo('negative', 'Foliage/Debris Negative Controls')}
+              onClick={() => handleDemo('negative', 'Foliage/Debris Negative Controls')}
             >
               <AlertTriangle size={14} />
               <span>Foliage & Shadow Negative Controls</span>
@@ -189,58 +177,14 @@ export const IngestTab: React.FC<Props> = ({
         />
       </div>
 
-      {/* Live Pipeline State Machine Tracker */}
-      {currentJob && (
-        <div className="stat-card" style={{ gap: 16 }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span className="stat-label">Pipeline Execution Status: {currentJob.jobId}</span>
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-muted)' }}>
-              Processed: {currentJob.progress.processed} / {currentJob.progress.total || '...'} Units
-            </span>
-          </div>
-
-          {/* Stepper Bar */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 8 }}>
-            {stages.map((st, idx) => {
-              const isPast = idx < currentIdx;
-              const isCurrent = idx === currentIdx;
-              return (
-                <div
-                  key={st.key}
-                  style={{
-                    backgroundColor: isCurrent ? 'var(--accent-subtle)' : isPast ? 'var(--bg-hover)' : 'var(--bg-tertiary)',
-                    border: `1px solid ${isCurrent ? 'var(--accent-primary)' : isPast ? '#059669' : 'var(--border-subtle)'}`,
-                    borderRadius: 4,
-                    padding: '8px 10px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: 4,
-                    transition: 'all var(--transition-normal)',
-                  }}
-                >
-                  <div style={{ fontSize: 10, fontWeight: 700, color: isCurrent ? '#60a5fa' : isPast ? '#34d399' : 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 4 }}>
-                    {isPast ? <CheckCircle2 size={12} /> : <span>STEP {idx + 1}</span>}
-                  </div>
-                  <div style={{ fontSize: 11, fontWeight: 500, color: isCurrent ? 'var(--text-primary)' : 'var(--text-secondary)' }}>
-                    {st.label}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Current Stage Note & Complete Action */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: 'var(--bg-primary)', padding: '10px 14px', borderRadius: 4, border: '1px solid var(--border-subtle)' }}>
-            <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
-              {currentJob.currentStage}
-            </span>
-            {currentJob.status === 'complete' && (
-              <button className="btn btn-primary" onClick={onNavigateToQueue}>
-                Open Priority Queue →
-              </button>
-            )}
-          </div>
+      {errorMessage && (
+        <div role="alert" style={{ color: '#fca5a5', background: 'rgba(127, 29, 29, 0.2)', border: '1px solid #7f1d1d', padding: '8px 12px', borderRadius: 4, fontSize: 12 }}>
+          {errorMessage}
         </div>
+      )}
+
+      {currentJob && (
+        <PipelineStageTracker currentJob={currentJob} onNavigateToQueue={onNavigateToQueue} />
       )}
     </div>
   );

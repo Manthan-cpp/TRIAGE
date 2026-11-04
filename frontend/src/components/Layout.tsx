@@ -36,12 +36,7 @@ export const Layout: React.FC<Props> = ({
   useEffect(() => {
     const update = () => {
       const now = new Date();
-      setTimeStr(
-        now.toTimeString().split(' ')[0] +
-          ' UTC' +
-          (now.getTimezoneOffset() <= 0 ? '+' : '-') +
-          Math.abs(now.getTimezoneOffset() / 60)
-      );
+       setTimeStr(`${now.toISOString().slice(11, 19)} UTC`);
     };
     update();
     const interval = setInterval(update, 1000);

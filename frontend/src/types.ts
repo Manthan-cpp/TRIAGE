@@ -27,6 +27,17 @@ export interface JobRecord {
   errorMessage?: string;
 }
 
+export interface JobSummary {
+  id: string;
+  sourceLabel: string;
+  status: JobStatus;
+  totalUnits: number;
+  processedUnits: number;
+  currentStage: string;
+  completedAt?: string;
+  errorMessage?: string;
+}
+
 export interface QueueItem {
   candidateId: string;
   priorityRank: number;
@@ -90,6 +101,79 @@ export interface HealthInfo {
     totalCalls: number;
     byModel: Record<string, number>;
   };
+  runtime?: {
+    environment: string;
+    nodeVersion: string;
+    uptimeSec: number;
+  };
+}
+
+export interface JobMetrics {
+  jobId: string;
+  status: JobStatus;
+  progress: JobProgress;
+  queue: {
+    total: number;
+    possibleHigh: number;
+    possibleMedium: number;
+    possibleLow: number;
+  };
+  review: { reviewed: number; pending: number };
+  timing: {
+    elapsedMs: number;
+    completedDurationMs?: number;
+    stageDurations: Record<string, number>;
+  };
+  audit: { totalEvents: number; errorEvents: number; warningEvents: number };
+}
+
+export interface SystemInfo {
+  startedAt: string;
+  environment: string;
+  models: {
+    sam: { id: string; endpoint: string };
+    muse: { id: string; endpoint: string };
+  };
+  prompts: string[];
+  pipeline: {
+    videoFps: number;
+    maxImageDimension: number;
+    jpegQuality: number;
+    perceptionConcurrency: number;
+    rankingBatchSize: number;
+  };
+  storage: { dataDirConfigured: boolean; databasePathConfigured: boolean; mode: string };
+}
+
+export interface BenchmarkMetric {
+  value: number;
+  hits?: number;
+  total?: number;
+  fromKb?: number;
+  toKb?: number;
+  fromMs?: number;
+  toMs?: number;
+}
+
+export interface BenchmarkRecord {
+  source: string;
+  evaluatedAt: string;
+  dataset: {
+    totalUnits: number;
+    lightOcclusionUnits: number;
+    heavyOcclusionUnits: number;
+    negativeControlUnits: number;
+  };
+  metrics: Record<string, BenchmarkMetric>;
+  promptSensitivity: Array<{
+    prompt: string;
+    weight: number;
+    lightRate: number;
+    heavyRate: number;
+    finding: string;
+  }>;
+  failurePatterns: string[];
+  note: string;
 }
 
 export interface ReviewerDecision {

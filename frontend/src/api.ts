@@ -1,4 +1,4 @@
-import type { JobRecord, QueueItem, CandidateDetail, HealthInfo, AuditLogEntry, ReviewerDecision } from './types';
+import type { JobRecord, JobSummary, JobMetrics, QueueItem, CandidateDetail, HealthInfo, AuditLogEntry, ReviewerDecision, SystemInfo, BenchmarkRecord } from './types';
 
 const rawBase = import.meta.env.VITE_API_BASE_URL || '';
 const API_BASE = rawBase.endsWith('/') ? rawBase.slice(0, -1) : rawBase;
@@ -18,7 +18,7 @@ export async function fetchHealth(): Promise<HealthInfo> {
   return res.json();
 }
 
-export async function fetchJobs(limit = 20): Promise<{ jobs: any[]; total: number }> {
+export async function fetchJobs(limit = 20): Promise<{ jobs: JobSummary[]; total: number }> {
   const res = await fetch(`${API_BASE}/api/jobs?limit=${limit}`);
   if (!res.ok) throw new Error(`Failed to list jobs: ${res.status}`);
   return res.json();
@@ -33,6 +33,24 @@ export async function fetchJob(jobId: string): Promise<JobRecord> {
 export async function fetchQueue(jobId: string): Promise<{ jobId: string; total: number; rankedItems: QueueItem[] }> {
   const res = await fetch(`${API_BASE}/api/jobs/${jobId}/queue`);
   if (!res.ok) throw new Error(`Failed to get queue for ${jobId}: ${res.status}`);
+  return res.json();
+}
+
+export async function fetchJobMetrics(jobId: string): Promise<JobMetrics> {
+  const res = await fetch(`${API_BASE}/api/jobs/${jobId}/metrics`);
+  if (!res.ok) throw new Error(`Failed to get metrics for ${jobId}: ${res.status}`);
+  return res.json();
+}
+
+export async function fetchSystemInfo(): Promise<SystemInfo> {
+  const res = await fetch(`${API_BASE}/api/system`);
+  if (!res.ok) throw new Error(`Failed to get system configuration: ${res.status}`);
+  return res.json();
+}
+
+export async function fetchBenchmarks(): Promise<BenchmarkRecord> {
+  const res = await fetch(`${API_BASE}/api/benchmarks`);
+  if (!res.ok) throw new Error(`Benchmark record unavailable: ${res.status}`);
   return res.json();
 }
 
