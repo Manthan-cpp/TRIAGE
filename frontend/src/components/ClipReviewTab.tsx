@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import type { CandidateDetail, ConfidenceLabel, ReviewerDecision, QueueItem } from '../types';
 import { ConfidencePill } from './ConfidencePill';
 import { resolveMediaUrl } from '../api';
-import { ArrowLeft, ArrowRight, Crosshair, Clock } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Crosshair } from 'lucide-react';
 import { ReviewDecisionPanel } from './ReviewDecisionPanel';
 
 function formatTimecode(sec?: number): string {
@@ -103,30 +103,13 @@ export const ClipReviewTab: React.FC<Props> = ({
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         {/* Viewer Toolbar */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{ fontWeight: 700, fontSize: 13, color: 'var(--text-primary)' }}>
               {candidate.sourceMetadata.clipId}
             </span>
-            {candidate.sourceMetadata.timestampSec !== undefined ? (
-              <span style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 5,
-                backgroundColor: 'rgba(16, 185, 129, 0.15)',
-                border: '1px solid rgba(16, 185, 129, 0.4)',
-                color: '#34d399',
-                padding: '3px 9px',
-                borderRadius: 4,
-                fontSize: 11,
-                fontWeight: 700,
-                fontFamily: 'var(--font-mono)',
-              }}>
-                <Clock size={12} />
-                TIMECODE: {formatTimecode(candidate.sourceMetadata.timestampSec)}
-              </span>
-            ) : (
-              <span style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
-                Single Frame
+            {candidate.sourceMetadata.timestampSec !== undefined && (
+              <span className="mono-chip">
+                {formatTimecode(candidate.sourceMetadata.timestampSec)}
               </span>
             )}
           </div>
@@ -161,29 +144,22 @@ export const ClipReviewTab: React.FC<Props> = ({
           }}
         >
           <div style={{ position: 'relative', display: 'inline-block', maxWidth: '100%', maxHeight: '100%' }}>
-            {/* On-screen HUD timestamp badge */}
+            {/* On-screen HUD timestamp */}
             {candidate.sourceMetadata.timestampSec !== undefined && (
               <div style={{
                 position: 'absolute',
-                top: 10,
-                left: 10,
-                backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                border: '1px solid rgba(16, 185, 129, 0.6)',
-                color: '#34d399',
-                padding: '3px 8px',
-                borderRadius: 3,
+                top: 8,
+                left: 8,
+                backgroundColor: 'rgba(9, 9, 11, 0.85)',
+                border: '1px solid var(--border-subtle)',
+                color: 'var(--text-secondary)',
+                padding: '2px 6px',
+                borderRadius: 2,
                 fontFamily: 'var(--font-mono)',
-                fontSize: 12,
-                fontWeight: 700,
-                display: 'flex',
-                alignItems: 'center',
-                gap: 5,
+                fontSize: 11,
                 zIndex: 10,
-                letterSpacing: '0.04em',
-                boxShadow: '0 2px 6px rgba(0,0,0,0.5)',
               }}>
-                <Clock size={12} />
-                <span>⏱ {formatTimecode(candidate.sourceMetadata.timestampSec)}</span>
+                {formatTimecode(candidate.sourceMetadata.timestampSec)}
               </div>
             )}
 
