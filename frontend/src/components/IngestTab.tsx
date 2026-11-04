@@ -105,7 +105,7 @@ export const IngestTab: React.FC<Props> = ({
             Drag & Drop Drone Footage or Photos Here
           </div>
           <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 4 }}>
-            Supports MP4, MOV, JPG, PNG, WEBP · Max 150MB per video, 25MB per image · Video sampled at 1 fps
+            Supports MP4, MOV, JPG, PNG, WEBP · Max 150MB per video, 25MB per image · Video sampled at 2 fps
           </div>
         </div>
         <button className="btn btn-primary" style={{ marginTop: 6 }} disabled={isSubmitting}>

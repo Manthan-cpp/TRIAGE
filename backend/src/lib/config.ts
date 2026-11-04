@@ -50,7 +50,7 @@ export function getMuseEndpoint(): string {
 }
 
 export function getVideoFps(): number {
-  return getPositiveNumber('VIDEO_FPS', 1, 0.1, 10);
+  return getPositiveNumber('VIDEO_FPS', 2, 0.1, 10);
 }
 
 export function getMaxImageDimension(): number {

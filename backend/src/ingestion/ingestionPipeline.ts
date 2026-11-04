@@ -3,7 +3,7 @@ import { FileValidator } from './fileValidator';
 import { IngestionStorage } from './storage';
 import { FrameSampler } from './frameSampler';
 import { ManifestGenerator, IngestionUnit, JobManifest } from './manifestGenerator';
-import { PROJECT_ROOT } from '../lib/config';
+import { PROJECT_ROOT, getVideoFps } from '../lib/config';
 
 export interface IngestionInputFile {
   originalName: string;
@@ -18,7 +18,7 @@ export class IngestionPipeline {
     jobId: string,
     sourceLabel: string,
     files: IngestionInputFile[],
-    videoFps = 1
+    videoFps = getVideoFps()
   ): Promise<JobManifest> {
     if (!files || files.length === 0) {
       throw new Error(`Ingestion failed: No files provided for job ${jobId}`);

@@ -9,7 +9,7 @@ interface Props {
 
 const stages = [
   { key: 'queued', label: 'Queued' },
-  { key: 'ingesting', label: 'Frame Ingestion (1 fps)' },
+  { key: 'ingesting', label: 'Frame Ingestion (2 fps)' },
   { key: 'detecting', label: 'SAM 3.1 Candidate Segmentation' },
   { key: 'ranking', label: 'Muse Spark Prioritization' },
   { key: 'complete', label: 'Review Ready' },
