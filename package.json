@@ -9,6 +9,7 @@
     "build": "npm --prefix frontend run build && npm --prefix backend run build",
     "lint": "npm --prefix frontend run lint && npm --prefix backend run build",
     "start": "node backend/dist/index.js",
+    "test": "npm --prefix backend run test:smoke",
     "reset": "node backend/dist/scripts/resetData.js",
     "smoke:prod": "npm --prefix backend run test:smoke",
     "dev:backend": "npm --prefix backend run dev",

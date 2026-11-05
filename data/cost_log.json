@@ -1,875 +1,11 @@
 {
-  "totalEstimatedCostUsd": 2.86,
-  "totalApiCalls": 611,
+  "totalEstimatedCostUsd": 3.376,
+  "totalApiCalls": 719,
   "callsByModel": {
-    "sam-3.1": 546,
-    "muse-spark-1.3": 65
+    "sam-3.1": 646,
+    "muse-spark-1.3": 73
   },
   "entries": [
-    {
-      "timestamp": "2026-11-01T12:23:10.524Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 1654,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-01T12:23:10.848Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 1974,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-01T12:23:10.880Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 2008,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-01T12:23:10.901Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 2028,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-01T12:23:11.642Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 737,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-01T12:23:11.643Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 738,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-01T12:23:11.656Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 748,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-01T12:23:12.323Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 1419,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-01T12:23:12.604Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 1697,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-01T12:23:23.650Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 12747,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-01T12:23:24.922Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 1266,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-01T12:23:25.152Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 1499,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-01T12:23:25.323Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 1669,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-01T12:23:25.341Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 1688,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-01T12:23:25.368Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 1712,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-01T12:23:25.393Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 1738,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-01T12:23:25.914Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 519,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-01T12:23:26.105Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 710,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-01T12:23:26.805Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 1408,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-01T12:23:26.855Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 1458,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-01T12:23:44.980Z",
-      "model": "muse-spark-1.3",
-      "endpoint": "/chat/completions",
-      "latencyMs": 18121,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.002
-    },
-    {
-      "timestamp": "2026-11-01T12:23:55.650Z",
-      "model": "muse-spark-1.3",
-      "endpoint": "/chat/completions",
-      "latencyMs": 10668,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.002
-    },
-    {
-      "timestamp": "2026-11-01T12:24:05.737Z",
-      "model": "muse-spark-1.3",
-      "endpoint": "/chat/completions",
-      "latencyMs": 10085,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.002
-    },
-    {
-      "timestamp": "2026-11-01T12:24:12.264Z",
-      "model": "muse-spark-1.3",
-      "endpoint": "/chat/completions",
-      "latencyMs": 6525,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.002
-    },
-    {
-      "timestamp": "2026-11-01T14:06:28.710Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 2116,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-01T14:06:29.083Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 2437,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-01T14:06:29.156Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 2512,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-01T14:06:29.456Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 2816,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-01T14:06:29.620Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 2976,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-01T14:06:29.972Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 3327,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-01T14:06:40.675Z",
-      "model": "muse-spark-1.3",
-      "endpoint": "/chat/completions",
-      "latencyMs": 10699,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.002
-    },
-    {
-      "timestamp": "2026-11-01T14:09:32.229Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 2341,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-01T14:09:32.311Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 2422,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-01T14:09:32.415Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 2527,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-01T14:09:32.595Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 2705,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-01T14:09:32.911Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 3080,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-01T14:09:33.152Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 3271,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-01T14:09:51.570Z",
-      "model": "muse-spark-1.3",
-      "endpoint": "/chat/completions",
-      "latencyMs": 18411,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.002
-    },
-    {
-      "timestamp": "2026-11-01T14:10:24.422Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 2230,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-01T14:10:24.424Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 2231,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-01T14:10:25.781Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 3598,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-01T14:10:25.956Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 3768,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-01T14:10:31.024Z",
-      "model": "muse-spark-1.3",
-      "endpoint": "/chat/completions",
-      "latencyMs": 5063,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.002
-    },
-    {
-      "timestamp": "2026-11-01T14:18:19.535Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 2765,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-01T14:18:19.571Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 2778,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-01T14:18:24.176Z",
-      "model": "muse-spark-1.3",
-      "endpoint": "/chat/completions",
-      "latencyMs": 4598,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.002
-    },
-    {
-      "timestamp": "2026-11-01T14:42:10.992Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 2490,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-01T14:42:11.076Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 2578,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-01T14:42:16.973Z",
-      "model": "muse-spark-1.3",
-      "endpoint": "/chat/completions",
-      "latencyMs": 5888,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.002
-    },
-    {
-      "timestamp": "2026-11-04T07:50:39.158Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 2405,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-04T07:50:39.609Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 2862,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-04T07:50:39.827Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 3076,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-04T07:50:39.932Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 3177,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-04T07:50:48.588Z",
-      "model": "muse-spark-1.3",
-      "endpoint": "/chat/completions",
-      "latencyMs": 8638,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.002
-    },
-    {
-      "timestamp": "2026-11-04T08:01:48.100Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 1995,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-04T08:01:48.178Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 2072,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-04T08:01:48.493Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 2380,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-04T08:01:49.569Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 3467,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-04T08:01:58.445Z",
-      "model": "muse-spark-1.3",
-      "endpoint": "/chat/completions",
-      "latencyMs": 8868,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.002
-    },
-    {
-      "timestamp": "2026-11-04T08:31:10.243Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 1672,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-04T08:31:10.330Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 1757,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-04T08:31:10.714Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 2140,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-04T08:31:11.006Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 2495,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-04T08:31:11.330Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 2758,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-04T08:31:11.405Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 2837,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-04T08:31:12.710Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 1302,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-04T08:31:13.093Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 1684,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-04T08:31:13.229Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 1815,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-04T08:31:13.241Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 1825,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-04T08:31:13.331Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 1920,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-04T08:31:14.067Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 2655,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-04T08:31:16.177Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 2105,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-04T08:31:16.179Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 2108,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-04T08:31:16.220Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 2147,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-04T08:31:16.503Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 2433,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-04T08:31:25.489Z",
-      "model": "muse-spark-1.3",
-      "endpoint": "/chat/completions",
-      "latencyMs": 8977,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.002
-    },
-    {
-      "timestamp": "2026-11-04T08:32:16.467Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 2292,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-04T08:32:16.803Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 2638,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-04T08:32:16.805Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 2639,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-04T08:32:16.817Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 2655,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-04T08:32:16.826Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 2648,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-04T08:32:17.365Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 3204,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-04T08:32:18.696Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 1324,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-04T08:32:19.034Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 1661,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-04T08:32:19.674Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 2305,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-04T08:32:19.676Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 2306,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-04T08:32:50.688Z",
-      "model": "muse-spark-1.3",
-      "endpoint": "/chat/completions",
-      "latencyMs": 31008,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.002
-    },
-    {
-      "timestamp": "2026-11-04T08:33:57.430Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 2339,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-04T08:33:57.512Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 2459,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-04T08:33:57.571Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 2521,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-04T08:33:57.639Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 2594,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-04T08:33:57.933Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 2884,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-04T08:33:58.026Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 2972,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-04T08:33:59.821Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 1792,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-04T08:34:00.039Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 2003,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-04T08:34:00.124Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 2093,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-04T08:34:00.213Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 2180,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-04T08:34:00.399Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 2362,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-04T08:34:00.420Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 2387,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-04T08:34:01.592Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 1165,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-04T08:34:02.209Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 1783,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-04T08:34:02.580Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 2149,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-04T08:34:02.623Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 2191,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-04T08:34:02.657Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 2230,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-04T08:34:03.189Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 2762,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-04T08:34:05.120Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 1927,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-04T08:34:05.237Z",
-      "model": "sam-3.1",
-      "endpoint": "/responses",
-      "latencyMs": 2045,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.005
-    },
-    {
-      "timestamp": "2026-11-04T08:34:20.612Z",
-      "model": "muse-spark-1.3",
-      "endpoint": "/chat/completions",
-      "latencyMs": 15370,
-      "inputUnits": 1,
-      "estimatedCostUsd": 0.002
-    },
     {
       "timestamp": "2026-11-04T17:37:03.894Z",
       "model": "sam-3.1",
@@ -4003,6 +3139,870 @@
       "model": "muse-spark-1.3",
       "endpoint": "/chat/completions",
       "latencyMs": 18363,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.002
+    },
+    {
+      "timestamp": "2026-11-05T00:05:23.516Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 3847,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:05:23.534Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 3818,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:05:23.797Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 3952,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:05:23.814Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 4482,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:05:23.826Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 4198,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:05:23.907Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 4078,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:05:23.948Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 4308,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:05:23.974Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 4180,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:05:24.023Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 4275,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:05:24.171Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 4437,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:05:24.238Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 4429,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:05:24.274Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 4505,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:05:26.103Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 1731,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:05:26.136Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 1733,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:05:26.974Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 2609,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:05:27.129Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 2787,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:05:27.203Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 2874,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:05:27.401Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 3068,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:05:27.449Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 3140,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:05:27.526Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 3138,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:05:38.803Z",
+      "model": "muse-spark-1.3",
+      "endpoint": "/chat/completions",
+      "latencyMs": 11202,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.002
+    },
+    {
+      "timestamp": "2026-11-05T00:05:42.205Z",
+      "model": "muse-spark-1.3",
+      "endpoint": "/chat/completions",
+      "latencyMs": 14527,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.002
+    },
+    {
+      "timestamp": "2026-11-05T00:05:42.909Z",
+      "model": "muse-spark-1.3",
+      "endpoint": "/chat/completions",
+      "latencyMs": 15271,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.002
+    },
+    {
+      "timestamp": "2026-11-05T00:06:09.342Z",
+      "model": "muse-spark-1.3",
+      "endpoint": "/chat/completions",
+      "latencyMs": 26421,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.002
+    },
+    {
+      "timestamp": "2026-11-05T00:31:49.848Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 2600,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:31:49.906Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 2688,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:31:49.933Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 2774,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:31:50.046Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 2838,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:31:50.123Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 2891,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:31:50.182Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 2956,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:31:50.222Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 3034,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:31:50.314Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 3077,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:31:50.367Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 3185,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:31:50.402Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 3189,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:31:50.503Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 3253,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:31:50.514Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 3320,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:31:52.145Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 1570,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:31:52.806Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 2264,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:31:52.993Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 2464,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:31:53.019Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 2430,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:31:53.060Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 2513,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:31:53.066Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 2482,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:31:53.262Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 2696,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:31:53.667Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 3066,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:31:53.683Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 3077,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:31:53.828Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 3224,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:31:54.052Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 3453,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:31:54.163Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 3626,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:31:56.030Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 1849,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:31:56.313Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 2144,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:31:56.320Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 2144,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:31:56.360Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 2185,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:31:56.435Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 2256,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:31:56.539Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 2340,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:31:56.795Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 2600,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:31:56.820Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 2626,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:31:56.854Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 2670,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:31:57.009Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 2825,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:31:57.203Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 3019,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:31:57.414Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 3225,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:31:59.132Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 1689,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:31:59.205Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 1756,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:31:59.297Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 1813,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:31:59.397Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 1896,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:31:59.820Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 2383,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:31:59.824Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 2395,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:32:00.021Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 2552,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:32:00.121Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 2647,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:32:00.165Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 2697,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:32:00.218Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 2722,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:32:00.774Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 3271,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:32:02.477Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 5001,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:32:03.900Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 1373,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:32:03.942Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 1421,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:32:03.943Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 1395,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:32:04.028Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 1523,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:32:04.631Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 2133,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:32:04.935Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 2404,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:32:04.941Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 2426,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:32:04.947Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 2447,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:32:04.952Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 2397,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:32:05.037Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 2547,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:32:05.419Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 2861,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:32:05.423Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 2882,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:32:06.530Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 1099,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:32:06.649Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 1209,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:32:06.882Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 1455,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:32:07.016Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 1560,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:32:07.280Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 1845,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:32:07.810Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 2380,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:32:07.816Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 2376,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:32:07.819Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 2366,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:32:07.823Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 2371,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:32:07.826Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 2383,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:32:07.832Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 2387,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:32:07.841Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 2390,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:32:08.787Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 934,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:32:08.802Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 955,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:32:08.953Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 1084,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:32:09.003Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 1142,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:32:09.130Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 1268,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:32:09.414Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 1563,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:32:10.275Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 2409,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:32:10.331Z",
+      "model": "sam-3.1",
+      "endpoint": "/responses",
+      "latencyMs": 2477,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.005
+    },
+    {
+      "timestamp": "2026-11-05T00:32:21.575Z",
+      "model": "muse-spark-1.3",
+      "endpoint": "/chat/completions",
+      "latencyMs": 11050,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.002
+    },
+    {
+      "timestamp": "2026-11-05T00:32:21.916Z",
+      "model": "muse-spark-1.3",
+      "endpoint": "/chat/completions",
+      "latencyMs": 11357,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.002
+    },
+    {
+      "timestamp": "2026-11-05T00:32:22.213Z",
+      "model": "muse-spark-1.3",
+      "endpoint": "/chat/completions",
+      "latencyMs": 11670,
+      "inputUnits": 1,
+      "estimatedCostUsd": 0.002
+    },
+    {
+      "timestamp": "2026-11-05T00:32:37.272Z",
+      "model": "muse-spark-1.3",
+      "endpoint": "/chat/completions",
+      "latencyMs": 15047,
       "inputUnits": 1,
       "estimatedCostUsd": 0.002
     }

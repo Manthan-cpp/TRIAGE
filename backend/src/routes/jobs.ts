@@ -68,7 +68,7 @@ router.post('/jobs', upload.array('files', 50), async (req: Request, res: Respon
         readDemoFiles(path.join(getDataDir(), 'raw', sub.replace('raw/', '')), 10);
       }
     }
-    // Case 3: Explicit units array per SYSTEM_DESIGN.md Section 4 contract
+    // Case 3: Explicit units array contract
     else if (req.body.units !== undefined) {
       if (!Array.isArray(req.body.units) || req.body.units.length === 0 || req.body.units.length > getMaxUploadFiles()) {
         res.status(400).json({ error: `units must be a non-empty array with at most ${getMaxUploadFiles()} entries.` });

@@ -129,7 +129,7 @@ export const SettingsTab: React.FC<Props> = ({ healthInfo, systemInfo }) => {
               <td style={{ fontFamily: 'var(--font-mono)', fontWeight: 600, color: 'var(--text-primary)' }}>UAV-SAR</td>
               <td style={{ fontFamily: 'var(--font-mono)' }}>CC-BY 4.0</td>
               <td style={{ fontFamily: 'var(--font-mono)', color: '#34d399' }}>Permitted w/ Attribution</td>
-              <td style={{ fontSize: 11 }}>Wilderness aerial SAR drone sweeps. Full attribution cited in <code>docs/dataset_licenses.md</code>.</td>
+              <td style={{ fontSize: 11 }}>Wilderness aerial SAR drone sweeps. Full attribution cited in <code>README.md</code>.</td>
             </tr>
           </tbody>
         </table>

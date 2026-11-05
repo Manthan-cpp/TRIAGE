@@ -19,7 +19,7 @@ router.get('/candidates/:candidateId', (req: Request, res: Response): void => {
     return;
   }
 
-  // Format response per SYSTEM_DESIGN.md Section 4 contract
+  // Format response per candidate contract
   res.json({
     candidateId: candidate.candidateId,
     jobId: candidate.jobId,

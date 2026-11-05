@@ -27,7 +27,7 @@
   --glass-shadow-md: 0 8px 30px rgba(0, 0, 0, 0.32);
   --glass-shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.44);
 
-  /* Single functional accent per DESIGN.md Section 3 */
+  /* Single functional accent */
   --accent-primary: #2563eb;
   --accent-primary-hover: #1d4ed8;
   --accent-subtle: rgba(37, 99, 235, 0.16);
