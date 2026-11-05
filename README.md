@@ -2,167 +2,144 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Meta Model API](https://img.shields.io/badge/Meta%20AI-SAM%203.1%20%7C%20Muse%20Spark%201.3-blueviolet)](https://api.meta.ai)
+[![Demo Video](https://img.shields.io/badge/YouTube-Demo%20Video-red?logo=youtube)](https://www.youtube.com/watch?v=xDeto4KjvcE)
 [![Node.js](https://img.shields.io/badge/Node.js-18%2B-green.svg)](https://nodejs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0%2B-3178C6.svg)](https://www.typescriptlang.org)
 
 > **Tactical Aerial Search & Rescue (SAR) Reconnaissance Copilot**  
-> Built for the **Meta Global AI Developer Hackathon** (Track: *Build for Your World*).
+> Built for the **Meta Global AI Developer Hackathon** — Track: *Build for Your World*.
 
-Project Triage is an AI-assisted decision-support dashboard for emergency search-and-rescue teams. It ingests raw aerial drone footage and disaster zone imagery, filters thousands of empty and redundant frames, segments potential survivor cues using **Meta SAM 3.1**, and performs contextual hazard analysis using **Meta Muse Spark 1.3** to prioritize human attention during the critical golden hour.
+**Project Triage** is an AI-powered tactical reconnaissance copilot that transforms raw aerial drone sweeps into prioritized, life-saving intelligence. By pairing **Meta SAM 3.1** spatial segmentation with **Meta Muse Spark 1.3** situational reasoning, Triage eliminates hours of manual footage review during the golden hour of disaster response.
 
----
-
-## The Problem & Mission
-
-During natural disasters (floods, earthquakes, structural collapses), aerial drones capture hours of high-resolution reconnaissance footage. First responders face severe **cognitive fatigue** manually reviewing repetitive terrain frame-by-frame to spot tiny survivor cues—such as a waving hand, submerged clothing, or improvised distress markers. Critical minutes are lost.
-
-**Project Triage compresses hours of raw drone footage into seconds of actionable, prioritized keyframes.**
-
-### Core Philosophy: Zero-Dismissal Safety Protocol
-In life-safety operations, **AI must never silently drop a potential survivor**. Project Triage operates on a strict human-in-the-loop paradigm:
-- The AI isolates candidate signals and ranks urgency.
-- Ambiguous or low-confidence cues are escalated to human operators, never discarded.
-- Responders inspect spatial segmentations, environmental hazards, and telemetry in a unified tactical dashboard before dispatching rescue teams.
+📺 **[Watch the 2-Minute Demo Video on YouTube](https://www.youtube.com/watch?v=xDeto4KjvcE)**
 
 ---
 
-## Meta AI Integration
-
-Project Triage combines two Meta model families to provide end-to-end aerial perception and reasoning:
-
-1. **Meta SAM 3.1 (`sam-3.1`) — Spatial Perception & Segmentation**
-   - Executes zero-shot boundary segmentation on candidate visual regions.
-   - Generates pixel-accurate spatial masks across complex, cluttered disaster terrain (water, mud, wreckage) without requiring task-specific fine-tuning.
-   
-2. **Meta Muse Spark 1.3 (`muse-spark-1.3`) — Situational Reasoning & Triage**
-   - Serves as the cognitive triage engine, analyzing environmental hazards surrounding each candidate (e.g. rising floodwaters, debris entrapment, immobility).
-   - Generates structured risk assessments and assigns priority tiers:
-     - **P1 Critical:** Imminent environmental or physical danger (e.g. actively submerged, trapped under unstable debris).
-     - **P2 High:** Confirmed survivor cue requiring expedited rescue.
-     - **P3 Moderate:** Inconclusive visual signal requiring human verification.
-     - **P4 Monitor:** Low-urgency or ambient visual cue.
+<p align="center">
+  <img src="assets/screenshots/02_pipeline_execution.png" width="49%" alt="Pipeline Execution Status" />
+  <img src="assets/screenshots/04_earthquake_rubble_triage.jpg" width="49%" alt="Earthquake Disaster Rubble Triage" />
+</p>
 
 ---
 
-## Architecture & Pipeline
+## The Problem Statement
 
-```text
-Raw Drone Video / Imagery
-       │
-       ▼
-[ Adaptive Keyframe Extraction ]
-  ├── 1 fps intelligent sampling
-  ├── Motion & perceptual saliency filtering
-  └── Discards redundant, empty terrain frames
-       │
-       ▼
-[ Meta SAM 3.1 Perception ]
-  ├── Zero-shot spatial segmentation
-  └── Generates candidate boundary masks
-       │
-       ▼
-[ Meta Muse Spark 1.3 Reasoning ]
-  ├── Environmental hazard & context evaluation
-  ├── Structured JSON triage assessment
-  └── Multi-tier priority assignment (P1 - P4)
-       │
-       ▼
-[ Tactical Mission Dashboard ]
-  ├── Real-time Obsidian Glassmorphism UI
-  ├── Side-by-side keyframe & mask inspection
-  └── One-click human verification & dispatch
+When floods, earthquakes, or wildfires hit, emergency teams deploy aerial drones capturing tens of thousands of high-resolution 4K frames. Spotting a motionless survivor, submerged clothing, or a distant distress gesture is an excruciating manual process. 
+
+Responders face acute **cognitive fatigue** scanning miles of empty wreckage under extreme time pressure. In emergency triage, the first **"golden hour"** determines survival—yet valuable minutes are lost scrubbing through empty video streams.
+
+## The Solution: Project Triage
+
+Project Triage automates the reconnaissance bottleneck through an intelligent, zero-loss triage pipeline:
+- **Intelligent Backlog Ingestion:** Ingests raw drone sweeps (MP4, MOV) and disaster photos, filtering thousands of redundant frames through motion and perceptual sampling.
+- **Zero-Dismissal Safety Protocol:** AI never silently discards a candidate. High-confidence cues are prioritized, while ambiguous signals are elevated to human operators for verification.
+- **Human-in-the-Loop Mission Control:** Responders inspect spatial segmentations, surrounding environmental hazards, and telemetry in an obsidian glassmorphism interface to dispatch rescue teams in seconds.
+
+---
+
+## Target Users
+
+1. **Search & Rescue (SAR) Teams:** Rapidly pinpoint stranded hikers, missing persons, or injured victims in dense wilderness or rugged terrain.
+2. **Emergency Operations Centers (EOC):** Triage floodwaters and collapsed structures to deploy medical and extraction units by urgency.
+3. **UAV / Drone Recon Operators:** Process raw drone sweeps immediately upon landing (or over field uplinks) without needing manual scrubbing.
+
+---
+
+## System Workflow
+
+```mermaid
+flowchart LR
+    A["Raw Drone Footage<br/>(Video / Photos)"] --> B["Intelligent Keyframe Ingestion<br/>(1 fps & Perceptual Sampling)"]
+    B --> C["Meta SAM 3.1<br/>(Spatial Boundary Masks)"]
+    C --> D["Meta Muse Spark 1.3<br/>(Situational Risk Reasoning)"]
+    D --> E["Tactical Triage Queue<br/>(P1 Critical ➔ P4 Monitor)"]
+    E --> F["Human Operator Action<br/>(Dispatch / Verify / Escalate)"]
+
+    style A fill:#1e293b,stroke:#475569,color:#fff
+    style B fill:#1e293b,stroke:#475569,color:#fff
+    style C fill:#3b82f6,stroke:#60a5fa,color:#fff
+    style D fill:#8b5cf6,stroke:#a78bfa,color:#fff
+    style E fill:#0f172a,stroke:#3b82f6,color:#fff
+    style F fill:#059669,stroke:#34d399,color:#fff
 ```
 
-### Technical Stack
-- **Backend:** Node.js, Express, TypeScript, SQLite (WAL mode), `@google/genai` / Meta Model API client.
-- **Frontend:** React 19, Vite, TypeScript, Lucide Icons, Canvas & WebGL tactical visualization.
-- **Data & Ops:** Bounded concurrency perception queues, automated fallback mechanisms, instant workspace state reset.
+---
+
+## Meta AI Integration & Significance
+
+Project Triage bridges the critical gap between basic object detection and actionable rescue reasoning by combining two Meta model families:
+
+| Meta Model | Role in Pipeline | Tactical Significance |
+| :--- | :--- | :--- |
+| **Meta SAM 3.1**<br/>(`sam-3.1`) | **Spatial Perception & Zero-Shot Segmentation** | Generates pixel-accurate boundary masks for survivors, clothing, and vehicles across chaotic wilderness, rubble, and flood terrain without task-specific fine-tuning. |
+| **Meta Muse Spark 1.3**<br/>(`muse-spark-1.3`) | **Contextual Reasoning & Hazard Triage** | Evaluates the immediate environment around each candidate (immobility, structural instability, rising water) to compute structured risk scores and assign priority tiers (P1 to P4). |
+
+**Why this matters:** Traditional computer vision stops at drawing a generic bounding box. Meta Muse Spark understands *why* a detected person in a collapsed building is in critical danger (P1) versus an upright resting hiker on a trail (P3), giving commanders instant situational context.
 
 ---
 
-## Quickstart
+<p align="center">
+  <img src="assets/screenshots/01_batch_ingest.png" width="49%" alt="Batch Ingestion Setup" />
+  <img src="assets/screenshots/03_forest_sar_review.jpg" width="49%" alt="Forest Search & Rescue Review" />
+</p>
+
+---
+
+## Setup & Startup Instructions
 
 ### Prerequisites
-- Node.js (v18+)
-- npm (v9+)
-- Meta Model API Key
+- **Node.js** (v18.0.0 or higher)
+- **npm** (v9.0.0 or higher)
+- **Meta Model API Key**
 
-### 1. Clone & Configure
+### 1. Installation
+Clone the repository and install all dependencies:
 ```bash
-git clone https://github.com/<your-username>/triage.git
-cd triage
+git clone https://github.com/Manthan-cpp/TRIAGE.git
+cd TRIAGE
+npm run install:all
+```
+
+### 2. Configure Environment
+Copy the example environment file and add your Meta API key:
+```bash
 cp .env.example .env
 ```
-Edit `.env` and set your `META_MODEL_API_KEY`:
+Inside `.env`:
 ```ini
 META_MODEL_API_KEY=your_meta_model_api_key_here
 META_MODEL_API_BASE_URL=https://api.meta.ai/v1
 PORT=4000
 ```
 
-### 2. Install & Build
+### 3. Build & Launch
+Build both frontend and backend bundles, then start the production server:
 ```bash
-npm run install:all
 npm run build
-```
-
-### 3. Start Production Server
-```bash
 npm start
 ```
 Open **`http://localhost:4000`** in your browser.
 
-> **Development Mode:** For separate hot-reloading frontend and backend processes:
+> **Instant State Reset:** To clear test jobs, evaluation candidates, and uploaded cache back to a clean slate, click the **Reset Data** button in the dashboard or run:
 > ```bash
-> npm run dev:backend   # Express API on port 4000
-> npm run dev:frontend  # Vite on port 5173 with proxy
+> npm run reset
 > ```
 
-### 4. Workspace Reset
-To instantly wipe test jobs, evaluation candidates, and cached media back to a clean slate:
-```bash
-npm run reset
-```
-*(You can also click the Reset button in the top-right navigation bar of the dashboard).*
-
 ---
 
-## API Reference
+## Acknowledgements
 
-| Endpoint | Method | Description |
-| :--- | :--- | :--- |
-| `/api/jobs` | `POST` | Upload drone videos or image batches for automated triage. |
-| `/api/jobs/:jobId` | `GET` | Track processing status, pipeline stages, and completion progress. |
-| `/api/jobs/:jobId/queue` | `GET` | Retrieve the ranked candidate priority queue. |
-| `/api/candidates/:candidateId` | `GET` | Fetch candidate crop, SAM 3.1 masks, Muse Spark reasoning, and GPS telemetry. |
-| `/api/candidates/:candidateId/decision` | `POST` | Record human responder verification decisions (Dispatch, Escalate, Dismiss). |
-| `/api/system/reset` | `POST` | Instant clean reset of all job queues and candidate database state. |
-| `/health` | `GET` | Service liveness and configuration health check. |
-
----
-
-## Evaluation & Benchmarks
-
-Project Triage was evaluated against standardized academic Search-and-Rescue aerial benchmarks:
-- **Precision@10:** 100% on a calibrated 38-unit evaluation suite across varied wilderness and flood terrain.
-- **Safety:** High-recall perception catches partially submerged actors and subtle clothing cues while logging terrain shadow edge cases for human review.
-- **Auditability:** Every flagged candidate records model confidence, timestamp, latency, and model inference costs.
-
----
-
-## Ethical Compliance & Dataset Attribution
-
-In strict accordance with project ethics:
-- **No real disaster casualties or traumatic footage is ever included or processed.**
-- All evaluation imagery originates from peer-reviewed academic datasets featuring actors simulating search-and-rescue scenarios:
-  1. **SARD (Search and Rescue Image Dataset for Person Detection):** Sambolek & Ivasic-Kos (2021), *IEEE Access*. Licensed under CC BY 4.0.
-  2. **Low-Altitude UAV Person Detection Benchmark (UAV-SAR):** Licensed under CC BY 4.0.
-  3. **NOMAD (Natural, Occluded, Multi-scale Aerial Dataset):** Russell Bernal et al. (WACV 2024). Academic research use.
-  4. **HERIDAL (Human Rescue Imaging Database on Land):** Božić-Štulić et al. (2019), *IEEE Transactions on Cybernetics*. Licensed under CC BY 3.0.
+- **Meta AI & Cerebral Valley:** For hosting the Meta Global AI Developer Hackathon and providing access to the Meta Model API ecosystem (SAM 3.1 & Muse Spark 1.3).
+- **Academic Benchmark Datasets:** Evaluation imagery uses open, simulated academic search-and-rescue datasets with actors:
+  - **SARD (Search and Rescue Image Dataset for Person Detection):** Sambolek & Ivasic-Kos (2021), *IEEE Access*.
+  - **UAV-SAR (Low-Altitude UAV Person Detection Benchmark):** CC-BY 4.0.
+  - **NOMAD:** Russell Bernal et al. (WACV 2024).
+  - **HERIDAL:** Božić-Štulić et al. (2019), *IEEE Transactions on Cybernetics*.
+  *(No actual disaster casualties or trauma footage are included).*
 
 ---
 
 ## License & Contributing
 
-- Distributed under the [MIT License](LICENSE).
-- Contributions, issues, and feature requests are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on code style and pull request guidelines.
+- **License:** Distributed under the [MIT License](LICENSE).
+- **Contributing:** Please review our [Contributing Guidelines](CONTRIBUTING.md) to learn about our code standards, test suite, and life-safety design principles.
